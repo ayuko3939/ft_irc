@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:11 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/04 19:15:46 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/04 21:04:23 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,11 @@ class Client
     std::string		_userName;
     std::string		_realName;
     std::string		_mode;
-    std::string		_readBuffer;
-    std::string		_sendBuffer;
-    bool		    	_toDeconnect;
-    bool		    	_registrationDone;
-    bool		    	_welcomeSent;
+    std::string		_readBuf; // 受信バッファ
+    std::string		_sendBuf; // 送信バッファ
+    bool		    	_toDeconnect; // 切断フラグ
+    bool		    	_registrationDone; // 登録完了フラグ
+    bool		    	_welcomeSent; // ウェルカムメッセージ送信済みフラグ
 
   public:
     Client(int clientFd);
@@ -41,8 +41,8 @@ class Client
     // void setUserName(const std::string &userName);
     // void setRealName(const std::string &realName);
     // void setMode(const std::string &mode);
-    // void setReadBuffer(const std::string &readBuffer);
-    // void setSendBuffer(const std::string &sendBuffer);
+    // void setReadBuf(const std::string &readBuf);
+    // void setSendBuf(const std::string &sendBuf);
     // void setToDeconnect(bool flag);
     // void setRegistrationDone(bool flag);
     // void setWelcomeSent(bool flag);
@@ -54,8 +54,8 @@ class Client
     // const std::string &getUserName() const;
     // const std::string &getRealName() const;
     // const std::string &getMode() const;
-    // const std::string &getReadBuffer() const;
-    // const std::string &getSendBuffer() const;
+    // const std::string &getReadBuf() const;
+    // const std::string &getSendBuf() const;
     // bool getToDeconnect() const;
     // bool isRegistrationDone() const;
     // bool isWelcomeSent() const;

@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:18 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/04 20:15:11 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/04 23:01:07 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,14 @@
 class Server
 {
   private:
-    int								_serverSockFd;
-    std::map<const int, Client>		_clientList;
+    int							              	_serverSockFd;
+    std::map<const int, Client>		  _clientList;
     std::map<std::string, Channel>	_channelList;
-    std::string						_port;
-    std::string						_Password;
-    std::string						_dateTime;
-    std::string						_motd;
-    struct addrinfo					_addrInfo;
-    struct addrinfo*				_serverInfo;
+    std::string						          _port;
+    std::string					          	_password;
+    std::string					          	_dateTime;
+    struct addrinfo				        	_addrInfo; // アドレス情報
+    struct addrinfo*			        	_serverInfo; // サーバー情報
 
   public:
 	  Server(std::string port, std::string password, struct tm *timeinfo);
@@ -39,7 +38,6 @@ class Server
     // void setPort(const std::string &port);
     // void setPassword(const std::string &password);
     // void setDateTime(const std::string &dateTime);
-    // void setMotd(const std::string &motd);
     // void setAddrInfo(const struct addrinfo &addrInfo);
     // void setServerInfo(struct addrinfo* serverInfo);
 
@@ -50,13 +48,12 @@ class Server
     // const std::string &getPort() const;
     // const std::string &getPassword() const;
     // const std::string &getDateTime() const;
-    // const std::string &getMotd() const;
     // const struct addrinfo &getAddrInfo() const;
     // struct addrinfo* getServerInfo() const;
 
     // Other member function prototypes (implementation to be provided later)
-    void launchServer();
-    void manageServerLoop();
+    void initServer();
+    // void manageServerLoop();
 };
 
 #endif

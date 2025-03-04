@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:04 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/04 19:17:23 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/04 21:03:01 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ class Channel
 	std::string						_topic;
 	std::string						_mode;
 	std::string						_password;
-	int						        _maxConnections;
+	int						        _maxConnections; // チャンネルに参加できる最大クライアント数
 	std::map<std::string, Client>	_clientList;
 	std::vector<std::string>		_kickedUsers;
 	std::vector<std::string>		_operatorList;
