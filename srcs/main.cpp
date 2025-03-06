@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 21:07:05 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/04 23:26:25 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/05 23:12:24 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,24 @@ int main(int ac, char **av)
 	signal(SIGINT, signalHandler);
 	
 	// サーバーの初期化
-	Server server(av[1], av[2], timeinfo);
-	
+	Server ircServer(av[1], av[2], timeinfo);
+
+	try
+	{
+		// オペレーターリストを読み込む
+		ircServer.readConfigFile();
+		// サーバーの情報を取得
+		ircServer.getServerInfo();
+		// サーバーを起動
+		ircServer.launchServer();
+		// サーバーのメインループ
+		manageServerLoop();
+	}
+	catch(char const *mes)
+	{
+		std::cout << RED << mes << END << std::endl;
+		return (EXIT_FAILURE);
+	}
+
 	return (EXIT_SUCCESS);
 }
