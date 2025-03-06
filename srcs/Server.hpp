@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:18 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/05 23:12:13 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/06 21:09:39 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,13 @@ class Server
     std::map<std::string, Channel>	_channelList;
     struct addrinfo				        	_addrInfo; // アドレス情報
     struct addrinfo*			        	_serverInfo; // サーバー情報
+
+    // manageServerLoop
+    void setServerPollFd(std::vector<pollfd> &pollFds);
+    int handlePollin(std::vector<pollfd> &pollFds, std::vector<pollfd> &tmpPollFds, std::vector<pollfd>::iterator &it);
+    int handlePollout(std::vector<pollfd> &pollFds, std::vector<pollfd>::iterator &it, int clientSockFd);
+    int handlePollerr(std::vector<pollfd> &pollFds, std::vector<pollfd>::iterator &it);
+
 
   public:
 	  Server(std::string port, std::string password, struct tm *timeinfo);

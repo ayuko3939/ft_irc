@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:18 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/05 23:16:01 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/06 21:11:50 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,14 +137,95 @@ void Server::launchServer()
 	freeaddrinfo(_serverInfo);
 }
 
+
+
+
+
+
+void Server::setServerPollFd(std::vector<pollfd> &pollFds)
+{
+	pollfd	serverPollFd;
+
+	serverPollFd.fd = _serverSockFd;
+	serverPollFd.events = POLLIN; // POLLIN: データ読み込み可能
+
+	pollFds.push_back(serverPollFd);
+}
+
+int Server::handlePollin(std::vector<pollfd> &pollFds, std::vector<pollfd> &tmpPollFds, std::vector<pollfd>::iterator &it)
+{
+	// クライアントからの新規接続
+	if (it->fd == _serverSockFd)
+		return (createClientConnexion(pollFds, tmpPollFds));
+		// return (handleNewConnection(pollFds, tmpPollFds));
+	// 既存クライアントからのデータ受信
+	else
+		return (handleExistingConnexion(pollFds, it));
+		// return (handleClientData(pollFds, it));
+}
+
+int Server::handlePollout(std::vector<pollfd> &pollFds, std::vector<pollfd>::iterator &it, int clientSockFd)
+{
+	return (0);
+}
+
+int Server::handlePollerr(std::vector<pollfd> &pollFds, std::vector<pollfd>::iterator &it)
+{
+	return (0);
+}
+
 void Server::manageServerLoop()
 {
 	std::vector<pollfd>		pollFds;
-	pollfd					serverPollFd;
+	std::vector<pollfd>		tmpPollFds;
 
-	serverPollFd.fd = _serverSockFd;
-	serverPollFd.events = POLLIN;
-
-	pollFds.push_back(serverPollFd);
+	// サーバーのソケットを監視対象に追加
+	setServerPollFd(pollFds);
 	
+	// サーバーがシャットダウンされるまでループ
+	while (g_ServerShutdown == false)
+	{
+		tmpPollFds.clear();
+
+		// pollFdsの接続に変化があるまで待機（-1:タイムアウトなし）
+		if (poll((pollfd *)&pollFds[0], pollFds.size(), -1) <= 0)
+		{
+			// シグナル（Ctrl + C）が発生した場合、ループを抜ける
+			if (errno == EINTR)
+				break;
+			throw ("Error: poll"); // ERROR_POLL
+		}
+		
+		// pollFdsの中身を状態を順番に確認し、処理を行う
+		std::vector<pollfd>::iterator it = pollFds.begin();
+		while (it != pollFds.end())
+		{
+			// POLLIN: データ読み込み可能（新規接続 or 既存クライアントからのデータ受信）
+			if (it->revents & POLLIN)
+			{
+				if (handlePollin(pollFds, tmpPollFds, it))
+					break;
+			}
+			// POLLOUT: データ書き込み可能（クライアントにデータを送信）
+			else if (it->revents & POLLOUT)
+			{
+				// クライアントにデータを送信する
+				if (handlePollout(pollFds, it, it->fd))
+					break;
+			}
+			// POLLERR: エラー（クライアントが切断された）
+			else if (it->revents & POLLERR)
+			{
+				// エラーが発生した
+				if (handlePollerr(pollFds, it))
+					break;
+			}
+
+			++it;
+		}
+
+		// 新しいクライアントがいれば、pollFdsに追加する
+		if (!tmpPollFds.empty())
+			pollFds.insert(pollFds.end(), tmpPollFds.begin(), tmpPollFds.end());
+	}
 }

@@ -45,9 +45,6 @@
 # define BROWN "\033[38;5;137m"
 # define END "\033[0m"
 
-// Settings
-# define CONFG_FILE "config/oprators.conf"
-
 // Error masege
 # define ERROR_OPEN_FILE		"Error: could not open file."
 # define ERROR_FILE_EMPTY		"Error: file is empty."
@@ -56,5 +53,11 @@
 # define ERROR_SERVER_SETSOCKETOPT	"Error: setsockopt failed"
 # define ERROR_SERVER_BIND		"Error: bind failed on port "
 # define ERROR_SERVER_LISTEN	"Error: listen failed"
+
+// Settings
+# define CONFG_FILE "config/oprators.conf"
+
+// サーバー停止フラグ
+bool g_ServerShutdown = false;
 
 #endif

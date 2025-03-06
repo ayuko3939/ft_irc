@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 21:07:05 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/05 23:12:24 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/06 21:12:35 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,10 @@
 # include <iostream>
 # include <cstdlib>
 
-// サーバー停止フラグ
-bool serverShutdown = false;
-
 static void signalHandler(int signal)
 {
 	(void)signal;
-	serverShutdown = true;
+	g_ServerShutdown = true;
 }
 
 int main(int ac, char **av)
@@ -55,7 +52,7 @@ int main(int ac, char **av)
 		// サーバーを起動
 		ircServer.launchServer();
 		// サーバーのメインループ
-		manageServerLoop();
+		ircServer.manageServerLoop();
 	}
 	catch(char const *mes)
 	{
