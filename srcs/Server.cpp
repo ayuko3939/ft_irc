@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:18 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/06 21:11:50 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/08 23:25:16 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ Server::~Server()
 // const std::string &Server::getPassword() const { return (_password); }
 // const std::string &Server::getDateTime() const { return (_dateTime); }
 // const std::vector<serverOperator> &Server::getOperatorList() const { return (_operatorList); }
-// const std::map<const int, Client>& Server::getClientList() const { return (_clientList); }
+std::map<const int, Client>& Server::getClientList() const { return (_clientList); }
 // const std::map<std::string, Channel>& Server::getChannelList() const { return (_channelList); }
 // const struct addrinfo &Server::getAddrInfo() const { return (_addrInfo); }
 // struct addrinfo* Server::getServerInfo() const { return (_serverInfo); }
@@ -138,40 +138,144 @@ void Server::launchServer()
 }
 
 
-
-
-
-
-void Server::setServerPollFd(std::vector<pollfd> &pollFds)
+void splitMessage(std::string &message, std::vector<std::string> &cmds)
 {
-	pollfd	serverPollFd;
+	// 改行コードを"\r\n"から"\n"に変換
+	std::string			replaced;
+	std::string::size_type pos = 0;
 
-	serverPollFd.fd = _serverSockFd;
-	serverPollFd.events = POLLIN; // POLLIN: データ読み込み可能
+	while ((pos = message.find("\r\n", pos)) != std::string::npos)
+	{
+		message.replace(pos, 2, "\n");
+		pos += 1;
+	}
 
-	pollFds.push_back(serverPollFd);
+	// メッセージを１行ずつ分割してコマンドリストに格納
+	std::istringstream	iss(message);
+	std::string			line;
+
+	while (std::getline(iss, line, '\n'))
+		cmds.push_back(line);
 }
 
-int Server::handlePollin(std::vector<pollfd> &pollFds, std::vector<pollfd> &tmpPollFds, std::vector<pollfd>::iterator &it)
+void Server::parseMessage(int clientFd, std::string &message)
 {
-	// クライアントからの新規接続
-	if (it->fd == _serverSockFd)
-		return (createClientConnexion(pollFds, tmpPollFds));
-		// return (handleNewConnection(pollFds, tmpPollFds));
-	// 既存クライアントからのデータ受信
+	std::vector<std::string>	cmds;
+	std::map<const int, Client>::iterator it = _clientList.find(clientFd);
+	
+	// 改行毎にメッセージを分割してコマンドリストに格納
+	splitMessage(message, cmds);
+	
+	// コマンドリストを順番に処理
+	std::vector<std::string>::iterator cmdIt = cmds.begin();
+	for ( ; cmdIt != cmds.end(); ++cmdIt)
+	{
+		const std::string &cmd = *cmdIt;
+		
+		// 登録が完了できていない場合
+		if (!it->second.isRegistrationDone())
+		{
+			if ()
+		}
+		else
+			execCommand(clientFd, cmd); // ★★★
+	}
+}
+
+
+int Server::handleClientData(std::vector<pollfd> &pollFds, std::vector<pollfd>::iterator &it)
+{
+	// 1. クライアント情報の取得
+	Client *client = getClient(this, it->fd);
+	if (!client)
+	{
+		std::cerr << ORANGE ERROR_CLIENT_NOT_FOUND << it->fd << END << std::endl;
+		return (EXIT_FAILURE);
+	}
+	
+	// 2. 受信用バッファの用意（メッセージの最大長さを指定）
+	std::string message;
+	message.resize(BUF_SIZE_MSG);
+
+	// 3. recv() を使ってデータ受信
+	size_t readSize = recv(it->fd, &message[0], BUF_SIZE_MSG, 0);
+	
+	// 4-a. エラー発生時の処理
+	if (readSize < 0)
+	{
+		std::cerr << ORANGE ERROR_SERVER_RECV END << std::endl;
+		deleteClient(pollFds, it, it->fd);
+		return (EXIT_FAILURE);
+	}
+	// 4-b. クライアントが切断された場合の処理
+	else if (readSize == 0)
+	{
+		deleteClient(pollFds, it, it->fd);
+		return (EXIT_FAILURE);
+	}
+	// 4-c. データ受信成功時の処理
 	else
-		return (handleExistingConnexion(pollFds, it));
-		// return (handleClientData(pollFds, it));
+	{
+		// 受信したデータをバッファに格納（実際のメッセージの長さにリサイズ）
+		message.resize(readSize);
+		std::cout << "[Client] " << message << std::endl; // ===== ★後で表示を整える★ =====
+		
+		// クライアントのバッファに受信したメッセージを追記で格納
+		client->setReadBuf(client->getReadBuf() + message);
+		
+		// 受信したデータに"\r\n"（IRCの改行）が含まれる含む場合、コマンドとして処理する
+		if (client->getReadBuf().find("\r\n") != std::string::npos)
+		{
+			try
+			{
+				parseMessage(it->fd, client->getReadBuf());
+
+				client->resetReadBuf();
+			}
+			catch(char const *mes)
+			{
+				// std::cerr << RED << mes << END << std::endl;
+
+				return (EXIT_FAILURE); // ★★★
+			}
+		}
+	}
+	return (EXIT_SUCCESS);
 }
+
 
 int Server::handlePollout(std::vector<pollfd> &pollFds, std::vector<pollfd>::iterator &it, int clientSockFd)
 {
-	return (0);
+	// クライアントが見つからなかった場合、エラー文を出力して何もしないで処理終了
+	if ()
+	{
+		std::cout << ORANGE END << std::endl;
+	}
+	else
+	{
+		// クライアントが切断フラグを持っている場合は削除してbreak
+		// （これ以降はこのクライアントに接続できないように即時削除）
+		if ()
+		{
+			return (1);
+		}
+	}
+	return (EXIT_SUCCESS);
 }
 
 int Server::handlePollerr(std::vector<pollfd> &pollFds, std::vector<pollfd>::iterator &it)
 {
-	return (0);
+	// サーバーにエラーが発生した場合、強制終了
+	if ()
+	{
+		throw ();
+	}
+	// クライアントにエラーが発生した場合、クライアントを削除
+	if ()
+	{
+		return (EXIT_FAILURE);
+	}
+	return (EXIT_SUCCESS);
 }
 
 void Server::manageServerLoop()
@@ -203,8 +307,18 @@ void Server::manageServerLoop()
 			// POLLIN: データ読み込み可能（新規接続 or 既存クライアントからのデータ受信）
 			if (it->revents & POLLIN)
 			{
-				if (handlePollin(pollFds, tmpPollFds, it))
-					break;
+				// クライアントからの新規接続
+				if (it->fd == _serverSockFd)
+				{
+					if (handleNewConnection(pollFds, tmpPollFds))
+						continue;
+				}
+				// 既存クライアントからのデータ受信
+				else
+				{
+					if (handleClientData(pollFds, it))
+						break;
+				}
 			}
 			// POLLOUT: データ書き込み可能（クライアントにデータを送信）
 			else if (it->revents & POLLOUT)
@@ -225,6 +339,8 @@ void Server::manageServerLoop()
 		}
 
 		// 新しいクライアントがいれば、pollFdsに追加する
+		// [!] pollFdsに直接入れるとイテレーターが狂うので、
+		// 一旦tmpに入れて後でまとめてpollFdsに格納する
 		if (!tmpPollFds.empty())
 			pollFds.insert(pollFds.end(), tmpPollFds.begin(), tmpPollFds.end());
 	}

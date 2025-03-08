@@ -2,10 +2,6 @@
 # define IRC_HPP
 
 // Libraries
-# include "Channel.hpp"
-# include "Client.hpp"
-# include "Server.hpp"
-
 # include <iostream>
 # include <fstream> // file
 # include <sstream> // string
@@ -45,17 +41,31 @@
 # define BROWN "\033[38;5;137m"
 # define END "\033[0m"
 
-// Error masege
-# define ERROR_OPEN_FILE		"Error: could not open file."
-# define ERROR_FILE_EMPTY		"Error: file is empty."
-# define ERROR_FILE_CONTENTS	"Error: file is wrong."
-# define ERROR_SERVER_SOCKET	"Error: socket creation failed"
+// ===== Error masege =====
+// fatal errors
+# define ERROR_OPEN_FILE			"Error: could not open file"
+# define ERROR_FILE_EMPTY			"Error: file is empty"
+# define ERROR_FILE_CONTENTS		"Error: file is wrong"
+# define ERROR_SERVER_SOCKET		"Error: socket creation failed"
 # define ERROR_SERVER_SETSOCKETOPT	"Error: setsockopt failed"
-# define ERROR_SERVER_BIND		"Error: bind failed on port "
-# define ERROR_SERVER_LISTEN	"Error: listen failed"
+# define ERROR_SERVER_BIND			"Error: bind failed on port "
+# define ERROR_SERVER_LISTEN		"Error: listen failed"
+// normal errors
+# define ERROR_SERVER_ACCEPT		"Error: accept failed"
+# define ERROR_SERVER_FULL			"Error: server is already full"
+# define ERROR_CLIENT_NOT_FOUND		"Error: client not found #"
+# define ERROR_SERVER_RECV			"Error: recv failed"
+
+// Server message
+# define SERVER_ADD_CLIENT			"[Server] Added client #"
+# define SERVER_DISCONNECT_CLIENT	"[Server] Client disconnected #"
+# define SERVER_NUMBER_OF_CLIENTS	"[Server] The current number of clients is "
+
 
 // Settings
 # define CONFG_FILE "config/oprators.conf"
+# define MAX_CLIENTS 4
+# define BUF_SIZE_MSG 1024
 
 // サーバー停止フラグ
 bool g_ServerShutdown = false;

@@ -6,11 +6,11 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 21:07:05 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/06 21:12:35 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/07 21:45:06 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "Irc.hpp"
+# include "Server.hpp"
 
 # include <iostream>
 # include <cstdlib>
@@ -56,7 +56,7 @@ int main(int ac, char **av)
 	}
 	catch(char const *mes)
 	{
-		std::cout << RED << mes << END << std::endl;
+		std::cerr << RED << mes << END << std::endl;
 		return (EXIT_FAILURE);
 	}
 

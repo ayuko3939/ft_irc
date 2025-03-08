@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:11 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/04 21:04:23 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/08 22:27:50 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,11 +41,12 @@ class Client
     // void setUserName(const std::string &userName);
     // void setRealName(const std::string &realName);
     // void setMode(const std::string &mode);
-    // void setReadBuf(const std::string &readBuf);
+    void setReadBuf(const std::string &readBuf);
     // void setSendBuf(const std::string &sendBuf);
     // void setToDeconnect(bool flag);
-    // void setRegistrationDone(bool flag);
+    void setRegistrationDone(bool flag);
     // void setWelcomeSent(bool flag);
+    void resetReadBuf();
 
     // Getters
     // int getClientFd() const;
@@ -54,10 +55,10 @@ class Client
     // const std::string &getUserName() const;
     // const std::string &getRealName() const;
     // const std::string &getMode() const;
-    // const std::string &getReadBuf() const;
+    const std::string &getReadBuf() const;
     // const std::string &getSendBuf() const;
     // bool getToDeconnect() const;
-    // bool isRegistrationDone() const;
+    bool isRegistrationDone() const;
     // bool isWelcomeSent() const;
 };
 
