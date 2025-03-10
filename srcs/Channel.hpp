@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:04 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/07 21:05:31 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/10 21:30:07 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,9 @@ class Channel
 	// std::map<std::string, Client> &getClientList();
 	// std::vector<std::string> &getKickedUsers();
 	// std::vector<std::string> &getOperatorList();
+	
+	bool isClientInChannel(std::string &clientName);
+	void addClientToChannel(Client &client);
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:18 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/08 19:17:09 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/10 21:34:11 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,11 @@ class Server
     
     void parseMessage(int clientFd, std::string &message);
 
+
+    void addChannel(std::string &channelName);
+    void addClientToChannel(std::string &channelName, Client &client);
+    bool isChannelExist(std::string &channelName);
+    
   public:
 	  Server(std::string port, std::string password, struct tm *timeinfo);
 	  ~Server();
@@ -70,15 +75,15 @@ class Server
     // void setServerInfo(struct addrinfo* serverInfo);
 
     // Getters
-    // int getServerSockFd() const;
-    // const std::string &getPort() const;
-    // const std::string &getPassword() const;
-    // const std::string &getDateTime() const;
-    // const std::vector<serverOperator> &getOperatorList() const;
-    std::map<const int, Client>& getClientList() const;
-    // const std::map<std::string, Channel>& getChannelList() const;
-    // const struct addrinfo &getAddrInfo() const;
-    // struct addrinfo* getServerInfo() const;
+    // int getServerSockFd();
+    // std::string &getPort();
+    // std::string &getPassword();
+    // std::string &getDateTime();
+    // std::vector<serverOperator> &getOperatorList();
+    std::map<const int, Client>& getClientList();
+    // std::map<std::string, Channel>& getChannelList();
+    // struct addrinfo &getAddrInfo();
+    // struct addrinfo* getServerInfo();
 
     // Other functions
     void readConfigFile();
@@ -89,5 +94,7 @@ class Server
 
 // utils
 Client *getClient(Server *server, int clientSockFd);
+void splitMessage(std::string &message, std::vector<std::string> &cmds);
+void sendServerReply(int clientFd, std::string &message);
 
 #endif

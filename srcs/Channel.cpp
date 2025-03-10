@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:04 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/04 19:05:15 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/10 21:30:29 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,3 +42,16 @@ Channel::~Channel() {}
 // void Channel::setKickedUsers(const std::vector<std::string> &kickedUsers) { _kickedUsers = kickedUsers; }
 // void Channel::setOperatorList(const std::vector<std::string> &operatorList) { _operatorList = operatorList; }
 
+
+bool Channel::isClientInChannel(std::string &clientName)
+{
+	std::map<std::string, Client>::iterator it = _clientList.find(clientName);
+	if (it == _clientList.end())
+		return (false);
+	return (true);
+}
+
+void Channel::addClientToChannel(Client &client)
+{
+	_clientList.insert(std::make_pair(client.getNickname(), client));
+}

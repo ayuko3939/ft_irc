@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 21:43:54 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/08 18:05:11 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/10 19:56:01 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ void Server::deleteClient(std::vector<pollfd> &pollFds, std::vector<pollfd>::ite
 {
 	std::cout << INDIGO SERVER_DISCONNECT_CLIENT << clientFd << END << std::endl;
 	
+	// クライアントリストから削除し、ソケットを閉じる
 	_clientList.erase(clientFd);
 	close(clientFd);
 	pollFds.erase(it);
@@ -75,4 +76,57 @@ int Server::handleNewConnection(std::vector<pollfd> &pollFds, std::vector<pollfd
 		addClient(clientFd, tmpPollFds);
 
 	return (EXIT_SUCCESS);
+}
+
+void fillClientInfo(std::map<const int, Client> &clientList, int clientFd, std::string &cmd)
+{
+	std::map<const int, Client>::iterator it = clientList.find(clientFd);
+	// s_ircCommand			cmdInfo;
+
+	// if (parseCommand(cmd, cmdInfo) == false)
+	// 	return ();
+
+	it->second.setNickname("tmp");
+	it->second.setUserName("tmp");
+	it->second.setConnexionPassword();
+}
+
+void Server::parseMessage(int clientFd, std::string &message)
+{
+	std::vector<std::string>	cmds;
+	std::map<const int, Client>::iterator it = _clientList.find(clientFd);
+	
+	// 改行毎にメッセージを分割してコマンドリストに格納
+	splitMessage(message, cmds);
+	
+	// コマンドリストを順番に処理
+	std::vector<std::string>::iterator cmdIt = cmds.begin();
+	for ( ; cmdIt != cmds.end(); ++cmdIt)
+	{
+		std::string &cmd = *cmdIt;
+		
+		// 登録が完了できていない場合
+		if (!it->second.isRegistrationDone())
+		{
+			// クライアント情報が全て揃っていない場合
+			if (it->second.getHasAllInfo() == false)
+			{
+				fillClientInfo(_clientList, clientFd, cmd); // ★★★
+				if (it->second.getNmInfo() == 3)
+					it->second.setHasAllInfo();
+			}
+			else if (it->second.isRegistrationDone() == false)
+			{
+				if (it->second.isValid())
+				{
+					// sendClientMsg(); // ★★★
+					it->second.setRegistrationDone();
+				}
+				else
+					throw (ERROR_CLIENT_INVALID_INFO);
+			}
+		}
+		else
+			// execCommand(clientFd, cmd); // ★★★
+	}
 }

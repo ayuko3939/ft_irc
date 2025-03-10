@@ -55,6 +55,10 @@
 # define ERROR_SERVER_FULL			"Error: server is already full"
 # define ERROR_CLIENT_NOT_FOUND		"Error: client not found #"
 # define ERROR_SERVER_RECV			"Error: recv failed"
+# define ERROR_CLIENT_INVALID_INFO	"Error: invalid client information"
+# define ERROR_SERVER_POLL			"Error: poll failed on fd: "
+# define ERROR_CHANNEL_EXIST		"Error: Channel already exists #"
+# define ERROR_CHANNEL_NOT_FOUND	"Error: Channel not found #"
 
 // Server message
 # define SERVER_ADD_CLIENT			"[Server] Added client #"
@@ -69,5 +73,15 @@
 
 // サーバー停止フラグ
 bool g_ServerShutdown = false;
+
+
+// コマンド関連
+struct s_ircCommand
+{
+	std::string		prefix; 
+	std::string		name; // コマンド名
+	std::string		message; // メッセージ
+};
+
 
 #endif

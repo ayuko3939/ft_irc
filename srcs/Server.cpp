@@ -6,11 +6,15 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:18 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/08 23:25:16 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/10 21:36:27 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
+
+/*******************************************************************/
+/*                    Constructor & Destructor                     */
+/*******************************************************************/
 
 Server::Server(std::string port, std::string password, struct tm *timeinfo) :
 _serverSockFd(-1),
@@ -40,6 +44,10 @@ Server::~Server()
 }
 
 
+/*******************************************************************/
+/*                             Accessor                            */
+/*******************************************************************/
+
 // Setters
 // void Server::setServerSockFd(int serverSockFd) { _serverSockFd = serverSockFd; }
 // void Server::setPort(const std::string &port) { _port = port; }
@@ -52,16 +60,20 @@ Server::~Server()
 // void Server::setServerInfo(struct addrinfo* serverInfo) { _serverInfo = serverInfo; } 
 
 // Getter
-// int Server::getServerSockFd() const { return (_serverSockFd); }
-// const std::string &Server::getPort() const { return (_port); }
-// const std::string &Server::getPassword() const { return (_password); }
-// const std::string &Server::getDateTime() const { return (_dateTime); }
-// const std::vector<serverOperator> &Server::getOperatorList() const { return (_operatorList); }
-std::map<const int, Client>& Server::getClientList() const { return (_clientList); }
-// const std::map<std::string, Channel>& Server::getChannelList() const { return (_channelList); }
-// const struct addrinfo &Server::getAddrInfo() const { return (_addrInfo); }
-// struct addrinfo* Server::getServerInfo() const { return (_serverInfo); }
+// int Server::getServerSockFd() { return (_serverSockFd); }
+// std::string &Server::getPort() { return (_port); }
+// std::string &Server::getPassword() { return (_password); }
+// std::string &Server::getDateTime() { return (_dateTime); }
+// std::vector<serverOperator> &Server::getOperatorList() { return (_operatorList); }
+std::map<const int, Client>& Server::getClientList() { return (_clientList); }
+// std::map<std::string, Channel>& Server::getChannelList() { return (_channelList); }
+// struct addrinfo &Server::getAddrInfo() { return (_addrInfo); }
+// struct addrinfo* Server::getServerInfo() { return (_serverInfo); }
 
+
+/*******************************************************************/
+/*                       Server Functions                          */
+/*******************************************************************/
 
 void Server::readConfigFile()
 {
@@ -138,50 +150,9 @@ void Server::launchServer()
 }
 
 
-void splitMessage(std::string &message, std::vector<std::string> &cmds)
-{
-	// 改行コードを"\r\n"から"\n"に変換
-	std::string			replaced;
-	std::string::size_type pos = 0;
-
-	while ((pos = message.find("\r\n", pos)) != std::string::npos)
-	{
-		message.replace(pos, 2, "\n");
-		pos += 1;
-	}
-
-	// メッセージを１行ずつ分割してコマンドリストに格納
-	std::istringstream	iss(message);
-	std::string			line;
-
-	while (std::getline(iss, line, '\n'))
-		cmds.push_back(line);
-}
-
-void Server::parseMessage(int clientFd, std::string &message)
-{
-	std::vector<std::string>	cmds;
-	std::map<const int, Client>::iterator it = _clientList.find(clientFd);
-	
-	// 改行毎にメッセージを分割してコマンドリストに格納
-	splitMessage(message, cmds);
-	
-	// コマンドリストを順番に処理
-	std::vector<std::string>::iterator cmdIt = cmds.begin();
-	for ( ; cmdIt != cmds.end(); ++cmdIt)
-	{
-		const std::string &cmd = *cmdIt;
-		
-		// 登録が完了できていない場合
-		if (!it->second.isRegistrationDone())
-		{
-			if ()
-		}
-		else
-			execCommand(clientFd, cmd); // ★★★
-	}
-}
-
+/*******************************************************************/
+/*                        Server Main Loop                         */
+/*******************************************************************/
 
 int Server::handleClientData(std::vector<pollfd> &pollFds, std::vector<pollfd>::iterator &it)
 {
@@ -244,19 +215,25 @@ int Server::handleClientData(std::vector<pollfd> &pollFds, std::vector<pollfd>::
 }
 
 
-int Server::handlePollout(std::vector<pollfd> &pollFds, std::vector<pollfd>::iterator &it, int clientSockFd)
+int Server::handlePollout(std::vector<pollfd> &pollFds, std::vector<pollfd>::iterator &it, int clientFd)
 {
+	Client *client = getClient(this, clientFd);
+
 	// クライアントが見つからなかった場合、エラー文を出力して何もしないで処理終了
-	if ()
+	if (!client)
 	{
-		std::cout << ORANGE END << std::endl;
+		std::cerr << ORANGE ERROR_CLIENT_NOT_FOUND << clientFd << END << std::endl;
 	}
 	else
 	{
+		// クライアントのメッセージを送信して、バッファをクリアする
+		sendServerReply(clientFd, client->getSendBuf());
+		client->getSendBuf().clear();
+
 		// クライアントが切断フラグを持っている場合は削除してbreak
-		// （これ以降はこのクライアントに接続できないように即時削除）
-		if ()
+		if (client->getToDeconnect())
 		{
+			deleteClient(pollFds, it, clientFd);
 			return (1);
 		}
 	}
@@ -265,17 +242,18 @@ int Server::handlePollout(std::vector<pollfd> &pollFds, std::vector<pollfd>::ite
 
 int Server::handlePollerr(std::vector<pollfd> &pollFds, std::vector<pollfd>::iterator &it)
 {
+	std::cerr << ORANGE ERROR_SERVER_POLL << it->fd << END << std::endl;
+	
 	// サーバーにエラーが発生した場合、強制終了
-	if ()
+	if (it->fd == _serverSockFd)
 	{
-		throw ();
+		throw (ERROR_SERVER_LISTEN);
 	}
 	// クライアントにエラーが発生した場合、クライアントを削除
-	if ()
 	{
+		deleteClient(pollFds, it, it->fd);
 		return (EXIT_FAILURE);
 	}
-	return (EXIT_SUCCESS);
 }
 
 void Server::manageServerLoop()
@@ -344,4 +322,56 @@ void Server::manageServerLoop()
 		if (!tmpPollFds.empty())
 			pollFds.insert(pollFds.end(), tmpPollFds.begin(), tmpPollFds.end());
 	}
+}
+
+/*******************************************************************/
+/*                       Channel Management                        */
+/*******************************************************************/
+
+void Server::addChannel(std::string &channelName)
+{
+	// すでにチャンネルが存在する場合、エラー文を出力して何もしないで処理終了
+	std::map<std::string, Channel>::iterator it = _channelList.find(channelName);
+	if (it != _channelList.end())
+	{
+		std::cerr << ORANGE << ERROR_CHANNEL_EXIST << channelName << END << std::endl;
+		return ;
+	}
+	
+	// チャンネルを作成し、チャンネルリストに追加
+	Channel channel(channelName);
+	_channelList.insert(std::make_pair(channelName, channel));
+}
+
+void Server::addClientToChannel(std::string &channelName, Client &client)
+{
+	// チャンネルが存在しない場合、エラー文を出力して何もしないで処理終了
+	std::map<std::string, Channel>::iterator it = _channelList.find(channelName);
+	if (it == _channelList.end())
+	{
+		std::cerr << ORANGE ERROR_CHANNEL_NOT_FOUND << channelName << END << std::endl;
+		return ;
+	}
+	
+	// クライアントがすでにチャンネルに参加している場合、エラー文を出力して何もしないで処理終了
+	if (it->second.isClientInChannel(client.getNickname()))
+	{
+		std::cerr << ORANGE "Error: Client is already in the channel" END << std::endl;
+		return ;
+	}
+
+	// チャンネルにクライアントを追加
+	it->second.addClientToChannel(client);
+}
+
+bool Server::isChannelExist(std::string &channelName)
+{
+	// チャンネルが存在しない場合、エラー文を出力してfalseを返す
+	std::map<std::string, Channel>::iterator it = _channelList.find(channelName);
+	if (it == _channelList.end())
+	{
+		std::cerr << ORANGE ERROR_CHANNEL_NOT_FOUND << channelName << END << std::endl;
+		return (false);
+	}
+	return (true);
 }
