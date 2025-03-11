@@ -2,6 +2,8 @@
 # define IRC_HPP
 
 // Libraries
+#include "IrcNumerics.hpp"
+
 # include <iostream>
 # include <fstream> // file
 # include <sstream> // string
@@ -59,6 +61,10 @@
 # define ERROR_SERVER_POLL			"Error: poll failed on fd: "
 # define ERROR_CHANNEL_EXIST		"Error: Channel already exists #"
 # define ERROR_CHANNEL_NOT_FOUND	"Error: Channel not found #"
+# define ERROR_SERVER_EMPTY_CMD		"Error: empty command"
+// # define 
+// # define 
+// # define 
 
 // Server message
 # define SERVER_ADD_CLIENT			"[Server] Added client #"
@@ -70,6 +76,7 @@
 # define CONFG_FILE "config/oprators.conf"
 # define MAX_CLIENTS 4
 # define BUF_SIZE_MSG 1024
+# define NUM_OF_CMD 11
 
 // サーバー停止フラグ
 bool g_ServerShutdown = false;

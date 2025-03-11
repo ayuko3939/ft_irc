@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:11 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/10 21:25:21 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/11 22:06:13 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,17 +42,17 @@ void Client::setNickname(const std::string &nickname) { _nickname = nickname; }
 // void Client::setOldNickname(const std::string &oldNickname) { _oldNickname = oldNickname; }
 // void Client::setMode(const std::string &mode) { _mode = mode; }
 void Client::setReadBuf(const std::string &readBuf) { _readBuf = readBuf; }
-// void Client::setSendBuf(const std::string &sendBuf) { _sendBuf = sendBuf; }
+void Client::setSendBuf(const std::string &sendBuf) { _sendBuf = sendBuf; }
 void Client::setConnexionPassword() { _connexion_password = true; }
 // void Client::incrementNmInfo() { _nmInfo++; }
 void Client::setHasAllInfo() { _hasAllInfo = true; }
-// void Client::setToDeconnect(bool flag) { _toDeconnect = flag; }
+void Client::setToDeconnect() { _toDeconnect = true; }
 void Client::setRegistrationDone() { _registrationDone = true; }
 // void Client::setWelcomeSent(bool flag) { _welcomeSent = flag; }
 void Client::resetReadBuf() { _readBuf.clear(); }
 
 int Client::getClientFd() { return (_clientFd); }
-// std::string &Client::getUserName() { return (_userName); }
+std::string &Client::getUserName() { return (_userName); }
 // std::string &Client::getRealName() { return (_realName); }
 std::string &Client::getNickname() { return (_nickname); }
 // std::string &Client::getOldNickname() { return (_oldNickname); }

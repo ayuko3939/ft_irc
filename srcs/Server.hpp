@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:18 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/10 21:34:11 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/11 22:22:26 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,8 @@ class Server
     void deleteClient(std::vector<pollfd> &pollFds, std::vector<pollfd>::iterator &it, int clientSockFd);
     
     void parseMessage(int clientFd, std::string &message);
-
+    void execCommand(int clientFd, std::string &cmd);
+    void fillClientInfo(std::map<const int, Client> &clientList, int clientFd, std::string &cmd);
 
     void addChannel(std::string &channelName);
     void addClientToChannel(std::string &channelName, Client &client);
@@ -78,7 +79,7 @@ class Server
     // int getServerSockFd();
     // std::string &getPort();
     // std::string &getPassword();
-    // std::string &getDateTime();
+    std::string &getDateTime();
     // std::vector<serverOperator> &getOperatorList();
     std::map<const int, Client>& getClientList();
     // std::map<std::string, Channel>& getChannelList();
@@ -93,7 +94,8 @@ class Server
 };
 
 // utils
-Client *getClient(Server *server, int clientSockFd);
+std::string trim(const std::string &s);
+Client &getClient(Server *server, int clientSockFd);
 void splitMessage(std::string &message, std::vector<std::string> &cmds);
 void sendServerReply(int clientFd, std::string &message);
 

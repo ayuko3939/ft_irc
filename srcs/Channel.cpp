@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:04 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/10 21:30:29 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/11 21:58:08 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ Channel::~Channel() {}
 
 // const std::string &Channel::getName() const { return (_name);}
 // const std::string &Channel::getTopic() const { return (_topic);}
-// const std::string &Channel::getMode() const { return (_mode);}
+const std::string &Channel::getMode() const { return (_mode);}
 // const std::string &Channel::getPassword() const { return (_password);}
 // int Channel::getMaxConnections() const { return (_maxConnections);}
 // std::map<std::string, Client> &Channel::getClientList() { return (_clientList);}

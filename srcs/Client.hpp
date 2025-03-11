@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:11 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/10 21:25:01 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/11 22:06:08 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,18 +45,18 @@ class Client
     // void setOldNickname(const std::string &oldNickname);
     // void setMode(const std::string &mode);
     void setReadBuf(const std::string &readBuf);
-    // void setSendBuf(const std::string &sendBuf);
+    void setSendBuf(const std::string &sendBuf);
     void setConnexionPassword();
     // void incrementNmInfo();
     void setHasAllInfo();
-    // void setToDeconnect(bool flag);
+    void setToDeconnect();
     void setRegistrationDone();
     // void setWelcomeSent(bool flag);
     void resetReadBuf();
 
     // Getters
     int getClientFd();
-    // std::string &getUserName();
+    std::string &getUserName();
     // std::string &getRealName();
     std::string &getNickname();
     // std::string &getOldNickname();
