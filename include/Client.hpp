@@ -42,12 +42,12 @@ class Client
     void setUserName(const std::string &userName);
     // void setRealName(const std::string &realName);
     void setNickname(const std::string &nickname);
-    // void setOldNickname(const std::string &oldNickname);
+    void setOldNickname(const std::string &oldNickname);
     // void setMode(const std::string &mode);
     void setReadBuf(const std::string &readBuf);
     void setSendBuf(const std::string &sendBuf);
     void setConnexionPassword();
-    // void incrementNmInfo();
+    void incrementNmInfo();
     void setHasAllInfo();
     void setToDeconnect();
     void setRegistrationDone();
@@ -59,7 +59,7 @@ class Client
     std::string &getUserName();
     // std::string &getRealName();
     std::string &getNickname();
-    // std::string &getOldNickname();
+    std::string &getOldNickname();
     // std::string &getMode();
     std::string &getReadBuf();
     std::string &getSendBuf();

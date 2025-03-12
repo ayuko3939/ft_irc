@@ -13,6 +13,8 @@ SRCS = main.cpp \
 		parsing.cpp \
 		utils.cpp \
 		commands/nick.cpp \
+		commands/user.cpp \
+		commands/pass.cpp \
 		commands/modes/topic.cpp
 
 OBJ_DIR = objs

@@ -13,6 +13,8 @@
 #ifndef IRCNUMERICS_HPP
 # define IRCNUMERICS_HPP
 
+#define RPL_NICK(client, newNick) (":" + client + " :Your nickname is " + newNick + "\r\n")
+
 // (001) RPL_WELCOME : クライアント登録直後の歓迎メッセージ
 #define RPL_WELCOME(client, nick) (":" + client + " :Welcome to the Internet Relay Network, " + nick + "\r\n")
 // (002) RPL_YOURHOST : 接続中のサーバ名とバージョン情報
@@ -273,8 +275,8 @@
 // // (431) ERR_NONICKNAMEGIVEN : ニックネーム未指定
 // #define ERR_NONICKNAMEGIVEN(client) (":" + client + " :No nickname given\r\n")
 
-// // (432) ERR_ERRONEUSNICKNAME : 不正なニックネーム
-// #define ERR_ERRONEUSNICKNAME(client, nick) (":" + client + " " + nick + " :Erroneous nickname\r\n")
+// (432) ERR_ERRONEUSNICKNAME : 不正なニックネーム
+#define ERR_ERRONEUSNICKNAME(client, nick) (":" + client + " " + nick + " :Erroneous nickname\r\n")
 
 // // (433) ERR_NICKNAMEINUSE : ニックネーム使用中
 // #define ERR_NICKNAMEINUSE(client, nick) (":" + client + " " + nick + " :Nickname is already in use\r\n")

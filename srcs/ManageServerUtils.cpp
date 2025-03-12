@@ -70,7 +70,7 @@ int Server::handleClientData(std::vector<pollfd> &pollFds, std::vector<pollfd>::
 	message.resize(BUF_SIZE_MSG);
 
 	// 3. recv() を使ってデータ受信
-	size_t readSize = recv(it->fd, &message[0], BUF_SIZE_MSG, 0);
+	int readSize = recv(it->fd, &message[0], BUF_SIZE_MSG, 0);
 	
 	// 4-a. エラー発生時の処理
 	if (readSize < 0)

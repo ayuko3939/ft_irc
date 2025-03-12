@@ -114,14 +114,13 @@ void Server::fillClientInfo(std::map<const int, Client> &clientList, int clientF
 
 	if (cmdInfo.name == "NICK")
 		nick(this, clientFd, cmdInfo);
-// 	else if (cmdInfo.name == "USER")
-// 		user(); // ★★★
-// 	else if (cmdInfo.name == "PASS")
-// 	{
-// 		// pass(); // ★★★
-		// if (pass() == 0)
+	else if (cmdInfo.name == "USER")
+		user(this, clientFd, cmdInfo);
+	else if (cmdInfo.name == "PASS")
+	{
+		if (pass(this, clientFd, cmdInfo) == EXIT_FAILURE)
 			it->second.setConnexionPassword();
-// 	}
+	}
 }
 
 // void Server::execCommand(int clientFd, std::string &cmd)
