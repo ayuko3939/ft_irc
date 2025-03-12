@@ -69,7 +69,7 @@
 
 // Server message
 # define SERVER_ADD_CLIENT			"[Server] Added client prot:"
-# define SERVER_DISCONNECT_CLIENT	"[Server] Client disconnected #"
+# define SERVER_DISCONNECT_CLIENT	"[Server] Client disconnected prot:"
 # define SERVER_NUMBER_OF_CLIENTS	"[Server] The current number of clients is "
 
 

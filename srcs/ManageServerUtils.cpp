@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 21:43:54 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/12 15:54:15 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/12 17:54:29 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,12 +90,17 @@ int Server::handleClientData(std::vector<pollfd> &pollFds, std::vector<pollfd>::
 	{
 		// 受信したデータをバッファに格納（実際のメッセージの長さにリサイズ）
 		message.resize(readSize);
+		
+		// trimして出力する、空なら処理をスキップ // ★★★コマンド処理ができないのでは？★★★
+		message = trim(message);
+		if (message.empty())
+			return (EXIT_SUCCESS);
 		std::cout << "[Client] " << message << std::endl; // ===== ★後で表示を整える★ =====
 		
 		// クライアントのバッファに受信したメッセージを追記で格納
 		client->setReadBuf(client->getReadBuf() + message);
 		
-		// 受信したデータに"\r\n"（IRCの改行）が含まれる含む場合、コマンドとして処理する
+		// 受信したデータに"\r\n"（IRCの改行）が含まれる場合、コマンドとして処理する
 		if (client->getReadBuf().find("\r\n") != std::string::npos)
 		{
 			try
@@ -116,7 +121,6 @@ int Server::handleClientData(std::vector<pollfd> &pollFds, std::vector<pollfd>::
 	}
 	return (EXIT_SUCCESS);
 }
-
 
 int Server::handlePollout(std::vector<pollfd> &pollFds, std::vector<pollfd>::iterator &it, int clientFd)
 {

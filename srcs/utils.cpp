@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 12:58:58 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/12 16:15:33 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/12 17:21:35 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,13 +121,12 @@ void sendClientRegistrationMsg(Server *server, int clientFd, std::map<const int,
 
 
 
-
 // 文字列の先頭と末尾の空白（スペース、タブ）を除去する
 std::string trim(const std::string &s)
 {
-    std::string::size_type start = s.find_first_not_of(" \t");
-    if (start == std::string::npos)
-        return "";
-    std::string::size_type end = s.find_last_not_of(" \t");
-    return s.substr(start, end - start + 1);
+	std::string::size_type start = s.find_first_not_of(" \t\r\n");
+	if (start == std::string::npos)
+		return "";
+	std::string::size_type end = s.find_last_not_of(" \t\r\n");
+	return s.substr(start, end - start + 1);
 }

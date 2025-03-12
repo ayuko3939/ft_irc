@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:43:40 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/12 16:14:38 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/12 17:29:33 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,7 @@
 void splitMessage(std::string &message, std::vector<std::string> &cmds)
 {
 	// 改行コードを"\r\n"から"\n"に変換
-	std::string			replaced;
 	std::string::size_type pos = 0;
-
 	while ((pos = message.find("\r\n", pos)) != std::string::npos)
 	{
 		message.replace(pos, 2, "\n");
@@ -32,8 +30,15 @@ void splitMessage(std::string &message, std::vector<std::string> &cmds)
 
 	while (std::getline(iss, line, '\n'))
 		cmds.push_back(line);
-}
 
+	// while (std::getline(iss, line, '\n'))
+	// {
+	// 	// 前後の空白を除去した上で、空文字列でなければ追加
+	// 	line = trim(line);
+	// 	if (!line.empty())
+	// 		cmds.push_back(line);
+	// }
+}
 
 int parseCommand(std::string &cmdLine, s_ircCommand &cmdInfo)
 {
@@ -107,8 +112,8 @@ void Server::fillClientInfo(std::map<const int, Client> &clientList, int clientF
 	if (parseCommand(cmd, cmdInfo) == false)
 		return ;
 
-	// if (cmdInfo.name == "NICK")
-	// 	// nick(); // ★★★
+	if (cmdInfo.name == "NICK")
+		nick(this, clientFd, cmdInfo);
 	// else if (cmdInfo.name == "USER")
 	// 	// user(); // ★★★
 	// else if (cmdInfo.name == "PASS")
@@ -149,7 +154,7 @@ void Server::execCommand(int clientFd, std::string &cmd)
 		case 2: // join(this, clientFd, cmdInfo); break; // ★★★
 		case 3: // kick(this, clientFd, cmdInfo); break; // ★★★
 		case 4: // mode(this, clientFd, cmdInfo); break; // ★★★
-		case 5: // nick(this, clientFd, cmdInfo); break; // ★★★
+		case 5: nick(this, clientFd, cmdInfo); break; // ★★★
 		case 6: // part(this, clientFd, cmdInfo); break; // ★★★
 		case 7: // ping(this, clientFd, cmdInfo); break; // ★★★
 		case 8: // privmsg(this, clientFd, cmdInfo); break; // ★★★

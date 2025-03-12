@@ -6,13 +6,13 @@ CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 SRC_DIR = srcs
 SRCS = main.cpp \
 		Client.cpp \
-		Command.cpp \
 		ManageServer.cpp \
 		ManageServerUtils.cpp \
 		Server.cpp \
 		Channel.cpp \
 		parsing.cpp \
-		utils.cpp
+		utils.cpp \
+		nick.cpp
 
 OBJ_DIR = objs
 OBJS = $(SRCS:%.cpp=$(OBJ_DIR)/%.o)
