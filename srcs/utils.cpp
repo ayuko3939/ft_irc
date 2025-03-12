@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 12:58:58 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/12 17:21:35 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/12 19:16:12 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,4 +129,22 @@ std::string trim(const std::string &s)
 		return "";
 	std::string::size_type end = s.find_last_not_of(" \t\r\n");
 	return s.substr(start, end - start + 1);
+}
+
+bool getCommandType(std::string &cmd)
+{
+	int	type = 0;
+	std::string	cmdList[NUM_OF_CMD] = {
+		"INVITE", "JOIN", "KICK","MODE", "NICK", "PART", "PING",
+		"PRIVMSG", "QUIT", "TOPIC", "USER"
+	};
+
+	// コマンドリストからコマンドを検索
+	while (type < NUM_OF_CMD)
+	{
+		if (cmd == cmdList[type])
+			break;
+		type++;
+	}
+	return (type);
 }

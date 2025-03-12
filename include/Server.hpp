@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:18 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/12 15:27:09 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/12 19:16:23 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,6 @@ void sendClientRegistrationMsg(Server *server, int clientFd,std::map<const int, 
 std::string getChannelMemberList(std::string client, Channel &channel);
 std::string getChannelName(std::string &msgToParse);
 std::string getSymbol(Channel &channel);
-
+bool getCommandType(std::string &cmd);
 
 #endif

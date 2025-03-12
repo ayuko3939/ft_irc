@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:43:40 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/12 17:29:33 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/12 19:45:13 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ int parseCommand(std::string &cmdLine, s_ircCommand &cmdInfo)
 		cmdInfo.message = "";
 	
 	// ６．コマンド名を大文字に変換
-	for (std::string::size_type i = 0; i < cmdInfo.message.size(); ++i)
+	for (std::string::size_type i = 0; i < cmdInfo.name.size(); ++i)
 		cmdInfo.name[i] = std::toupper(cmdInfo.name[i]);
 	
 	// DEBUG
@@ -109,20 +109,57 @@ void Server::fillClientInfo(std::map<const int, Client> &clientList, int clientF
 	std::map<const int, Client>::iterator it = clientList.find(clientFd);
 	s_ircCommand			cmdInfo;
 
-	if (parseCommand(cmd, cmdInfo) == false)
+	if (parseCommand(cmd, cmdInfo) == EXIT_FAILURE)
 		return ;
 
 	if (cmdInfo.name == "NICK")
 		nick(this, clientFd, cmdInfo);
-	// else if (cmdInfo.name == "USER")
-	// 	// user(); // ★★★
-	// else if (cmdInfo.name == "PASS")
-	// {
-	// 	// pass(); // ★★★
-		// if (pass() == 0)
-			it->second.setConnexionPassword();
-	// }
+// 	else if (cmdInfo.name == "USER")
+// 		user(); // ★★★
+// 	else if (cmdInfo.name == "PASS")
+// 	{
+// 		// pass(); // ★★★
+// 		if (pass() == 0)
+// 			it->second.setConnexionPassword();
+// 	}
 }
+
+// void Server::execCommand(int clientFd, std::string &cmd)
+// {	
+// 	Client	*client = getClient(this, clientFd);
+// 	s_ircCommand	cmdInfo;
+
+// 	// コマンド解析
+// 	if (parseCommand(cmd, cmdInfo) == EXIT_FAILURE)
+// 		return ;
+	
+// 	// コマンドリストからコマンドを検索
+// 	int	index = getCommandType(cmdInfo.name);
+		
+// 	// コマンドに応じた処理を実行
+// 	switch (index + 1)
+// 	{
+// 		case 1: // invite(this, clientFd, cmdInfo); break; // ★★★
+// 		case 2: // join(this, clientFd, cmdInfo); break; // ★★★
+// 		case 3: // kick(this, clientFd, cmdInfo); break; // ★★★
+// 		case 4: // mode(this, clientFd, cmdInfo); break; // ★★★
+// 		case 5: nick(this, clientFd, cmdInfo); break; // ★★★
+// 		case 6: // part(this, clientFd, cmdInfo); break; // ★★★
+// 		case 7: // ping(this, clientFd, cmdInfo); break; // ★★★
+// 		case 8: // privmsg(this, clientFd, cmdInfo); break; // ★★★
+// 		case 9: // quit(this, clientFd, cmdInfo); break; // ★★★
+// 		case 10: // topic(this, clientFd, cmdInfo); break; // ★★★
+// 		case 11: // user(this, clientFd, cmdInfo); break; // ★★★
+
+// 		// コマンドが見つからない場合、エラー文を出力して何もしないで処理終了
+// 		default:
+// 			std::cout << "command not found: " << cmdInfo.name << std::endl; // errorMsg(); // ★★★
+// 	}
+
+
+
+// 	(void)client;
+// }
 
 void Server::execCommand(int clientFd, std::string &cmd)
 {
@@ -136,7 +173,7 @@ void Server::execCommand(int clientFd, std::string &cmd)
 	int	i = 0;
 	
 	// コマンド解析
-	if (parseCommand(cmd, cmdInfo) == false)
+	if (parseCommand(cmd, cmdInfo) == EXIT_FAILURE)
 		return ;
 	
 	// コマンドリストからコマンドを検索
