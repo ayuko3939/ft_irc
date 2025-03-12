@@ -12,7 +12,8 @@ SRCS = main.cpp \
 		Channel.cpp \
 		parsing.cpp \
 		utils.cpp \
-		nick.cpp
+		commands/nick.cpp \
+		commands/modes/topic.cpp
 
 OBJ_DIR = objs
 OBJS = $(SRCS:%.cpp=$(OBJ_DIR)/%.o)
@@ -30,18 +31,19 @@ $(NAME): $(OBJS)
 	@echo "$(GREEN)Compiling $(NAME)...$(END)"
 	@$(CXX) $(CXXFLAGS) $^ -o $@
 
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
+	@mkdir -p $(dir $@)
+	@$(CXX) $(CXXFLAGS) $(INCS) -c $< -o $@
+
 $(OBJ_DIR):
 	@mkdir -p $(OBJ_DIR)
-
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
-	@$(CXX) $(CXXFLAGS) $(INCS) -c $< -o $@
 
 clean:
 	@echo "$(GREEN)Removing object files...$(END)"
 	@rm -rf $(OBJ_DIR)
 
 fclean: clean
-	@echo "$(GREEN)Removeing $(NAME)...$(END)"
+	@echo "$(GREEN)Removing $(NAME)...$(END)"
 	@rm -rf $(NAME)
 
-re : fclean all
+re: fclean all

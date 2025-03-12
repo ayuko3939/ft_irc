@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:43:40 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/12 19:45:13 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/12 19:50:15 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,8 +119,8 @@ void Server::fillClientInfo(std::map<const int, Client> &clientList, int clientF
 // 	else if (cmdInfo.name == "PASS")
 // 	{
 // 		// pass(); // ★★★
-// 		if (pass() == 0)
-// 			it->second.setConnexionPassword();
+		// if (pass() == 0)
+			it->second.setConnexionPassword();
 // 	}
 }
 
