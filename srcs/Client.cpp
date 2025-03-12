@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:11 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/11 22:06:13 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/12 16:04:27 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 
 Client::Client(int clientFd) :
 _clientFd(clientFd),
-_nickname(""),
-_oldNickname(""),
 _userName(""),
 _realName(""),
+_nickname(""),
+_oldNickname(""),
 _mode(""),
 _readBuf(""),
 _sendBuf(""),
@@ -25,8 +25,8 @@ _connexion_password(false),
 _nmInfo(0),
 _hasAllInfo(false),
 _toDeconnect(false),
-_registrationDone(false),
-_welcomeSent(false)
+_registrationDone(false)
+// _welcomeSent(false)
 {
 }
 

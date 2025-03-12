@@ -11,6 +11,7 @@
 # include <signal.h>
 # include <cstring> // memset
 # include <ctime> // tm
+# include <cstdlib> // exit
 
 # include <netdb.h> // getaddrinfo
 # include <poll.h> // poll
@@ -23,7 +24,7 @@
 // # include <sys/socket.h>
 // # include <netinet/in.h>
 // # include <arpa/inet.h>
-// # include <cstdlib>
+
 
 // # include <unistd.h>
 
@@ -67,20 +68,19 @@
 // # define 
 
 // Server message
-# define SERVER_ADD_CLIENT			"[Server] Added client #"
+# define SERVER_ADD_CLIENT			"[Server] Added client prot:"
 # define SERVER_DISCONNECT_CLIENT	"[Server] Client disconnected #"
 # define SERVER_NUMBER_OF_CLIENTS	"[Server] The current number of clients is "
 
 
 // Settings
-# define CONFG_FILE "config/oprators.conf"
+# define CONFG_FILE "config/operators.conf"
 # define MAX_CLIENTS 4
 # define BUF_SIZE_MSG 1024
 # define NUM_OF_CMD 11
 
 // サーバー停止フラグ
-bool g_ServerShutdown = false;
-
+extern bool g_ServerShutdown;
 
 // コマンド関連
 struct s_ircCommand

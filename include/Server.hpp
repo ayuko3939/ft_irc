@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:18 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/11 22:22:26 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/12 15:27:09 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,8 +95,15 @@ class Server
 
 // utils
 std::string trim(const std::string &s);
-Client &getClient(Server *server, int clientSockFd);
+Client *getClient(Server *server, int clientSockFd);
+Client &retrieveClient(Server *server, int clientSockFd);
 void splitMessage(std::string &message, std::vector<std::string> &cmds);
 void sendServerReply(int clientFd, std::string &message);
+void addToClientSendBuf(Server *server, int clientFd, std::string message);
+void sendClientRegistrationMsg(Server *server, int clientFd,std::map<const int, Client>::iterator &it);
+std::string getChannelMemberList(std::string client, Channel &channel);
+std::string getChannelName(std::string &msgToParse);
+std::string getSymbol(Channel &channel);
+
 
 #endif

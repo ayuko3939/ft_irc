@@ -6,19 +6,20 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:04 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/11 21:57:59 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/12 16:09:32 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CHANNEL_HPP
 # define CHANNEL_HPP
 
+# include "Irc.hpp"
+# include "Client.hpp"
+
 # include <iostream>
 # include <string>
 # include <map>
 
-# include "Irc.hpp"
-# include "Client.hpp"
 
 class Channel
 {
@@ -51,8 +52,8 @@ class Channel
 	// const std::string &getTopic() const;
 	const std::string &getMode() const;
 	// const std::string &getPassword() const;
-	// int getMaxConnections() const;
-	// std::map<std::string, Client> &getClientList();
+	int getMaxConnections() const;
+	std::map<std::string, Client> &getClientList();
 	// std::vector<std::string> &getKickedUsers();
 	// std::vector<std::string> &getOperatorList();
 	
