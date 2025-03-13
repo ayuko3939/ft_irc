@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/13 16:02:50 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/13 16:15:11 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,6 @@ static bool	isAlreadyUsed(Server *server, int clientFd, std::string nickname)
 	return (false);
 }
 
-
 void nick(Server *server, int clientFd, s_ircCommand cmdInfo)
 {
 	// 1. ユーザー入力をスペースで分割
@@ -93,13 +92,13 @@ void nick(Server *server, int clientFd, s_ircCommand cmdInfo)
 	if (client.getNickname() == newNick)
 		return ;
 
-	// 6. 重複チェック（他のユーザーが既に使用しているか）
+	// 4. 重複チェック（他のユーザーが既に使用しているか）
 	if (isAlreadyUsed(server, clientFd, newNick)) {
 		addToClientSendBuf(server, clientFd, ERR_NICKNAMEINUSE(client.getNickname(), newNick));
 		return ;
 	}
 
-	// 7. ニックネームの更新
+	// 5. ニックネームの更新
 	// 未設定の場合は新しいニックネームを設定
 	if (client.getNickname().empty())
 	{
@@ -114,7 +113,6 @@ void nick(Server *server, int clientFd, s_ircCommand cmdInfo)
 		client.setNickname(newNick);
 	}
 
-	// 8. 成功通知の送信
-	// RPL_NICK マクロ（もしくは関数）で新旧の情報を含む成功メッセージを生成し、クライアントに送信
+	// 6. 成功通知の送信
 	addToClientSendBuf(server, clientFd, RPL_NICK(client.getNickname(), newNick));
 }

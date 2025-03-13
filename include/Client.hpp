@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:11 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/12 16:02:55 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/13 16:26:51 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ class Client
     // Setters
     // void setClientFd(int clientFd);
     void setUserName(const std::string &userName);
-    // void setRealName(const std::string &realName);
+    void setRealName(const std::string &realName);
     void setNickname(const std::string &nickname);
     void setOldNickname(const std::string &oldNickname);
     // void setMode(const std::string &mode);

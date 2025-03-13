@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:11 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/12 16:04:27 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/13 16:27:02 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ Client::~Client()
 
 // void Client::setClientFd(int clientFd) { _clientFd = clientFd; }
 void Client::setUserName(const std::string &userName) { _userName = userName; }
-// void Client::setRealName(const std::string &realName) { _realName = realName; }
+void Client::setRealName(const std::string &realName) { _realName = realName; }
 void Client::setNickname(const std::string &nickname) { _nickname = nickname; }
 void Client::setOldNickname(const std::string &oldNickname) { _oldNickname = oldNickname; }
 // void Client::setMode(const std::string &mode) { _mode = mode; }
