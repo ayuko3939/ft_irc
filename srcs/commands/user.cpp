@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/13 16:31:13 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/13 17:10:00 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ void user(Server *server, int clientFd,s_ircCommand cmdInfo)
 	Client &client = retrieveClient(server, clientFd);
 
 	// 1. 既に登録済みの場合はエラーを返す
-	if (client.isRegistrationDone())
+	if (!client.getUserName().empty())
 	{
 		addToClientSendBuf(server, clientFd, ERR_ALREADYREGISTERED(client.getNickname()));
 		return ;

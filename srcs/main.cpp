@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 21:07:05 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/12 16:05:52 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/13 17:05:47 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int main(int ac, char **av)
 		// サーバーのメインループ
 		ircServer.manageServerLoop();
 	}
-	catch(char const *mes)
+	catch(const std::string &mes)
 	{
 		std::cerr << RED << mes << END << std::endl;
 		return (EXIT_FAILURE);
