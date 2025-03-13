@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 22:07:12 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/13 16:32:36 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/13 17:36:13 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,17 +16,21 @@
 // エラーメッセージ
 # define ERR_NOT_ENOUGH_ARGS	"Error: not enough arguments. Usage: "
 # define ERR_TOO_MANY_ARGS	"Error: too many arguments. Usage: "
+# define ERR_ALREADYDONE(client) (":" + client + " :You are already done\r\n")
 
 // コマンド要件
 # define NICK_USAGE			"NICK <nickname>\r\n"
 # define NICK_REQUIREMENTS	"[!] nickname requirements: len(1-10), char(a-z, A-Z, 0-9)\r\n"
 # define USER_USAGE			"USER <username> <realname>\r\n"
 # define USER_REQUIREMENTS	"[!] username requirements: len(1-10), char(a-z, A-Z, 0-9)\r\n    realname requirements: len(1-10), char(a-z, A-Z)\r\n"
+# define PASS_USAGE			"PASS <password>\r\n"
+// # define PASS_REQUIREMENTS	"[!] \r\n"
 
 // 成功通知
 # define RPL_NICK(client, newNick) (":" + client + " :Your nickname is " + newNick + "\r\n")
 # define RPL_USER(client, user, real) (":" + client + " :Your username is " + user + ", realname is " + real + "\r\n")
-
+# define RPL_PASS(client) (":" + client + " :Password accepted\r\n")
+	
 // (001) RPL_WELCOME : クライアント登録直後の歓迎メッセージ
 # define RPL_WELCOME(client, nick) (":" + client + " :Welcome to the Internet Relay Network, " + nick + "\r\n")
 // (002) RPL_YOURHOST : 接続中のサーバ名とバージョン情報
@@ -315,8 +319,8 @@
 // (462) ERR_ALREADYREGISTERED : 再登録不可
 # define ERR_ALREADYREGISTERED(client) (":" + client + " :You may not reregister\r\n")
 
-// // (464) ERR_PASSWDMISMATCH : パスワード不正
-// # define ERR_PASSWDMISMATCH(client) (":" + client + " :Password incorrect\r\n")
+// (464) ERR_PASSWDMISMATCH : パスワード不正
+# define ERR_PASSWDMISMATCH(client) (":" + client + " :Password incorrect\r\n")
 
 // // (465) ERR_YOUREBANNEDCREEP : 接続拒否（BAN）
 // # define ERR_YOUREBANNEDCREEP(client) (":" + client + " :You are banned\r\n")

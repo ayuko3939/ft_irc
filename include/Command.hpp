@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/12 17:48:09 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/13 17:34:02 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,6 @@
 
 void nick(Server *server, int clientFd,s_ircCommand cmdInfo);
 void user(Server *server, int clientFd,s_ircCommand cmdInfo);
-int pass(Server *server, int clientFd,s_ircCommand cmdInfo);
+void pass(Server *server, int clientFd,s_ircCommand cmdInfo);
 
 #endif

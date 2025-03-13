@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 12:58:58 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/12 19:16:12 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/13 17:57:34 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,17 +109,6 @@ std::string getSymbol(Channel &channel)
 	return (symbol);
 }
 
-void sendClientRegistrationMsg(Server *server, int clientFd, std::map<const int, Client>::iterator &it)
-{
-	addToClientSendBuf(server, clientFd, RPL_WELCOME(it->second.getNickname(), it->second.getNickname()));
-	addToClientSendBuf(server, clientFd, RPL_YOURHOST(it->second.getNickname(), "ft_irc", "1.0"));
-	addToClientSendBuf(server, clientFd, RPL_CREATED(it->second.getNickname(), server->getDateTime()));
-	// addToClientSendBuf(server, clientFd, RPL_MYINFO(it->second.getNickname(), "ft_irc", "1.0"));
-	addToClientSendBuf(server, clientFd, RPL_ISUPPORT(it->second.getNickname(), "CHANNELLEN=32 NICKLEN=9 TOPICLEN=307"));
-}
-
-
-
 
 // 文字列の先頭と末尾の空白（スペース、タブ）を除去する
 std::string trim(const std::string &s)
@@ -135,8 +124,8 @@ bool getCommandType(std::string &cmd)
 {
 	int	type = 0;
 	std::string	cmdList[NUM_OF_CMD] = {
-		"INVITE", "JOIN", "KICK","MODE", "NICK", "PART", "PING",
-		"PRIVMSG", "QUIT", "TOPIC", "USER"
+		"INVITE", "JOIN", "KICK","MODE", "NICK", "PART", "PASS",
+		"PING", "PRIVMSG", "QUIT", "TOPIC", "USER"
 	};
 
 	// コマンドリストからコマンドを検索

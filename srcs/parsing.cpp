@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:43:40 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/12 19:50:15 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/13 17:58:57 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,9 +104,8 @@ int parseCommand(std::string &cmdLine, s_ircCommand &cmdInfo)
 	return (EXIT_SUCCESS);
 }
 
-void Server::fillClientInfo(std::map<const int, Client> &clientList, int clientFd, std::string &cmd)
+void Server::fillClientInfo(int clientFd, std::string &cmd)
 {
-	std::map<const int, Client>::iterator it = clientList.find(clientFd);
 	s_ircCommand			cmdInfo;
 
 	if (parseCommand(cmd, cmdInfo) == EXIT_FAILURE)
@@ -117,10 +116,16 @@ void Server::fillClientInfo(std::map<const int, Client> &clientList, int clientF
 	else if (cmdInfo.name == "USER")
 		user(this, clientFd, cmdInfo);
 	else if (cmdInfo.name == "PASS")
-	{
-		if (pass(this, clientFd, cmdInfo) == EXIT_FAILURE)
-			it->second.setConnexionPassword();
-	}
+		pass(this, clientFd, cmdInfo);
+}
+
+void sendClientRegistrationMsg(Server *server, int clientFd, std::map<const int, Client>::iterator &it)
+{
+	addToClientSendBuf(server, clientFd, RPL_WELCOME(it->second.getNickname(), it->second.getNickname()));
+	addToClientSendBuf(server, clientFd, RPL_YOURHOST(it->second.getNickname(), "ft_irc", "1.0"));
+	addToClientSendBuf(server, clientFd, RPL_CREATED(it->second.getNickname(), server->getDateTime()));
+	addToClientSendBuf(server, clientFd, RPL_MYINFO(it->second.getNickname(), "ft_irc", "1.0"));
+	addToClientSendBuf(server, clientFd, RPL_ISUPPORT(it->second.getNickname(), "CHANNELLEN=32 NICKLEN=10 TOPICLEN=307"));
 }
 
 // void Server::execCommand(int clientFd, std::string &cmd)
@@ -163,8 +168,8 @@ void Server::fillClientInfo(std::map<const int, Client> &clientList, int clientF
 void Server::execCommand(int clientFd, std::string &cmd)
 {
 	std::string	cmdList[NUM_OF_CMD] = {
-		"INVITE", "JOIN", "KICK","MODE", "NICK", "PART", "PING",
-		"PRIVMSG", "QUIT", "TOPIC", "USER"
+		"INVITE", "JOIN", "KICK","MODE", "NICK", "PART", "PASS",
+		"PING", "PRIVMSG", "QUIT", "TOPIC", "USER"
 	};
 	
 	Client	*client = getClient(this, clientFd);
@@ -192,11 +197,12 @@ void Server::execCommand(int clientFd, std::string &cmd)
 		case 4: // mode(this, clientFd, cmdInfo); break; // ★★★
 		case 5: nick(this, clientFd, cmdInfo); break; // ★★★
 		case 6: // part(this, clientFd, cmdInfo); break; // ★★★
-		case 7: // ping(this, clientFd, cmdInfo); break; // ★★★
-		case 8: // privmsg(this, clientFd, cmdInfo); break; // ★★★
-		case 9: // quit(this, clientFd, cmdInfo); break; // ★★★
-		case 10: // topic(this, clientFd, cmdInfo); break; // ★★★
-		case 11: // user(this, clientFd, cmdInfo); break; // ★★★
+		case 7: pass(this, clientFd, cmdInfo); break; // ★★★
+		case 8: // ping(this, clientFd, cmdInfo); break; // ★★★
+		case 9: // privmsg(this, clientFd, cmdInfo); break; // ★★★
+		case 10: // quit(this, clientFd, cmdInfo); break; // ★★★
+		case 11: // topic(this, clientFd, cmdInfo); break; // ★★★
+		case 12: user(this, clientFd, cmdInfo); break;
 
 		// コマンドが見つからない場合、エラー文を出力して何もしないで処理終了
 		default:
@@ -207,7 +213,6 @@ void Server::execCommand(int clientFd, std::string &cmd)
 
 	(void)client;
 }
-
 
 void Server::parseMessage(int clientFd, std::string &message)
 {
@@ -223,25 +228,18 @@ void Server::parseMessage(int clientFd, std::string &message)
 	{
 		std::string &cmd = *cmdIt;
 		
-		// 登録が完了できていない場合、クライアント情報を取得する
+		// 登録処理が完了していない場合
 		if (!it->second.isRegistrationDone())
 		{
-			// クライアント情報が全て揃っていない場合
-			if (it->second.getHasAllInfo() == false)
+			// クライアント情報が全て揃っていない場合、クライアント情報を取得する
+			if (it->second.getNmInfo() < 3)
+				fillClientInfo(clientFd, cmd);
+			
+			// クライアント情報が全て揃った場合、登録処理を行う
+			if (it->second.getNmInfo() == 3 && it->second.isRegistrationDone() == false)
 			{
-				fillClientInfo(_clientList, clientFd, cmd); // ★★★
-				if (it->second.getNmInfo() == 3)
-					it->second.setHasAllInfo();
-			}
-			else if (it->second.isRegistrationDone() == false)
-			{
-				if (it->second.isValid())
-				{
-					sendClientRegistrationMsg(this, clientFd, it);
-					it->second.setRegistrationDone();
-				}
-				else
-					throw (ERROR_CLIENT_INVALID_INFO);
+				sendClientRegistrationMsg(this, clientFd, it);
+				it->second.setRegistrationDone();
 			}
 		}
 		// 登録が完了している場合、コマンドを処理する

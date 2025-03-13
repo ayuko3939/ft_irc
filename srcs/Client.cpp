@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:11 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/13 16:27:02 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/13 17:48:40 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,8 @@ _readBuf(""),
 _sendBuf(""),
 _connexion_password(false),
 _nmInfo(0),
-_hasAllInfo(false),
 _toDeconnect(false),
 _registrationDone(false)
-// _welcomeSent(false)
 {
 }
 
@@ -45,7 +43,6 @@ void Client::setReadBuf(const std::string &readBuf) { _readBuf = readBuf; }
 void Client::setSendBuf(const std::string &sendBuf) { _sendBuf = sendBuf; }
 void Client::setConnexionPassword() { _connexion_password = true; }
 void Client::incrementNmInfo() { ++_nmInfo; }
-void Client::setHasAllInfo() { _hasAllInfo = true; }
 void Client::setToDeconnect() { _toDeconnect = true; }
 void Client::setRegistrationDone() { _registrationDone = true; }
 // void Client::setWelcomeSent(bool flag) { _welcomeSent = flag; }
@@ -59,17 +56,9 @@ std::string &Client::getOldNickname() { return (_oldNickname); }
 // std::string &Client::getMode() { return (_mode); }
 std::string &Client::getReadBuf() { return (_readBuf); }
 std::string &Client::getSendBuf() { return (_sendBuf); }
-// bool Client::getConnexionPassword() { return (_connexion_password); }
+bool Client::getConnexionPassword() { return (_connexion_password); }
 int Client::getNmInfo() { return (_nmInfo); }
-bool Client::getHasAllInfo() { return (_hasAllInfo); }
 bool Client::getToDeconnect() { return (_toDeconnect); }
 bool Client::isRegistrationDone() { return (_registrationDone); }
 // bool Client::isWelcomeSent() { return (_welcomeSent); }
 
-bool Client::isValid()
-{
-	return (_clientFd != -1 &&
-			_nickname != "" && _userName != "" && _realName != "" &&
-			_connexion_password == true &&
-			_nmInfo >= 3);
-}

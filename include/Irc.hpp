@@ -78,7 +78,7 @@
 # define CONFG_FILE "config/operators.conf"
 # define MAX_CLIENTS 4
 # define BUF_SIZE_MSG 1024
-# define NUM_OF_CMD 11
+# define NUM_OF_CMD 12
 
 // サーバー停止フラグ
 extern bool g_ServerShutdown;

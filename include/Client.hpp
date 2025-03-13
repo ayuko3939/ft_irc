@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:11 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/13 16:26:51 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/13 17:48:04 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,8 @@ class Client
     std::string		_sendBuf; // 送信バッファ
     bool		    	_connexion_password; // パスワード認証が成功したか
     int           _nmInfo; // 受け取った情報の数
-    bool		    	_hasAllInfo; // クライアント情報が全て揃ったか
     bool		    	_toDeconnect; // 切断フラグ
     bool		    	_registrationDone; // 登録完了フラグ
-    // bool		    	_welcomeSent; // ウェルカムメッセージ送信済みフラグ
 
   public:
     Client(int clientFd);
@@ -48,7 +46,6 @@ class Client
     void setSendBuf(const std::string &sendBuf);
     void setConnexionPassword();
     void incrementNmInfo();
-    void setHasAllInfo();
     void setToDeconnect();
     void setRegistrationDone();
     // void setWelcomeSent(bool flag);
@@ -63,15 +60,13 @@ class Client
     // std::string &getMode();
     std::string &getReadBuf();
     std::string &getSendBuf();
-    // bool getConnexionPassword();
+    bool getConnexionPassword();
     int getNmInfo();
-    bool getHasAllInfo();
     bool getToDeconnect();
     bool isRegistrationDone();
-    // bool isWelcomeSent();
 
     // functions
-    bool isValid();
+
 };
 
 #endif

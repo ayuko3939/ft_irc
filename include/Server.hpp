@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:18 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/12 19:16:23 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/13 17:52:32 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ class Server
     
     void parseMessage(int clientFd, std::string &message);
     void execCommand(int clientFd, std::string &cmd);
-    void fillClientInfo(std::map<const int, Client> &clientList, int clientFd, std::string &cmd);
+    void fillClientInfo(int clientFd, std::string &cmd);
 
     void addChannel(std::string &channelName);
     void addClientToChannel(std::string &channelName, Client &client);
@@ -78,7 +78,7 @@ class Server
     // Getters
     // int getServerSockFd();
     // std::string &getPort();
-    // std::string &getPassword();
+    std::string &getPassword();
     std::string &getDateTime();
     // std::vector<serverOperator> &getOperatorList();
     std::map<const int, Client>& getClientList();
