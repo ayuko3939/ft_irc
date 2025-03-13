@@ -6,12 +6,18 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 22:07:12 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/11 22:07:37 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/13 16:00:35 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef IRCNUMERICS_HPP
 # define IRCNUMERICS_HPP
+
+#define ERR_NOT_ENOUGH_ARGS	"Error: not enough arguments. Usage: "
+#define ERR_TOO_MANY_ARGS	"Error: too many arguments. Usage: "
+
+#define NICK_USAGE			"NICK <nickname>\r\n"
+#define NICK_REQUIREMENTS	"[!] nickname requirements: len(1-10), char(a-z, A-Z, 0-9)\r\n"
 
 #define RPL_NICK(client, newNick) (":" + client + " :Your nickname is " + newNick + "\r\n")
 
@@ -278,8 +284,8 @@
 // (432) ERR_ERRONEUSNICKNAME : 不正なニックネーム
 #define ERR_ERRONEUSNICKNAME(client, nick) (":" + client + " " + nick + " :Erroneous nickname\r\n")
 
-// // (433) ERR_NICKNAMEINUSE : ニックネーム使用中
-// #define ERR_NICKNAMEINUSE(client, nick) (":" + client + " " + nick + " :Nickname is already in use\r\n")
+// (433) ERR_NICKNAMEINUSE : ニックネーム使用中
+#define ERR_NICKNAMEINUSE(client, nick) (":" + client + " " + nick + " :Nickname is already in use\r\n")
 
 // // (436) ERR_NICKCOLLISION : ニックネーム衝突
 // #define ERR_NICKCOLLISION(client, nick) (":" + client + " " + nick + " :Nickname collision\r\n")

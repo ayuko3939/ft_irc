@@ -63,7 +63,8 @@
 # define ERROR_CHANNEL_EXIST		"Error: Channel already exists #"
 # define ERROR_CHANNEL_NOT_FOUND	"Error: Channel not found #"
 # define ERROR_SERVER_EMPTY_CMD		"Error: empty command"
-// # define 
+
+
 // # define 
 // # define 
 
