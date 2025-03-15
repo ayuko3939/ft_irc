@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/13 17:12:57 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/15 12:08:15 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ static bool	isAlreadyUsed(Server *server, int clientFd, std::string nickname)
 	return (false);
 }
 
-void user(Server *server, int clientFd,s_ircCommand cmdInfo)
+void user(Server *server, const int clientFd,s_ircCommand cmdInfo)
 {
 	// クライアント情報の取得
 	Client &client = retrieveClient(server, clientFd);

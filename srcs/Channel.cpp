@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:04 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/12 16:09:24 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/15 12:11:19 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,14 +41,14 @@ Channel::~Channel() {}
 const std::string &Channel::getMode() const { return (_mode);}
 // const std::string &Channel::getPassword() const { return (_password);}
 int Channel::getMaxConnections() const { return (_maxConnections);}
-std::map<std::string, Client> &Channel::getClientList() { return (_clientList);}
+std::map<const int, Client> &Channel::getClientList() { return (_clientList);}
 // std::vector<std::string> &Channel::getKickedUsers() { return (_kickedUsers);}
 // std::vector<std::string> &Channel::getOperatorList() { return (_operatorList);}
 
 
-bool Channel::isClientInChannel(std::string &clientName)
+bool Channel::isClientInChannel(const int clientFd)
 {
-	std::map<std::string, Client>::iterator it = _clientList.find(clientName);
+	std::map<const int, Client>::iterator it = _clientList.find(clientFd);
 	if (it == _clientList.end())
 		return (false);
 	return (true);
@@ -56,5 +56,5 @@ bool Channel::isClientInChannel(std::string &clientName)
 
 void Channel::addClientToChannel(Client &client)
 {
-	_clientList.insert(std::make_pair(client.getNickname(), client));
+	_clientList.insert(std::make_pair(client.getClientFd(), client));
 }

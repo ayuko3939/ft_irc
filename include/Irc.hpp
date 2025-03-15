@@ -65,7 +65,8 @@
 # define ERROR_SERVER_EMPTY_CMD		"Error: empty command"
 
 
-// # define 
+# define DELIMITER_LINE "-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-\r\n"
+// # define DELIMITER_LINE "=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=\r\n"
 // # define 
 
 // Server message

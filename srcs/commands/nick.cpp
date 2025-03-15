@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/13 16:15:11 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/15 12:08:40 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static std::vector<std::string>	splitMessage(std::string message)
 	return (words);
 }
 
-static bool checkArgumentsNum(Server *server, int clientFd, std::vector<std::string> &words)
+static bool checkArgumentsNum(Server *server, const int clientFd, std::vector<std::string> &words)
 {
 	// 引数が足りなければエラーを返す
 	if (words.size() < 1)
@@ -57,7 +57,7 @@ static bool	isValidNickname(std::string nickname)
 	return (true);
 }
 
-static bool	isAlreadyUsed(Server *server, int clientFd, std::string nickname)
+static bool	isAlreadyUsed(Server *server, const int clientFd, std::string nickname)
 {
 	std::map<int, Client>::iterator it = server->getClientList().begin();
 	for (; it != server->getClientList().end(); ++it)
@@ -68,7 +68,7 @@ static bool	isAlreadyUsed(Server *server, int clientFd, std::string nickname)
 	return (false);
 }
 
-void nick(Server *server, int clientFd, s_ircCommand cmdInfo)
+void nick(Server *server, const int clientFd, s_ircCommand cmdInfo)
 {
 	// 1. ユーザー入力をスペースで分割
 	std::vector<std::string> words = splitMessage(cmdInfo.message);

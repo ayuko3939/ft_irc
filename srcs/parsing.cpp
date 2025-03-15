@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:43:40 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/13 17:58:57 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/13 19:40:00 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,11 +121,13 @@ void Server::fillClientInfo(int clientFd, std::string &cmd)
 
 void sendClientRegistrationMsg(Server *server, int clientFd, std::map<const int, Client>::iterator &it)
 {
+	addToClientSendBuf(server, clientFd, DELIMITER_LINE);
 	addToClientSendBuf(server, clientFd, RPL_WELCOME(it->second.getNickname(), it->second.getNickname()));
 	addToClientSendBuf(server, clientFd, RPL_YOURHOST(it->second.getNickname(), "ft_irc", "1.0"));
 	addToClientSendBuf(server, clientFd, RPL_CREATED(it->second.getNickname(), server->getDateTime()));
 	addToClientSendBuf(server, clientFd, RPL_MYINFO(it->second.getNickname(), "ft_irc", "1.0"));
 	addToClientSendBuf(server, clientFd, RPL_ISUPPORT(it->second.getNickname(), "CHANNELLEN=32 NICKLEN=10 TOPICLEN=307"));
+	addToClientSendBuf(server, clientFd, DELIMITER_LINE);
 }
 
 // void Server::execCommand(int clientFd, std::string &cmd)
@@ -192,14 +194,14 @@ void Server::execCommand(int clientFd, std::string &cmd)
 	switch (i + 1)
 	{
 		case 1: // invite(this, clientFd, cmdInfo); break; // ★★★
-		case 2: // join(this, clientFd, cmdInfo); break; // ★★★
+		// case 2: join(this, clientFd, cmdInfo); break; // ★★★
 		case 3: // kick(this, clientFd, cmdInfo); break; // ★★★
 		case 4: // mode(this, clientFd, cmdInfo); break; // ★★★
-		case 5: nick(this, clientFd, cmdInfo); break; // ★★★
+		case 5: nick(this, clientFd, cmdInfo); break;
 		case 6: // part(this, clientFd, cmdInfo); break; // ★★★
-		case 7: pass(this, clientFd, cmdInfo); break; // ★★★
+		case 7: pass(this, clientFd, cmdInfo); break;
 		case 8: // ping(this, clientFd, cmdInfo); break; // ★★★
-		case 9: // privmsg(this, clientFd, cmdInfo); break; // ★★★
+		// case 9: privmsg(this, clientFd, cmdInfo); break;
 		case 10: // quit(this, clientFd, cmdInfo); break; // ★★★
 		case 11: // topic(this, clientFd, cmdInfo); break; // ★★★
 		case 12: user(this, clientFd, cmdInfo); break;

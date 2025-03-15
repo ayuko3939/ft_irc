@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:18 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/13 17:52:54 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/15 12:03:52 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,7 +212,7 @@ void Server::addClientToChannel(std::string &channelName, Client &client)
 	}
 	
 	// クライアントがすでにチャンネルに参加している場合、エラー文を出力して何もしないで処理終了
-	if (it->second.isClientInChannel(client.getNickname()))
+	if (it->second.isClientInChannel(client.getClientFd()))
 	{
 		std::cerr << ORANGE "Error: Client is already in the channel" END << std::endl;
 		return ;

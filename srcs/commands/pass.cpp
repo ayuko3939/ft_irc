@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/13 17:48:51 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/15 12:08:23 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static std::vector<std::string>	splitMessage(std::string message)
 	return (words);
 }
 
-static bool checkArgumentsNum(Server *server, int clientFd, std::vector<std::string> &words)
+static bool checkArgumentsNum(Server *server, const int clientFd, std::vector<std::string> &words)
 {
 	// 引数が足りなければエラーを返す
 	if (words.size() < 1)
@@ -44,7 +44,7 @@ static bool checkArgumentsNum(Server *server, int clientFd, std::vector<std::str
 	return (true);
 }
 
-void pass(Server *server, int clientFd,s_ircCommand cmdInfo)
+void pass(Server *server, const int clientFd,s_ircCommand cmdInfo)
 {
 	// クライアント情報の取得
 	Client &client = retrieveClient(server, clientFd);
