@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:18 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/15 12:03:52 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/15 13:47:30 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ std::string &Server::getPassword() { return (_password); }
 std::string &Server::getDateTime() { return (_dateTime); }
 // std::vector<serverOperator> &Server::getOperatorList() { return (_operatorList); }
 std::map<const int, Client>& Server::getClientList() { return (_clientList); }
-// std::map<std::string, Channel>& Server::getChannelList() { return (_channelList); }
+std::map<std::string, Channel>& Server::getChannelList() { return (_channelList); }
 // struct addrinfo &Server::getAddrInfo() { return (_addrInfo); }
 // struct addrinfo* Server::getServerInfo() { return (_serverInfo); }
 

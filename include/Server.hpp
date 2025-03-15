@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:18 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/13 17:52:32 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/15 13:48:58 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ class Server
     std::string &getDateTime();
     // std::vector<serverOperator> &getOperatorList();
     std::map<const int, Client>& getClientList();
-    // std::map<std::string, Channel>& getChannelList();
+    std::map<std::string, Channel>& getChannelList();
     // struct addrinfo &getAddrInfo();
     // struct addrinfo* getServerInfo();
 
@@ -91,6 +91,10 @@ class Server
     void getServerInfo();
     void launchServer();
     void manageServerLoop();
+
+    void Server::addChannel(std::string &channelName);
+    void Server::addClientToChannel(std::string &channelName, Client &client);
+    bool Server::isChannelExist(std::string &channelName);
 };
 
 // utils

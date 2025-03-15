@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 22:07:12 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/13 17:36:13 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/15 15:03:54 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,9 @@
 # define USER_USAGE			"USER <username> <realname>\r\n"
 # define USER_REQUIREMENTS	"[!] username requirements: len(1-10), char(a-z, A-Z, 0-9)\r\n    realname requirements: len(1-10), char(a-z, A-Z)\r\n"
 # define PASS_USAGE			"PASS <password>\r\n"
-// # define PASS_REQUIREMENTS	"[!] \r\n"
+# define PASS_REQUIREMENTS	"[!] \r\n"
+# define JOIN_USAGE			"JOIN <#channel> [key]  or  JOIN <#channel>{,<channel>} [<key>{,<key>}]\r\n"
+# define JOIN_REQUIREMENTS	"[!] channel requirements: \r\nkey requirements: len(1-10), char(a-z, A-Z, 0-9)\r\n"
 
 // 成功通知
 # define RPL_NICK(client, newNick) (":" + client + " :Your nickname is " + newNick + "\r\n")
@@ -307,8 +309,8 @@
 // // (442) ERR_NOTONCHANNEL : チャネル未参加（自分）
 // # define ERR_NOTONCHANNEL(client, channel) (":" + client + " " + channel + " :You're not on that channel\r\n")
 
-// // (443) ERR_USERONCHANNEL : 既にチャネル参加中
-// # define ERR_USERONCHANNEL(client, nick, channel) (":" + client + " " + nick + " " + channel + " :Already on channel\r\n")
+// (443) ERR_USERONCHANNEL : 既にチャネル参加中
+# define ERR_USERONCHANNEL(client, nick, channel) (":" + client + " " + nick + " " + channel + " :Already on channel\r\n")
 
 // // (451) ERR_NOTREGISTERED : 未登録
 // # define ERR_NOTREGISTERED(client) (":" + client + " :You have not registered\r\n")
