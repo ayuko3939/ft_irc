@@ -6,42 +6,13 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/16 15:27:38 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 15:55:16 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Command.hpp"
 
-static std::vector<std::string> splitMessage(std::string message)
-{
-    std::istringstream iss(message);
-    std::vector<std::string> words;
-    std::string word;
-
-    while (iss >> word)
-    {
-        trim(word);
-        words.push_back(word);
-    }
-    return words;
-}
-
-static std::vector<std::string> splitByComma(const std::string &str)
-{
-    std::vector<std::string> result;
-    std::istringstream iss(str);
-    std::string token;
-
-    while (std::getline(iss, token, ','))
-    {
-        trim(token);
-        if (!token.empty())
-            result.push_back(token);
-    }
-    return result;
-}
-
-static bool checkArgumentsNum(Server *server, int clientFd, std::vector<std::string> &words)
+static bool checkArguments(Server *server, int clientFd, std::vector<std::string> &words)
 {
     // 引数が1つまたは2つでない場合はエラー（チャンネル名が必須、キーは任意）
     if (words.size() != 1 && words.size() != 2)
@@ -71,7 +42,7 @@ void join(Server *server, const int clientFd, s_ircCommand cmdInfo)
 	// 1. ユーザー入力をスペース区切りで取得し、引数の数をチェック
 	std::vector<std::string> words = splitMessage(cmdInfo.message);
 
-	if (!checkArgumentsNum(server, clientFd, words))
+	if (!checkArguments(server, clientFd, words))
 		return;
 
 	// 2. チャンネル名リストとキーリストをカンマ区切りで取得

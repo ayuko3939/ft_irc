@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:43:40 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/16 15:43:00 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 15:55:40 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,65 +149,14 @@ void Server::fillClientInfo(Client *client, int clientFd, s_ircCommand cmdInfo)
 	}
 }
 
-// void Server::execCommand(int clientFd, std::string &cmd)
-// {	
-// 	Client	*client = getClient(this, clientFd);
-// 	s_ircCommand	cmdInfo;
-
-// 	// コマンド解析
-// 	if (parseCommand(cmd, cmdInfo) == EXIT_FAILURE)
-// 		return ;
-	
-// 	// コマンドリストからコマンドを検索
-// 	int	index = getCommandType(cmdInfo.name);
-		
-// 	// コマンドに応じた処理を実行
-// 	switch (index + 1)
-// 	{
-// 		case 1: // invite(this, clientFd, cmdInfo); break; // ★★★
-// 		case 2: // join(this, clientFd, cmdInfo); break; // ★★★
-// 		case 3: // kick(this, clientFd, cmdInfo); break; // ★★★
-// 		case 4: // mode(this, clientFd, cmdInfo); break; // ★★★
-// 		case 5: nick(this, clientFd, cmdInfo); break; // ★★★
-// 		case 6: // part(this, clientFd, cmdInfo); break; // ★★★
-// 		case 7: // ping(this, clientFd, cmdInfo); break; // ★★★
-// 		case 8: // privmsg(this, clientFd, cmdInfo); break; // ★★★
-// 		case 9: // quit(this, clientFd, cmdInfo); break; // ★★★
-// 		case 10: // topic(this, clientFd, cmdInfo); break; // ★★★
-// 		case 11: // user(this, clientFd, cmdInfo); break; // ★★★
-
-// 		// コマンドが見つからない場合、エラー文を出力して何もしないで処理終了
-// 		default:
-// 			std::cout << "command not found: " << cmdInfo.name << std::endl; // errorMsg(); // ★★★
-// 	}
-
-
-
-// 	(void)client;
-// }
-
 void Server::execCommand(int clientFd, std::string &cmd)
 {
-	std::string	cmdList[NUM_OF_CMD] = {
-		"INVITE", "JOIN", "KICK","MODE", "NICK", "PART", "PASS",
-		"PING", "PRIVMSG", "QUIT", "TOPIC", "USER"
-	};
-	
 	Client	*client = getClient(this, clientFd);
 	s_ircCommand	cmdInfo;
-	int	i = 0;
 	
 	// コマンド解析
 	if (parseCommand(cmd, cmdInfo) == EXIT_FAILURE)
 		return ;
-	
-	// コマンドリストからコマンドを検索
-	while (i < NUM_OF_CMD)
-	{
-		if (cmdInfo.name == cmdList[i])
-			break;
-		i++;
-	}
 
 	// 登録処理が完了していない場合
 	if (!client->isRegistrationDone())
@@ -216,8 +165,11 @@ void Server::execCommand(int clientFd, std::string &cmd)
 		return ;
 	}
 
+	// コマンドリストからコマンドを検索
+	int	index = getCommandType(cmdInfo.name);
+
 	// コマンドに応じた処理を実行
-	switch (i + 1)
+	switch (index + 1)
 	{
 		case 1: // invite(this, clientFd, cmdInfo); break; // ★★★
 		// case 2: join(this, clientFd, cmdInfo); break; // ★★★

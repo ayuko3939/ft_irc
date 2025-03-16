@@ -6,28 +6,13 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/15 12:08:15 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 15:54:49 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Command.hpp"
 
-static std::vector<std::string>	splitMessage(std::string message)
-{
-	std::istringstream iss(message);
-	std::vector<std::string> words;
-	std::string word;
-
-	while (iss >> word)
-	{
-		trim(word);
-		words.push_back(word);
-	}
-
-	return (words);
-}
-
-static bool checkArgumentsNum(Server *server, int clientFd, std::vector<std::string> &words)
+static bool checkArguments(Server *server, int clientFd, std::vector<std::string> &words)
 {
 	// 引数が足りなければエラーを返す
 	if (words.size() < 2)
@@ -44,7 +29,7 @@ static bool checkArgumentsNum(Server *server, int clientFd, std::vector<std::str
 	return (true);
 }
 
-static bool	isValidName(std::string username, std::string realname)
+static bool	isValid(std::string username, std::string realname)
 {
 	if (username.empty() || (realname.size() > 10) ||
 		realname.empty() || (realname.size() > 10))
@@ -89,13 +74,13 @@ void user(Server *server, const int clientFd,s_ircCommand cmdInfo)
 	// 2. ユーザー入力をスペースで分割し、引数の数が正しいかチェック
 	std::vector<std::string> words = splitMessage(cmdInfo.message);
 
-	if (!checkArgumentsNum(server, clientFd, words))
+	if (!checkArguments(server, clientFd, words))
 		return ;
 
 	// 3. 入力内容の妥当性チェック（ニックネームの文字数、文字種）
 	std::string username = words[0];
 	std::string realname = words[1];
-	if (!isValidName(username, realname))
+	if (!isValid(username, realname))
 	{
 		addToClientSendBuf(server, clientFd, USER_REQUIREMENTS);
 		return ;
