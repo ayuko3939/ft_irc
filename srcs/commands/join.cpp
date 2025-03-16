@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/16 17:54:28 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 18:06:30 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,13 @@
 
 static bool checkArguments(Server *server, int clientFd, std::vector<std::string> &words)
 {
-    // 引数が1つまたは2つでない場合はエラー（チャンネル名が必須、キーは任意）
-    if (words.size() != 1 && words.size() != 2)
-    {
-        addToClientSendBuf(server, clientFd, ERR_NOT_ENOUGH_ARGS + std::string(JOIN_USAGE));
-        return false;
-    }
-    return true;
+	// 引数が1つまたは2つでない場合はエラー（チャンネル名が必須、キーは任意）
+	if (words.size() != 1 && words.size() != 2)
+	{
+		addToClientSendBuf(server, clientFd, ERR_NOT_ENOUGH_ARGS + std::string(JOIN_USAGE));
+		return false;
+	}
+	return true;
 }
 
 static bool	isValid(std::string word)
@@ -36,7 +36,7 @@ static bool	isValid(std::string word)
 	return (true);
 }
 
-static bool function(Server *server, Client client, Channel &channel, std::string key)
+static bool checkJoinEligibility(Server *server, Client client, Channel &channel, std::string key)
 {
 	std::string clientNickname = client.getNickname();
 	const int clientFd = client.getClientFd();
@@ -77,14 +77,14 @@ static bool function(Server *server, Client client, Channel &channel, std::strin
 	return (true);
 }
 
-static void broadcastNewMember(Server *server, Channel &channel, std::string channelName, Client client)
+static void broadcastNewMember(Server *server, Channel &channel,const std::string channelName, Client client)
 {
 	std::string newClientNick = client.getNickname();
 
 	// チャンネルメンバー全員に新しいメンバーの参加を通知
 	std::map<const int, Client> &clientList = channel.getClientList();
-	std::map<int, Client>::iterator it = clientList.begin();
-	for (; it != clientList.end(); ++it)
+
+	for (std::map<int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
 	{
 		addToClientSendBuf(server, it->second.getClientFd(), RPL_JOIN(newClientNick, channelName));
 	}
@@ -118,7 +118,7 @@ void join(Server *server, const int clientFd, s_ircCommand cmdInfo)
 		std::string channelName = channelNames[i];
 		std::string key = keyList[i];
 
-		// 4. チャンネル名が空ならエラー
+		// 4. チャンネル名の妥当性をチェック
 		if (!isValid(channelName))
 		{
 			addToClientSendBuf(server, clientFd, ERR_NOT_ENOUGH_ARGS + std::string(JOIN_USAGE));
@@ -147,7 +147,7 @@ void join(Server *server, const int clientFd, s_ircCommand cmdInfo)
 		// 6-2. 既存のチャンネルに参加できるかチェック
 		else
 		{
-			if (!function(server, client, it->second, key))
+			if (!checkJoinEligibility(server, client, it->second, key))
 				continue;
 		}
 
