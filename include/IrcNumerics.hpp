@@ -33,6 +33,8 @@
 # define TOPIC_USAGE		"TOPIC <channel> [<topic>]   If <topic> is not given, display topic\r\n"
 # define TOPIC_REQUIREMENTS	"[!] topic requirements: len(50), char(a-z, A-Z, 0-9)\r\n"
 # define INVITE_USAGE		"INVITE <nickname> <channel>\r\n"
+# define KICK_USAGE			"KICK <channel> <nickname> [<comment>]\r\n"
+# define KICK_REQUIREMENTS	"[!] comment requirements: len(1-30)\r\n"
 
 // 成功通知
 # define RPL_NICK(client, newNick) (":" + client + " :Your nickname is " + newNick + "\r\n")
@@ -316,8 +318,8 @@
 // // (436) ERR_NICKCOLLISION : ニックネーム衝突
 // # define ERR_NICKCOLLISION(client, nick) (":" + client + " " + nick + " :Nickname collision\r\n")
 
-// // (441) ERR_USERNOTINCHANNEL : チャネル未参加
-// # define ERR_USERNOTINCHANNEL(client, nick, channel) (":" + client + " " + nick + " " + channel + " :Not on that channel\r\n")
+// (441) ERR_USERNOTINCHANNEL : チャネル未参加
+# define ERR_USERNOTINCHANNEL(client, nick, channel) (":" + client + " " + nick + " " + channel + " :Not on that channel\r\n")
 
 // (442) ERR_NOTONCHANNEL : チャネル未参加（自分）
 # define ERR_NOTONCHANNEL(client, channel) (":" + client + " " + channel + " :You're not on that channel\r\n")

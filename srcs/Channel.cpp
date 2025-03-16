@@ -125,3 +125,23 @@ void Channel::addClientToChannel(Client &client)
 {
 	_clientList.insert(std::make_pair(client.getClientFd(), client));
 }
+
+void Channel::removeClient(int clientFd)
+{
+	_clientList.erase(clientFd);
+
+	if (isOperator(clientFd))
+		removeOperator(clientFd);
+}
+
+void Channel::removeOperator(int clientFd)
+{
+	for (std::vector<int>::iterator it = _operatorList.begin(); it != _operatorList.end(); ++it)
+	{
+		if (*it == clientFd)
+		{
+			_operatorList.erase(it);
+			return ;
+		}
+	}
+}

@@ -67,6 +67,8 @@ class Channel
 	bool isClientInChannel(const int clientFd);
 	bool isOperator(const int clientFd);
 	void addClientToChannel(Client &client);
+	void removeClient(int clientFd);
+	void removeOperator(int clientFd);
 };
 
 #endif

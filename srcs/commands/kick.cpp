@@ -12,12 +12,12 @@
 
 #include "Command.hpp"
 
-// INVITEコマンドの引数数チェック (INVITE <nickname> <channel> であること)
 static bool checkArguments(Server *server, int clientFd, std::vector<std::string> &words)
 {
-    if (words.size() != 2)
+	// <channel> <user> [<comment>]
+    if (words.size() < 2 || words.size() > 3)
     {
-        addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(INVITE_USAGE));
+        addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(KICK_USAGE));
         return false;
     }
     return true;
@@ -26,7 +26,7 @@ static bool checkArguments(Server *server, int clientFd, std::vector<std::string
 bool isValid(Server *server, int const clientFd, std::string targetNick, std::string channelName)
 {
 	Client &client = retrieveClient(server, clientFd);
-	std::string inviterNick = client.getNickname();
+	std::string issuerNick = client.getNickname();
 
 	// 対象ニックネームとチャンネル名が空文字でないことを確認
 	if (targetNick.empty() || channelName.empty())
@@ -43,78 +43,84 @@ bool isValid(Server *server, int const clientFd, std::string targetNick, std::st
 	// 対象クライアントが存在することを確認
 	if (!server->isClientExist(targetNick))
 	{
-		addToClientSendBuf(server, clientFd, ERR_NOSUCHNICK(inviterNick, targetNick));
+		addToClientSendBuf(server, clientFd, ERR_NOSUCHNICK(issuerNick, targetNick));
 		return (false);
 	}
 	// InviterとTargetが同一でないことを確認
-	if (inviterNick == targetNick)
+	if (issuerNick == targetNick)
 	{
-		addToClientSendBuf(server, clientFd, ":" + inviterNick + " : Inviter and target are the same.\r\n");
+		addToClientSendBuf(server, clientFd, ":" + issuerNick + " : Issuer and target are the same.\r\n");
 		return (false);
 	}
 	return (true);
 }
 
-static void broadcastNewMember(Server *server, Channel &channel, std::string &inviter, std::string &target)
+static void broadcastNewMember(Server *server, Channel &channel, std::string &issuer, std::string &target)
 {
 	// チャンネルメンバー全員に新しいメンバーの参加を通知
 	std::map<const int, Client> &clientList = channel.getClientList();
 
 	for (std::map<int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
 	{
-		addToClientSendBuf(server, it->second.getClientFd(), RPL_INVITE(inviter, target, channel.getName()));
+		addToClientSendBuf(server, it->second.getClientFd(), RPL_INVITE(issuer, target, channel.getName()));
 	}
 }
 
-// コマンド形式: INVITE <nickname> <channel>
-void invite(Server *server, int const clientFd, s_ircCommand cmdInfo)
+// コマンド形式: KICK <channel> <user> [<comment>]
+void kick(Server *server, int const clientFd, s_ircCommand cmdInfo)
 {
-	// 1. 入力パラメータの分割
+	// 1. 入力パラメータを空白で分割
 	std::vector<std::string> words = splitMessage(cmdInfo.message);
 	if (!checkArguments(server, clientFd, words))
 		return;
 
-	// 2. クライアント情報の取得
+	// 2. 発行者のクライアント情報を取得
 	Client &client = retrieveClient(server, clientFd);
-	std::string inviterNick = client.getNickname();
+	std::string issuerNick = client.getNickname();
 
-	// 3. パラメータから招待対象のニックネームとチャンネル名を取得する
-	std::string targetNick = words[0];
-	std::string channelName = words[1];
+	// 3. パラメータから対象のチャンネル名と追放対象ユーザーのニックネームを取得
+	std::string channelName = words[0];
+	std::string targetNick = words[1];
 
-	// 4. パラメータの妥当性を確認する
+	// 4. コメントが指定されていなければデフォルトメッセージを使用
+	std::string comment;
+	if (words.size() == 3)
+		comment = words[2];
+	if (comment.empty())
+		comment = DEFAULT_KICK_COMMENT;
+
+	// 5. パラメータの妥当性を確認
 	if (!isValid(server, clientFd, targetNick, channelName))
 		return;
 
-	// 5. 招待したユーザーが対象チャンネルに参加しているかチェックする
+	// 6. 発行者が対象チャンネルに参加しているか確認
 	std::map<std::string, Channel> &channels = server->getChannelList();
 	Channel &channel = channels.find(channelName)->second;
 
 	if (!channel.isClientInChannel(clientFd))
 	{
-		addToClientSendBuf(server, clientFd, ERR_NOTONCHANNEL(inviterNick, channelName));
+		addToClientSendBuf(server, clientFd, ERR_NOTONCHANNEL(issuerNick, channelName));
 		return;
 	}
 
-	// 6. 招待対象のユーザーが既にチャンネルに参加しているかチェックする
+	// 7. 発行者がチャンネルオペレーターであるか確認
+	if (!channel.isOperator(clientFd))
+	{
+		addToClientSendBuf(server, clientFd, ERR_CHANOPRIVSNEEDED(issuerNick, channelName));
+		return;
+	}
+
+	// 8. 対象ユーザーがチャンネルに参加しているかチェック
 	int targetFd = server->getClientFdFromNick(targetNick);
-	if (channel.isClientInChannel(targetFd))
+	if (!channel.isClientInChannel(targetFd))
 	{
-		addToClientSendBuf(server, clientFd, ERR_USERONCHANNEL(inviterNick, targetNick, channelName));
+		addToClientSendBuf(server, clientFd, ERR_USERNOTINCHANNEL(issuerNick, targetNick, channelName));
 		return;
 	}
 
-	// 7. チャンネルが招待制限されている場合、招待対象のユーザーがチャンネルに参加できるかチェックする
-	if (channel.getMode("limit") && channel.getCapacity() <= channel.getClientList().size())
-	{
-		addToClientSendBuf(server, clientFd, ERR_CHANNELISFULL(inviterNick, channelName));
-		return;
-	}
+	// 9. チャンネルメンバー全員に追放を通知
+	broadcastNewMember(server, channel, issuerNick, targetNick);
 
-	// 8. 招待対象のユーザーをチャンネルに追加する
-	Client &target = retrieveClient(server, targetFd);
-	channel.addClientToChannel(target);
-
-	// 9. チャンネルメンバー全員に新しいメンバーの参加を通知
-	broadcastNewMember(server, channel, inviterNick, targetNick);
+	// 10. 対象ユーザーをチャンネルから削除する
+	channel.removeClient(targetFd);
 }

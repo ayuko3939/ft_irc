@@ -72,6 +72,7 @@
 # define SERVER_DISCONNECT_CLIENT	"[Server] Client disconnected prot:"
 # define SERVER_NUMBER_OF_CLIENTS	"[Server] The current number of clients is "
 # define SEVER_REQUIREMENTS			"CHANNELLEN=20 NICKLEN=10 TOPICLEN=50"
+# define DEFAULT_KICK_COMMENT		"Kicked by channel operator"
 
 // Settings
 # define CONFG_FILE "config/operators.conf"
