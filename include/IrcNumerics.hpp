@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 22:07:12 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/16 19:08:21 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 23:17:50 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # define ERR_PASS_AUTH_YET		"Error: Password authentication is not complete. Please \"PASS\".\r\n"
 # define ERR_REGISTRATION_YET	"Error: Registration is not complete. Please \"NICK\" and \"USER\".\r\n"
 # define ERR_CMD_NOT_FOUND		"Error: Command not found.\r\n"
+# define ERR_PARM_EMPTY			"Error: Parameter is empty.\r\n"
 
 // コマンド要件
 # define NICK_USAGE			"NICK <nickname>\r\n"
@@ -28,8 +29,10 @@
 # define PASS_USAGE			"PASS <password>\r\n"
 # define PASS_REQUIREMENTS	"[!] \r\n"
 # define JOIN_USAGE			"JOIN <channel> [key]  or  JOIN <channel>{,<channel>} [<key>{,<key>}]\r\n"
-# define JOIN_REQUIREMENTS	"[!] channel/key requirements: len(1-10), char(a-z, A-Z, 0-9)\r\n"
+# define JOIN_REQUIREMENTS	"[!] channel/key requirements: len(1-20), char(a-z, A-Z, 0-9)\r\n"
 # define TOPIC_USAGE		"TOPIC <channel> [<topic>]   If <topic> is not given, display topic\r\n"
+# define TOPIC_REQUIREMENTS	"[!] topic requirements: len(50), char(a-z, A-Z, 0-9)\r\n"
+# define INVITE_USAGE		"INVITE <nickname> <channel>\r\n"
 
 // 成功通知
 # define RPL_NICK(client, newNick) (":" + client + " :Your nickname is " + newNick + "\r\n")
@@ -37,6 +40,11 @@
 # define RPL_PASS(client) (":" + client + " :Password accepted\r\n")
 # define RPL_JOIN(client, channel) (":" + client + " : joined " + channel + "\r\n")
 # define RPL_TOPI(client, channel, topic) (":" + client + " : #" + channel + " topic has been changed to: " + topic + "\r\n")
+# define RPL_INVITE(inviter, guest, channelName) (":" + inviter + " :invited " + guest + " to " + channelName + "\r\n")
+
+# define DELIMITER_LINE "-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-\r\n"
+// # define DELIMITER_LINE "=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=\r\n"
+
 
 // (001) RPL_WELCOME : クライアント登録直後の歓迎メッセージ
 # define RPL_WELCOME(client, nick) (":" + client + " :Welcome to the Internet Relay Network, " + nick + "\r\n")
@@ -259,8 +267,8 @@
 // // (400) ERR_UNKNOWNERROR : 一般的エラー
 // # define ERR_UNKNOWNERROR(client, command, info) (":" + client + " " + command + " :" + info + "\r\n")
 
-// // (401) ERR_NOSUCHNICK : 存在しないニック
-// # define ERR_NOSUCHNICK(client, nick) (":" + client + " " + nick + " :No such nick/channel\r\n")
+// (401) ERR_NOSUCHNICK : 存在しないニック
+# define ERR_NOSUCHNICK(client, nick) (":" + client + " " + nick + " :No such nickname user\r\n")
 
 // // (402) ERR_NOSUCHSERVER : 存在しないサーバ
 // # define ERR_NOSUCHSERVER(client, server) (":" + client + " " + server + " :No such server\r\n")

@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:43:40 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/16 21:32:08 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 23:01:09 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ void sendClientRegistrationMsg(Server *server, int clientFd, Client *client)
 	addToClientSendBuf(server, clientFd, RPL_YOURHOST(client->getNickname(), "ft_irc", "1.0"));
 	addToClientSendBuf(server, clientFd, RPL_CREATED(client->getNickname(), server->getDateTime()));
 	addToClientSendBuf(server, clientFd, RPL_MYINFO(client->getNickname(), "ft_irc", "1.0"));
-	addToClientSendBuf(server, clientFd, RPL_ISUPPORT(client->getNickname(), "CHANNELLEN=32 NICKLEN=10 TOPICLEN=307"));
+	addToClientSendBuf(server, clientFd, RPL_ISUPPORT(client->getNickname(), SEVER_REQUIREMENTS));
 	addToClientSendBuf(server, clientFd, DELIMITER_LINE);
 }
 
@@ -171,7 +171,7 @@ void Server::execCommand(int clientFd, std::string &cmd)
 	// コマンドに応じた処理を実行
 	switch (type)
 	{
-		// case 1: invite(this, clientFd, cmdInfo); break; // ★★★
+		case 1: invite(this, clientFd, cmdInfo); break;
 		case 2: join(this, clientFd, cmdInfo); break;
 		// case 3: kick(this, clientFd, cmdInfo); break; // ★★★
 		// case 4: mode(this, clientFd, cmdInfo); break; // ★★★

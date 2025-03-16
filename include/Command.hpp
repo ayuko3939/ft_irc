@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/16 19:19:53 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 23:00:54 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include "Server.hpp"
 
 // Command functions
+void invite(Server *server, const int clientFd, s_ircCommand cmdInfo);
 void nick(Server *server, const int clientFd, s_ircCommand cmdInfo);
 void join(Server *server, const int clientFd, s_ircCommand cmdInfo);
 void pass(Server *server, const int clientFd, s_ircCommand cmdInfo);

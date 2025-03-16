@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:18 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/16 21:32:12 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 23:25:37 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,8 @@ class Server
     std::map<std::string, Channel>& getChannelList();
     // struct addrinfo &getAddrInfo();
     // struct addrinfo* getServerInfo();
+    int getClientFdFromNick(std::string &nick);
+
 
     // Other functions
     void readConfigFile();
@@ -91,6 +93,8 @@ class Server
     void addChannel(std::string &channelName);
     void addClientToChannel(std::string &channelName, Client &client);
     bool isChannelExist(std::string &channelName);
+    bool isClientExist(int clientFd);
+    bool isClientExist(std::string &nick);
 };
 
 // utils

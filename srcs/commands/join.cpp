@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/16 21:31:36 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 22:38:07 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static bool checkJoinEligibility(Server *server, Client client, Channel &channel
 	std::string channelName = channel.getName();
 
 	// 既に参加している場合、エラーを返す
-	if (channel.getClientList().find(clientFd) != channel.getClientList().end())
+	if (channel.isClientInChannel(clientFd))
 	{
 		addToClientSendBuf(server, clientFd, ERR_USERONCHANNEL(clientNickname, clientNickname, channelName));
 		return (false);
@@ -121,7 +121,7 @@ void join(Server *server, const int clientFd, s_ircCommand cmdInfo)
 		// 4. チャンネル名の妥当性をチェック
 		if (!isValid(channelName))
 		{
-			addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(JOIN_USAGE));
+			addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(JOIN_REQUIREMENTS));
 			continue;
 		}
 

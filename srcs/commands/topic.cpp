@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/16 21:31:14 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 22:07:54 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,19 @@ static bool checkTopicArguments(Server *server, int clientFd, std::vector<std::s
 	{
 		addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(TOPIC_USAGE));
 		return false;
+	}
+	return true;
+}
+
+static bool isValidTopic(const std::string &topic)
+{
+	if (topic.empty() || (topic.size() > 50))
+		return false;
+
+	for (std::size_t i = 0; i < topic.size(); i++)
+	{
+		if (!isalnum(topic[i]))
+			return false;
 	}
 	return true;
 }
@@ -84,6 +97,12 @@ void topic(Server *server, const int clientFd, s_ircCommand cmdInfo)
 		if (newTopic.empty())
 		{
 			channel.setTopic("");
+		}
+		// 6-2. トピックが50文字を超える場合はエラー
+		else if (isValidTopic(newTopic))
+		{
+			addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(TOPIC_REQUIREMENTS));
+			return;
 		}
 		// 6-2. それ以外は、保護されたトピックモードの場合、オペレーター権限をチェックする
 		else

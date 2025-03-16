@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:18 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/15 13:47:30 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 23:26:24 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -232,4 +232,39 @@ bool Server::isChannelExist(std::string &channelName)
 		return (false);
 	}
 	return (true);
+}
+
+int Server::getClientFdFromNick(std::string &nick)
+{
+	// クライアントリストからニックネームに対応するクライアントのFDを取得
+	std::map<const int, Client>::iterator it = _clientList.begin();
+	while (it != _clientList.end())
+	{
+		if (it->second.getNickname() == nick)
+			return (it->first);
+		++it;
+	}
+	return (-1);
+}
+
+bool Server::isClientExist(int clientFd)
+{
+	// クライアントリストからクライアントが存在するかチェック
+	std::map<const int, Client>::iterator it = _clientList.find(clientFd);
+	if (it == _clientList.end())
+		return (false);
+	return (true);
+}
+
+bool Server::isClientExist(std::string &nickname)
+{
+	// クライアントリストからニックネームに対応するクライアントが存在するかチェック
+	std::map<const int, Client>::iterator it = _clientList.begin();
+	while (it != _clientList.end())
+	{
+		if (it->second.getNickname() == nickname)
+			return (true);
+		++it;
+	}
+	return (false);
 }
