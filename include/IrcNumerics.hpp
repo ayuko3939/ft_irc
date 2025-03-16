@@ -36,6 +36,9 @@
 # define KICK_USAGE			"KICK <channel> <nickname> [<comment>]\r\n"
 # define KICK_REQUIREMENTS	"[!] comment requirements: len(1-30)\r\n"
 
+# define MODE_USAGE			"MODE <channel> <modestring> [<mode arguments>]\r\n"
+# define MODE_REQUIREMENTS	"[!] modestring requirements: len(2-6), char(\'+\' or \'-\' + \'i\', \'t\', \'k\', \'o\', \'l\')\r\n"
+
 // 成功通知
 # define RPL_NICK(client, newNick) (":" + client + " :Your nickname is " + newNick + "\r\n")
 # define RPL_USER(client, user, real) (":" + client + " :Your username is " + user + ", realname is " + real + "\r\n")

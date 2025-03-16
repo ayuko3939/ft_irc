@@ -18,9 +18,9 @@ static bool checkArguments(Server *server, int clientFd, std::vector<std::string
     if (words.size() < 2 || words.size() > 3)
     {
         addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(KICK_USAGE));
-        return false;
+        return (false);
     }
-    return true;
+    return (true);
 }
 
 bool isValid(Server *server, int const clientFd, std::string targetNick, std::string channelName)
