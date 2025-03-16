@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 22:07:12 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/15 15:03:54 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 15:42:45 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,9 @@
 # define ERR_NOT_ENOUGH_ARGS	"Error: not enough arguments. Usage: "
 # define ERR_TOO_MANY_ARGS	"Error: too many arguments. Usage: "
 # define ERR_ALREADYDONE(client) (":" + client + " :You are already done\r\n")
+# define ERR_PASS_AUTH_YET		"Error: Password authentication is not complete. Please \"PASS\".\r\n"
+# define ERR_REGISTRATION_YET	"Error: Registration is not complete. Please \"NICK\" and \"USER\".\r\n"
+# define ERR_CMD_NOT_FOUND		"Error: Command not found.\r\n"
 
 // コマンド要件
 # define NICK_USAGE			"NICK <nickname>\r\n"
@@ -25,8 +28,8 @@
 # define USER_REQUIREMENTS	"[!] username requirements: len(1-10), char(a-z, A-Z, 0-9)\r\n    realname requirements: len(1-10), char(a-z, A-Z)\r\n"
 # define PASS_USAGE			"PASS <password>\r\n"
 # define PASS_REQUIREMENTS	"[!] \r\n"
-# define JOIN_USAGE			"JOIN <#channel> [key]  or  JOIN <#channel>{,<channel>} [<key>{,<key>}]\r\n"
-# define JOIN_REQUIREMENTS	"[!] channel requirements: \r\nkey requirements: len(1-10), char(a-z, A-Z, 0-9)\r\n"
+# define JOIN_USAGE			"JOIN <channel> [key]  or  JOIN <channel>{,<channel>} [<key>{,<key>}]\r\n"
+# define JOIN_REQUIREMENTS	"[!] channel/key requirements: len(1-10), char(a-z, A-Z, 0-9)\r\n"
 
 // 成功通知
 # define RPL_NICK(client, newNick) (":" + client + " :Your nickname is " + newNick + "\r\n")
@@ -327,8 +330,8 @@
 // // (465) ERR_YOUREBANNEDCREEP : 接続拒否（BAN）
 // # define ERR_YOUREBANNEDCREEP(client) (":" + client + " :You are banned\r\n")
 
-// // (471) ERR_CHANNELISFULL : チャネル満員
-// # define ERR_CHANNELISFULL(client, channel) (":" + client + " " + channel + " :Channel is full\r\n")
+// (471) ERR_CHANNELISFULL : チャネル満員
+# define ERR_CHANNELISFULL(client, channel) (":" + client + " " + channel + " :Channel is full\r\n")
 
 // // (472) ERR_UNKNOWNMODE : 不明なモード文字
 // # define ERR_UNKNOWNMODE(client, mode) (":" + client + " " + mode + " :Unknown mode char\r\n")
@@ -339,8 +342,8 @@
 // // (474) ERR_BANNEDFROMCHAN : BAN状態
 // # define ERR_BANNEDFROMCHAN(client, channel) (":" + client + " " + channel + " :Banned from channel\r\n")
 
-// // (475) ERR_BADCHANNELKEY : チャネルキー不正
-// # define ERR_BADCHANNELKEY(client, channel) (":" + client + " " + channel + " :Bad channel key\r\n")
+// (475) ERR_BADCHANNELKEY : チャネルキー不正
+# define ERR_BADCHANNELKEY(client, channel) (":" + client + " " + channel + " :Bad channel key\r\n")
 
 // // (476) ERR_BADCHANMASK : 不正なチャネル名
 // # define ERR_BADCHANMASK(channel) (":" + channel + " :Bad channel mask\r\n")

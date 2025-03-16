@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:43:40 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/13 19:40:00 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 15:43:00 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,30 +104,49 @@ int parseCommand(std::string &cmdLine, s_ircCommand &cmdInfo)
 	return (EXIT_SUCCESS);
 }
 
-void Server::fillClientInfo(int clientFd, std::string &cmd)
+void sendClientRegistrationMsg(Server *server, int clientFd, Client *client)
 {
-	s_ircCommand			cmdInfo;
-
-	if (parseCommand(cmd, cmdInfo) == EXIT_FAILURE)
-		return ;
-
-	if (cmdInfo.name == "NICK")
-		nick(this, clientFd, cmdInfo);
-	else if (cmdInfo.name == "USER")
-		user(this, clientFd, cmdInfo);
-	else if (cmdInfo.name == "PASS")
-		pass(this, clientFd, cmdInfo);
+	addToClientSendBuf(server, clientFd, DELIMITER_LINE);
+	addToClientSendBuf(server, clientFd, RPL_WELCOME(client->getNickname(), client->getNickname()));
+	addToClientSendBuf(server, clientFd, RPL_YOURHOST(client->getNickname(), "ft_irc", "1.0"));
+	addToClientSendBuf(server, clientFd, RPL_CREATED(client->getNickname(), server->getDateTime()));
+	addToClientSendBuf(server, clientFd, RPL_MYINFO(client->getNickname(), "ft_irc", "1.0"));
+	addToClientSendBuf(server, clientFd, RPL_ISUPPORT(client->getNickname(), "CHANNELLEN=32 NICKLEN=10 TOPICLEN=307"));
+	addToClientSendBuf(server, clientFd, DELIMITER_LINE);
 }
 
-void sendClientRegistrationMsg(Server *server, int clientFd, std::map<const int, Client>::iterator &it)
+void Server::fillClientInfo(Client *client, int clientFd, s_ircCommand cmdInfo)
 {
-	addToClientSendBuf(server, clientFd, DELIMITER_LINE);
-	addToClientSendBuf(server, clientFd, RPL_WELCOME(it->second.getNickname(), it->second.getNickname()));
-	addToClientSendBuf(server, clientFd, RPL_YOURHOST(it->second.getNickname(), "ft_irc", "1.0"));
-	addToClientSendBuf(server, clientFd, RPL_CREATED(it->second.getNickname(), server->getDateTime()));
-	addToClientSendBuf(server, clientFd, RPL_MYINFO(it->second.getNickname(), "ft_irc", "1.0"));
-	addToClientSendBuf(server, clientFd, RPL_ISUPPORT(it->second.getNickname(), "CHANNELLEN=32 NICKLEN=10 TOPICLEN=307"));
-	addToClientSendBuf(server, clientFd, DELIMITER_LINE);
+	// パスワード認証が完了していない場合
+	if (!client->getConnexionPassword())
+	{
+		if (cmdInfo.name != "PASS")
+			addToClientSendBuf(this, clientFd, ERR_PASS_AUTH_YET);
+		else
+			pass(this, clientFd, cmdInfo);
+		return ;
+	}
+	else
+	{
+		// クライアント情報が全て揃っていない場合、クライアント情報を取得する
+		if (cmdInfo.name != "NICK" && cmdInfo.name != "USER")
+			addToClientSendBuf(this, clientFd, ERR_REGISTRATION_YET);
+		else
+		{
+			if (cmdInfo.name == "NICK")
+				nick(this, clientFd, cmdInfo);
+			else if (cmdInfo.name == "USER")
+				user(this, clientFd, cmdInfo);
+		}
+
+		// クライアント情報が全て揃った場合、登録処理を行う
+		if (client->getNmInfo() == 3 && client->isRegistrationDone() == false)
+		{
+			sendClientRegistrationMsg(this, clientFd, client);
+			client->setRegistrationDone();
+		}
+		return ;
+	}
 }
 
 // void Server::execCommand(int clientFd, std::string &cmd)
@@ -189,7 +208,14 @@ void Server::execCommand(int clientFd, std::string &cmd)
 			break;
 		i++;
 	}
-		
+
+	// 登録処理が完了していない場合
+	if (!client->isRegistrationDone())
+	{
+		fillClientInfo(client, clientFd, cmdInfo);
+		return ;
+	}
+
 	// コマンドに応じた処理を実行
 	switch (i + 1)
 	{
@@ -208,18 +234,14 @@ void Server::execCommand(int clientFd, std::string &cmd)
 
 		// コマンドが見つからない場合、エラー文を出力して何もしないで処理終了
 		default:
-			; // errorMsg(); // ★★★
+			addToClientSendBuf(this, clientFd, ERR_CMD_NOT_FOUND);
 	}
-
-
-
 	(void)client;
 }
 
 void Server::parseMessage(int clientFd, std::string &message)
 {
 	std::vector<std::string>	cmds;
-	std::map<const int, Client>::iterator it = _clientList.find(clientFd);
 	
 	// 改行毎にメッセージを分割してコマンドリストに格納
 	splitMessage(message, cmds);
@@ -229,24 +251,7 @@ void Server::parseMessage(int clientFd, std::string &message)
 	for ( ; cmdIt != cmds.end(); ++cmdIt)
 	{
 		std::string &cmd = *cmdIt;
-		
-		// 登録処理が完了していない場合
-		if (!it->second.isRegistrationDone())
-		{
-			// クライアント情報が全て揃っていない場合、クライアント情報を取得する
-			if (it->second.getNmInfo() < 3)
-				fillClientInfo(clientFd, cmd);
-			
-			// クライアント情報が全て揃った場合、登録処理を行う
-			if (it->second.getNmInfo() == 3 && it->second.isRegistrationDone() == false)
-			{
-				sendClientRegistrationMsg(this, clientFd, it);
-				it->second.setRegistrationDone();
-			}
-		}
-		// 登録が完了している場合、コマンドを処理する
-		else
-			execCommand(clientFd, cmd);
+		execCommand(clientFd, cmd);
 	}
 }
 

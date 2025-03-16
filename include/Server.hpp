@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:18 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/15 13:48:58 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 15:29:21 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ class Server
     
     void parseMessage(int clientFd, std::string &message);
     void execCommand(int clientFd, std::string &cmd);
-    void fillClientInfo(int clientFd, std::string &cmd);
+    void fillClientInfo(Client *client, int clientFd, s_ircCommand cmdInfo);
 
     void addChannel(std::string &channelName);
     void addClientToChannel(std::string &channelName, Client &client);
@@ -92,9 +92,9 @@ class Server
     void launchServer();
     void manageServerLoop();
 
-    void Server::addChannel(std::string &channelName);
-    void Server::addClientToChannel(std::string &channelName, Client &client);
-    bool Server::isChannelExist(std::string &channelName);
+    // void addChannel(std::string &channelName);
+    // void addClientToChannel(std::string &channelName, Client &client);
+    // bool isChannelExist(std::string &channelName);
 };
 
 // utils

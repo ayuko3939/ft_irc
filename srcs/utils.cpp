@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 12:58:58 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/15 12:12:46 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 15:31:09 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,18 +96,18 @@ std::string getChannelName(std::string &msgToParse)
 }
 
 // チャンネルのシンボルを取得(@: secret, *: private, =: public)
-std::string getSymbol(Channel &channel)
-{
-	std::string symbol;
+// std::string getSymbol(Channel &channel)
+// {
+// 	std::string symbol;
 
-	if (channel.getMode().find('s') != std::string::npos)
-		symbol = "@";
-	else if (channel.getMode().find('p') != std::string::npos)
-		symbol = "*";
-	else
-		symbol = "=";
-	return (symbol);
-}
+// 	if (channel.getMode().'s' )
+// 		symbol = "@";
+// 	else if (channel.getMode().find('p') != std::string::npos)
+// 		symbol = "*";
+// 	else
+// 		symbol = "=";
+// 	return (symbol);
+// }
 
 
 // 文字列の先頭と末尾の空白（スペース、タブ）を除去する
