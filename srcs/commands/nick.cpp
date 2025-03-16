@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/16 15:54:12 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 18:17:57 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,10 @@
 
 static bool checkArguments(Server *server, const int clientFd, std::vector<std::string> &words)
 {
-	// 引数が足りなければエラーを返す
-	if (words.size() < 1)
+	// 引数が1つであることを確認
+	if (words.size() != 1)
 	{
-		addToClientSendBuf(server, clientFd, ERR_NOT_ENOUGH_ARGS + std::string(NICK_USAGE));
-		return (false);
-	}
-	// 引数が多すぎればエラーを返す
-	else if (words.size() > 1)
-	{
-		addToClientSendBuf(server, clientFd, ERR_TOO_MANY_ARGS + std::string(NICK_USAGE));
+		addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(NICK_USAGE));
 		return (false);
 	}
 	return (true);

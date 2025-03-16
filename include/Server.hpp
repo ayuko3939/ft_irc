@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:18 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/16 15:50:03 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 21:32:12 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,10 +100,10 @@ Client &retrieveClient(Server *server, int clientSockFd);
 void splitMessage(std::string &message, std::vector<std::string> &cmds);
 void sendServerReply(int clientFd, std::string &message);
 void addToClientSendBuf(Server *server, int clientFd, std::string message);
-void sendClientRegistrationMsg(Server *server, int clientFd,std::map<const int, Client>::iterator &it);
+void sendClientRegistrationMsg(Server *server, int clientFd, Client *client);
 std::string getChannelMemberList(std::string client, Channel &channel);
 std::string getChannelName(std::string &msgToParse);
-std::string getSymbol(Channel &channel);
-bool getCommandType(std::string &cmd);
+// std::string getSymbol(Channel &channel);
+int getCommandType(std::string &cmd);
 
 #endif

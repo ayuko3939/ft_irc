@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 12:58:58 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/16 15:47:49 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 21:20:12 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ std::string trim(const std::string &s)
 	return s.substr(start, end - start + 1);
 }
 
-bool getCommandType(std::string &cmd)
+int getCommandType(std::string &cmd)
 {
 	int	type = 0;
 	std::string	cmdList[NUM_OF_CMD] = {
@@ -120,5 +120,5 @@ bool getCommandType(std::string &cmd)
 			break;
 		type++;
 	}
-	return (type);
+	return (type + 1);
 }

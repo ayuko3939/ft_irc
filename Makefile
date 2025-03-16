@@ -14,8 +14,9 @@ SRCS = main.cpp \
 		utils.cpp \
 		commands/join.cpp \
 		commands/nick.cpp \
-		commands/user.cpp \
 		commands/pass.cpp \
+		commands/topic.cpp \
+		commands/user.cpp \
 		commands/cmmandUtils.cpp \
 		commands/modes/topic.cpp
 

@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:43:40 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/16 17:10:23 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 21:32:08 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,16 +40,16 @@ void splitMessage(std::string &message, std::vector<std::string> &cmds)
 	// }
 }
 
+// 処理例
+//     ":nick!user@host PRIVMSG #channel :Hello there\n"
+// 　→ "PRIVMSG #channel :Hello there\n"
+// 　→ "PRIVMSG" をコマンド名として取得
+// 　→ ":nick!user@host " をプレフィックスとして取得
+// 　→ "#channel :Hello there\n" をメッセージとして取得
+// 　→ "PRIVMSG" を大文字に変換
+	
 int parseCommand(std::string &cmdLine, s_ircCommand &cmdInfo)
 {
-	// 処理例
-	//     ":nick!user@host PRIVMSG #channel :Hello there\n"
-	// 　→ "PRIVMSG #channel :Hello there\n"
-	// 　→ "PRIVMSG" をコマンド名として取得
-	// 　→ ":nick!user@host " をプレフィックスとして取得
-	// 　→ "#channel :Hello there\n" をメッセージとして取得
-	// 　→ "PRIVMSG" を大文字に変換
-	
 	// １．コマンドが空の場合、エラーを返す
 	cmdLine = trim(cmdLine);
 	if (cmdLine.empty())
@@ -166,29 +166,28 @@ void Server::execCommand(int clientFd, std::string &cmd)
 	}
 
 	// コマンドリストからコマンドを検索
-	int	index = getCommandType(cmdInfo.name);
+	int	type = getCommandType(cmdInfo.name);
 
 	// コマンドに応じた処理を実行
-	switch (index + 1)
+	switch (type)
 	{
-		case 1: // invite(this, clientFd, cmdInfo); break; // ★★★
-		case 2: join(this, clientFd, cmdInfo); break; // ★★★
-		case 3: // kick(this, clientFd, cmdInfo); break; // ★★★
-		case 4: // mode(this, clientFd, cmdInfo); break; // ★★★
+		// case 1: invite(this, clientFd, cmdInfo); break; // ★★★
+		case 2: join(this, clientFd, cmdInfo); break;
+		// case 3: kick(this, clientFd, cmdInfo); break; // ★★★
+		// case 4: mode(this, clientFd, cmdInfo); break; // ★★★
 		case 5: nick(this, clientFd, cmdInfo); break;
-		case 6: // part(this, clientFd, cmdInfo); break; // ★★★
+		// case 6: part(this, clientFd, cmdInfo); break; // ★★★
 		case 7: pass(this, clientFd, cmdInfo); break;
-		case 8: // ping(this, clientFd, cmdInfo); break; // ★★★
-		// case 9: privmsg(this, clientFd, cmdInfo); break;
-		case 10: // quit(this, clientFd, cmdInfo); break; // ★★★
-		case 11: // topic(this, clientFd, cmdInfo); break; // ★★★
+		// case 8: ping(this, clientFd, cmdInfo); break; // ★★★
+		// case 9: privmsg(this, clientFd, cmdInfo); break;  // ★★★
+		// case 10: quit(this, clientFd, cmdInfo); break; // ★★★
+		case 11: topic(this, clientFd, cmdInfo); std::cout << "!!!" << std::endl; break;
 		case 12: user(this, clientFd, cmdInfo); break;
 
 		// コマンドが見つからない場合、エラー文を出力して何もしないで処理終了
 		default:
 			addToClientSendBuf(this, clientFd, ERR_CMD_NOT_FOUND);
 	}
-	(void)client;
 }
 
 void Server::parseMessage(int clientFd, std::string &message)

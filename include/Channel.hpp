@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:04 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/16 17:09:35 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 18:55:22 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ class Channel
 
     // Setters
 	// void setName(const std::string &name);
-	// void setTopic(const std::string &topic);
+	void setTopic(const std::string &topic);
 	void setMode(const std::string &mode);
 	void setPassword(const std::string &password);
 	// void setCapacity(int capacity);
@@ -56,7 +56,7 @@ class Channel
 
 	// Getters
 	const std::string &getName() const;
-	// const std::string &getTopic() const;
+	const std::string &getTopic() const;
 	bool getMode(const std::string mode) const;
 	const std::string &getPassword() const;
 	int getCapacity() const;
@@ -65,6 +65,7 @@ class Channel
 	std::vector<int> getOperatorList();
 	
 	bool isClientInChannel(const int clientFd);
+	bool isOperator(const int clientFd);
 	void addClientToChannel(Client &client);
 };
 

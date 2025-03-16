@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:04 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/16 17:09:47 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 18:59:06 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ Channel::~Channel() {}
 
 
 // void Channel::setName(const std::string &name) { _name = name; }
-// void Channel::setTopic(const std::string &topic) { _topic = topic; }
+void Channel::setTopic(const std::string &topic) { _topic = topic; }
 void Channel::setPassword(const std::string &password) { _password = password; }
 // void Channel::setCapacity(int capacity) { _capacity = capacity; }
 // void Channel::setClientList(const Client &client) { _clientList.insert(std::make_pair(client.getClientFd(), client)); }
@@ -82,7 +82,7 @@ void Channel::setMode(const std::string &mode)
 }
 
 const std::string &Channel::getName() const { return (_name);}
-// const std::string &Channel::getTopic() const { return (_topic);}
+const std::string &Channel::getTopic() const { return (_topic);}
 const std::string &Channel::getPassword() const { return (_password);}
 int Channel::getCapacity() const { return (_capacity);}
 std::map<const int, Client> &Channel::getClientList() { return (_clientList);}
@@ -109,6 +109,16 @@ bool Channel::isClientInChannel(const int clientFd)
 	if (it == _clientList.end())
 		return (false);
 	return (true);
+}
+
+bool Channel::isOperator(int clientFd)
+{
+	for (std::vector<int>::iterator it = _operatorList.begin(); it != _operatorList.end(); ++it)
+	{
+		if (*it == clientFd)
+			return (true);
+	}
+	return (false);
 }
 
 void Channel::addClientToChannel(Client &client)

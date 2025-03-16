@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 22:07:12 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/16 17:21:54 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 19:08:21 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,7 @@
 # define IRCNUMERICS_HPP
 
 // エラーメッセージ
-# define ERR_NOT_ENOUGH_ARGS	"Error: not enough arguments. Usage: "
-# define ERR_TOO_MANY_ARGS	"Error: too many arguments. Usage: "
+# define ERR_INVALID_PARM	"Error: Invalid parameters. Usage: "
 # define ERR_ALREADYDONE(client) (":" + client + " :You are already done\r\n")
 # define ERR_PASS_AUTH_YET		"Error: Password authentication is not complete. Please \"PASS\".\r\n"
 # define ERR_REGISTRATION_YET	"Error: Registration is not complete. Please \"NICK\" and \"USER\".\r\n"
@@ -30,12 +29,14 @@
 # define PASS_REQUIREMENTS	"[!] \r\n"
 # define JOIN_USAGE			"JOIN <channel> [key]  or  JOIN <channel>{,<channel>} [<key>{,<key>}]\r\n"
 # define JOIN_REQUIREMENTS	"[!] channel/key requirements: len(1-10), char(a-z, A-Z, 0-9)\r\n"
+# define TOPIC_USAGE		"TOPIC <channel> [<topic>]   If <topic> is not given, display topic\r\n"
 
 // 成功通知
 # define RPL_NICK(client, newNick) (":" + client + " :Your nickname is " + newNick + "\r\n")
 # define RPL_USER(client, user, real) (":" + client + " :Your username is " + user + ", realname is " + real + "\r\n")
 # define RPL_PASS(client) (":" + client + " :Password accepted\r\n")
 # define RPL_JOIN(client, channel) (":" + client + " : joined " + channel + "\r\n")
+# define RPL_TOPI(client, channel, topic) (":" + client + " : #" + channel + " topic has been changed to: " + topic + "\r\n")
 
 // (001) RPL_WELCOME : クライアント登録直後の歓迎メッセージ
 # define RPL_WELCOME(client, nick) (":" + client + " :Welcome to the Internet Relay Network, " + nick + "\r\n")
@@ -165,11 +166,11 @@
 // // (330) RPL_WHOISACCOUNT : アカウント名
 // # define RPL_WHOISACCOUNT(client, nick, account) (":" + client + " " + nick + " " + account + "\r\n")
 
-// // (331) RPL_NOTOPIC : トピック未設定
-// # define RPL_NOTOPIC(client, channel) (":" + client + " " + channel + " :No topic is set\r\n")
+// (331) RPL_NOTOPIC : トピック未設定
+# define RPL_NOTOPIC(client, channel) (":" + client + " " + channel + " :No topic is set\r\n")
 
-// // (332) RPL_TOPIC : チャネルトピック
-// # define RPL_TOPIC(client, channel, topic) (":" + client + " " + channel + " :" + topic + "\r\n")
+// (332) RPL_TOPIC : チャネルトピック
+# define RPL_TOPIC(client, channel, topic) (":" + client + " " + channel + " :" + topic + "\r\n")
 
 // // (333) RPL_TOPICWHOTIME : トピック設定者と時刻
 // # define RPL_TOPICWHOTIME(client, channel, nick, ts) (":" + client + " " + channel + " " + nick + " " + ts + "\r\n")
@@ -264,8 +265,8 @@
 // // (402) ERR_NOSUCHSERVER : 存在しないサーバ
 // # define ERR_NOSUCHSERVER(client, server) (":" + client + " " + server + " :No such server\r\n")
 
-// // (403) ERR_NOSUCHCHANNEL : 存在しないチャネル
-// # define ERR_NOSUCHCHANNEL(client, channel) (":" + client + " " + channel + " :No such channel\r\n")
+// (403) ERR_NOSUCHCHANNEL : 存在しないチャネル
+# define ERR_NOSUCHCHANNEL(client, channel) (":" + client + " " + channel + " :No such channel\r\n")
 
 // // (404) ERR_CANNOTSENDTOCHAN : 送信不可
 // # define ERR_CANNOTSENDTOCHAN(client, channel) (":" + client + " " + channel + " :Cannot send to channel\r\n")
@@ -310,8 +311,8 @@
 // // (441) ERR_USERNOTINCHANNEL : チャネル未参加
 // # define ERR_USERNOTINCHANNEL(client, nick, channel) (":" + client + " " + nick + " " + channel + " :Not on that channel\r\n")
 
-// // (442) ERR_NOTONCHANNEL : チャネル未参加（自分）
-// # define ERR_NOTONCHANNEL(client, channel) (":" + client + " " + channel + " :You're not on that channel\r\n")
+// (442) ERR_NOTONCHANNEL : チャネル未参加（自分）
+# define ERR_NOTONCHANNEL(client, channel) (":" + client + " " + channel + " :You're not on that channel\r\n")
 
 // (443) ERR_USERONCHANNEL : 既にチャネル参加中
 # define ERR_USERONCHANNEL(client, nick, channel) (":" + client + " : " + nick + " is already on channel #" + channel +"\r\n")
@@ -352,8 +353,8 @@
 // // (481) ERR_NOPRIVILEGES : 権限不足
 // # define ERR_NOPRIVILEGES(client) (":" + client + " :Permission Denied\r\n")
 
-// // (482) ERR_CHANOPRIVSNEEDED : チャンネル権限不足
-// # define ERR_CHANOPRIVSNEEDED(client, channel) (":" + client + " " + channel + " :Not channel operator\r\n")
+// (482) ERR_CHANOPRIVSNEEDED : チャンネル権限不足
+# define ERR_CHANOPRIVSNEEDED(client, channel) (":" + client + " " + channel + " :Not channel operator\r\n")
 
 // // (483) ERR_CANTKILLSERVER : サーバ殺害不可
 // # define ERR_CANTKILLSERVER(client) (":" + client + " :Cannot kill server\r\n")

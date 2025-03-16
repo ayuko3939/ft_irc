@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/16 18:06:30 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 21:31:36 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,9 @@
 static bool checkArguments(Server *server, int clientFd, std::vector<std::string> &words)
 {
 	// 引数が1つまたは2つでない場合はエラー（チャンネル名が必須、キーは任意）
-	if (words.size() != 1 && words.size() != 2)
+	if (words.size() < 1 || words.size() > 2)
 	{
-		addToClientSendBuf(server, clientFd, ERR_NOT_ENOUGH_ARGS + std::string(JOIN_USAGE));
+		addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(JOIN_USAGE));
 		return false;
 	}
 	return true;
@@ -121,7 +121,7 @@ void join(Server *server, const int clientFd, s_ircCommand cmdInfo)
 		// 4. チャンネル名の妥当性をチェック
 		if (!isValid(channelName))
 		{
-			addToClientSendBuf(server, clientFd, ERR_NOT_ENOUGH_ARGS + std::string(JOIN_USAGE));
+			addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(JOIN_USAGE));
 			continue;
 		}
 
