@@ -13,7 +13,7 @@
 #include "Command.hpp"
 
 // INVITEコマンドの引数数チェック (INVITE <nickname> <channel> であること)
-static bool checkInviteArguments(Server *server, int clientFd, std::vector<std::string> &words)
+static bool checkArguments(Server *server, int clientFd, std::vector<std::string> &words)
 {
     if (words.size() != 2)
     {
@@ -65,7 +65,7 @@ void invite(Server *server, int const clientFd, s_ircCommand cmdInfo)
 {
 	// 1. 入力パラメータの分割
 	std::vector<std::string> words = splitMessage(cmdInfo.message);
-	if (!checkInviteArguments(server, clientFd, words))
+	if (!checkArguments(server, clientFd, words))
 		return;
 
 	// 2. クライアント情報の取得
