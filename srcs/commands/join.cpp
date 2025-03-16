@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/16 15:55:16 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 17:23:25 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,60 @@ static bool	isValid(std::string word)
 	return (true);
 }
 
+static bool function(Server *server, Client client, Channel &channel, std::string key)
+{
+	std::string clientNickname = client.getNickname();
+	const int clientFd = client.getClientFd();
+	std::string channelName = channel.getName();
+
+	// 既に参加している場合、エラーを返す
+	if (channel.getClientList().find(clientFd) != channel.getClientList().end())
+	{
+		addToClientSendBuf(server, clientFd, ERR_USERONCHANNEL(clientNickname, clientNickname, channelName));
+		return (false);
+	}
+
+	// パスワード保護(mode:k)されている場合、キーの一致を確認する
+	if (channel.getMode("key"))
+	{
+		if (key != channel.getPassword())
+		{
+			addToClientSendBuf(server, clientFd, ERR_BADCHANNELKEY(clientNickname, channelName));
+			return (false);
+		}
+	}
+	
+	// 招待制(mode:i)されている場合、招待されているか確認する
+	if (channel.getMode("invite"))
+	{
+		addToClientSendBuf(server, clientFd, ERR_INVITEONLYCHAN(clientNickname, channelName));
+		return (false);
+	}
+
+	// 参加人数制限チェック
+	if (channel.getMode("limit") &&
+		static_cast<int>(channel.getClientList().size()) >= channel.getCapacity())
+	{
+		addToClientSendBuf(server, clientFd, ERR_CHANNELISFULL(clientNickname, channelName));
+		return (false);
+	}
+
+	return (true);
+}
+
+static void sendChannelInfos(Server *server, Channel &channel, std::string channelName, Client client)
+{
+	std::string newClientNick = client.getNickname();
+
+	// チャンネル参加者一覧を送信
+	std::map<const int, Client> &clientList = channel.getClientList();
+	std::map<int, Client>::iterator it = clientList.begin();
+	for (; it != clientList.end(); ++it)
+	{
+		addToClientSendBuf(server, it->second.getClientFd(), RPL_JOIN(newClientNick, channelName));
+	}
+}
+
 // JOIN <channel>{,<channel>} [<key>{,<key>}]
 void join(Server *server, const int clientFd, s_ircCommand cmdInfo)
 {
@@ -57,7 +111,6 @@ void join(Server *server, const int clientFd, s_ircCommand cmdInfo)
 
 	// 3. クライアント情報の取得
 	Client &client = retrieveClient(server, clientFd);
-	std::string clientNickname = client.getNickname();
 
 	// 各チャンネルについて処理
 	for (std::size_t i = 0; i < channelNames.size(); i++)
@@ -76,55 +129,32 @@ void join(Server *server, const int clientFd, s_ircCommand cmdInfo)
 		std::map<std::string, Channel> &channels = server->getChannelList();
 		std::map<std::string, Channel>::iterator it = channels.find(channelName);
 
-		// 6. 存在しない場合は新規作成、存在する場合は既存のチャンネルに参加
+		// 6-1. 存在しない場合は新規作成
 		if (it == channels.end())
 		{
 			// チャンネルを作成
 			server->addChannel(channelName);
 			it = channels.find(channelName);
 
-			// チャンネルの初期設定（オペレーター、クライアント、パスワード等）
+			// チャンネルの初期設定（オペレーター、パスワード等）
 			it->second.setOperatorList(clientFd);
-			it->second.addClientToChannel(client);
 			if (key != "")
 			{
 				it->second.setMode("+k");
 				it->second.setPassword(key);
 			}
 		}
+		// 6-2. 既存のチャンネルに参加できるかチェック
 		else
 		{
-			// 既に参加している場合、エラーを返す
-			if (it->second.getClientList().find(clientFd) != it->second.getClientList().end())
-			{
-				addToClientSendBuf(server, clientFd, ERR_USERONCHANNEL(clientNickname, clientNickname, channelName));
+			if (!function(server, client, it->second, key))
 				continue;
-			}
-
-			// パスワード保護(+k)されている場合、キーの一致を確認する
-			if (it->second.getMode().k)
-			{
-				if (key != it->second.getPassword())
-				{
-					addToClientSendBuf(server, clientFd, ERR_BADCHANNELKEY(clientNickname, channelName));
-					continue;
-				}
-			}
 		}
 
-		// 4-4. 参加人数制限チェック
-		if (it->second.getCapacity() != -1 &&
-			static_cast<int>(it->second.getClientList().size()) >= it->second.getCapacity())
-		{
-			addToClientSendBuf(server, clientFd, ERR_CHANNELISFULL(clientNickname, channelName));
-			continue;
-		}
-
-		// 3.g クライアントをチャンネルに追加
+		// 7. クライアントをチャンネルに追加
 		server->addClientToChannel(channelName, client);
 
-
-		// 3.i チャンネル参加後、JOINメッセージ、トピック、参加者一覧などの情報を送信
-		// sendChanInfos(server, it->second, channelName, client);
+		// 8. チャンネル参加後、JOINメッセージ、トピック、参加者一覧などの情報を送信
+		sendChannelInfos(server, it->second, channelName, client);
 	}
 }

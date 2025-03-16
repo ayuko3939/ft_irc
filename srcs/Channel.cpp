@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:04 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/16 14:47:16 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 17:09:47 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ Channel::Channel(const std::string &name):
 _name(name),
 _topic(""),
 _password(""),
-_capacity(-1),
+_capacity(MAX_CLIENTS),
 _clientList(),
 _kickedUsers(),
 _operatorList()
@@ -61,18 +61,18 @@ void Channel::setMode(const std::string &mode)
 		switch (*it)
 		{
 			case 'i':
-				_mode.i = flag;
+				_mode.invite = flag;
 				break;
 			case 't':
-				_mode.t = flag;
+				_mode.topic = flag;
 				break;
 			case 'k':
-				_mode.k = flag;
+				_mode.key = flag;
 				break;
 			case 'o':
 				break;
 			case 'l':
-				_mode.l = flag;
+				_mode.limit = flag;
 				break;
 			default:
 				std::cerr << "invalid option" << std::endl;
@@ -81,15 +81,27 @@ void Channel::setMode(const std::string &mode)
 	}
 }
 
-// const std::string &Channel::getName() const { return (_name);}
+const std::string &Channel::getName() const { return (_name);}
 // const std::string &Channel::getTopic() const { return (_topic);}
-const s_mode &Channel::getMode() const { return (_mode);}
 const std::string &Channel::getPassword() const { return (_password);}
 int Channel::getCapacity() const { return (_capacity);}
 std::map<const int, Client> &Channel::getClientList() { return (_clientList);}
 // int Channel::getKickedUsers() { return (_kickedUsers);}
 std::vector<int> Channel::getOperatorList() { return (_operatorList);}
 
+bool Channel::getMode(const std::string mode) const
+{
+	if (mode == "i" || mode == "invite")
+		return (_mode.invite);
+	else if (mode == "t" || mode == "topic")
+		return (_mode.topic);
+	else if (mode == "k" || mode == "key")
+		return (_mode.key);
+	else if (mode == "l" || mode == "limit")
+		return (_mode.limit);
+	else
+		return (false);
+}
 
 bool Channel::isClientInChannel(const int clientFd)
 {

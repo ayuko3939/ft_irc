@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 22:07:12 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/16 15:42:45 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 17:21:54 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,8 @@
 # define RPL_NICK(client, newNick) (":" + client + " :Your nickname is " + newNick + "\r\n")
 # define RPL_USER(client, user, real) (":" + client + " :Your username is " + user + ", realname is " + real + "\r\n")
 # define RPL_PASS(client) (":" + client + " :Password accepted\r\n")
-	
+# define RPL_JOIN(client, channel) (":" + client + " : joined " + channel + "\r\n")
+
 // (001) RPL_WELCOME : クライアント登録直後の歓迎メッセージ
 # define RPL_WELCOME(client, nick) (":" + client + " :Welcome to the Internet Relay Network, " + nick + "\r\n")
 // (002) RPL_YOURHOST : 接続中のサーバ名とバージョン情報
@@ -313,7 +314,7 @@
 // # define ERR_NOTONCHANNEL(client, channel) (":" + client + " " + channel + " :You're not on that channel\r\n")
 
 // (443) ERR_USERONCHANNEL : 既にチャネル参加中
-# define ERR_USERONCHANNEL(client, nick, channel) (":" + client + " " + nick + " " + channel + " :Already on channel\r\n")
+# define ERR_USERONCHANNEL(client, nick, channel) (":" + client + " : " + nick + " is already on channel #" + channel +"\r\n")
 
 // // (451) ERR_NOTREGISTERED : 未登録
 // # define ERR_NOTREGISTERED(client) (":" + client + " :You have not registered\r\n")
@@ -336,8 +337,8 @@
 // // (472) ERR_UNKNOWNMODE : 不明なモード文字
 // # define ERR_UNKNOWNMODE(client, mode) (":" + client + " " + mode + " :Unknown mode char\r\n")
 
-// // (473) ERR_INVITEONLYCHAN : 招待制チャネル
-// # define ERR_INVITEONLYCHAN(client, channel) (":" + client + " " + channel + " :Invite only\r\n")
+// (473) ERR_INVITEONLYCHAN : 招待制チャネル
+# define ERR_INVITEONLYCHAN(client, channel) (":" + client + " " + channel + " :Invite only\r\n")
 
 // // (474) ERR_BANNEDFROMCHAN : BAN状態
 // # define ERR_BANNEDFROMCHAN(client, channel) (":" + client + " " + channel + " :Banned from channel\r\n")

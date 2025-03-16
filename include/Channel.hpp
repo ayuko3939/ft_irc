@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:04 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/16 14:46:45 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 17:09:35 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,10 @@
 
 struct s_mode
 {
-	bool	i;
-	bool	t;
-	bool	k;
-	bool	l;
+	bool	invite;	// invite only
+	bool	topic;	// topic settable by channel operator only
+	bool	key;	// channel requires a key to join
+	bool	limit;	// limit number of users
 };
 
 class Channel
@@ -55,9 +55,9 @@ class Channel
 	void setOperatorList(int clientFd);
 
 	// Getters
-	// const std::string &getName() const;
+	const std::string &getName() const;
 	// const std::string &getTopic() const;
-	const s_mode &getMode() const;
+	bool getMode(const std::string mode) const;
 	const std::string &getPassword() const;
 	int getCapacity() const;
 	std::map<const int, Client> &getClientList();

@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:43:40 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/16 15:55:40 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 17:10:23 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,7 +172,7 @@ void Server::execCommand(int clientFd, std::string &cmd)
 	switch (index + 1)
 	{
 		case 1: // invite(this, clientFd, cmdInfo); break; // ★★★
-		// case 2: join(this, clientFd, cmdInfo); break; // ★★★
+		case 2: join(this, clientFd, cmdInfo); break; // ★★★
 		case 3: // kick(this, clientFd, cmdInfo); break; // ★★★
 		case 4: // mode(this, clientFd, cmdInfo); break; // ★★★
 		case 5: nick(this, clientFd, cmdInfo); break;

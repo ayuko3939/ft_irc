@@ -12,6 +12,7 @@ SRCS = main.cpp \
 		Channel.cpp \
 		parsing.cpp \
 		utils.cpp \
+		commands/join.cpp \
 		commands/nick.cpp \
 		commands/user.cpp \
 		commands/pass.cpp \
