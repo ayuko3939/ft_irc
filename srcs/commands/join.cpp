@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/16 17:23:25 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/16 17:54:28 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,11 +77,11 @@ static bool function(Server *server, Client client, Channel &channel, std::strin
 	return (true);
 }
 
-static void sendChannelInfos(Server *server, Channel &channel, std::string channelName, Client client)
+static void broadcastNewMember(Server *server, Channel &channel, std::string channelName, Client client)
 {
 	std::string newClientNick = client.getNickname();
 
-	// チャンネル参加者一覧を送信
+	// チャンネルメンバー全員に新しいメンバーの参加を通知
 	std::map<const int, Client> &clientList = channel.getClientList();
 	std::map<int, Client>::iterator it = clientList.begin();
 	for (; it != clientList.end(); ++it)
@@ -155,6 +155,6 @@ void join(Server *server, const int clientFd, s_ircCommand cmdInfo)
 		server->addClientToChannel(channelName, client);
 
 		// 8. チャンネル参加後、JOINメッセージ、トピック、参加者一覧などの情報を送信
-		sendChannelInfos(server, it->second, channelName, client);
+		broadcastNewMember(server, it->second, channelName, client);
 	}
 }
