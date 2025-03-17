@@ -351,8 +351,8 @@
 // (471) ERR_CHANNELISFULL : チャネル満員
 # define ERR_CHANNELISFULL(client, channel) (":" + client + " " + channel + " :Channel is full\r\n")
 
-// // (472) ERR_UNKNOWNMODE : 不明なモード文字
-// # define ERR_UNKNOWNMODE(client, mode) (":" + client + " " + mode + " :Unknown mode char\r\n")
+// (472) ERR_UNKNOWNMODE : 不明なモード文字
+# define ERR_UNKNOWNMODE(client, mode) (":" + client + " " + mode + " :Unknown mode char\r\n")
 
 // (473) ERR_INVITEONLYCHAN : 招待制チャネル
 # define ERR_INVITEONLYCHAN(client, channel) (":" + client + " " + channel + " :Invite only\r\n")

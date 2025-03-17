@@ -82,18 +82,35 @@ static void infoChannelMode(Server *server, int const clientFd, Channel &channel
 	addToClientSendBuf(server, clientFd, modeInfo);
 }
 
-static void processModeChanges(Server *server, Channel &channel, Client &client, std::string modeString, std::string modeArgs)
+static void processModeChanges(Server *server, Client &client, Channel &channel, std::string modeString, std::string modeArgs)
 {
-	std::string mode = modeString.substr(1, 1);
+	// モード変更の内容を取得
+	bool sign = modeString[0] == '+'; // true: +, false: -
+	char mode = modeString[1];
 
 	// モード変更の処理
 	switch (mode)
 	{
-	case 'i':
-		break;
+		case 'i':
+			inviteOnlyMode(server, channel, client, sign);
+			break;
+		case 't':
+			topicProtectMode(server, channel, client, sign);
+			break;
+		case 'k':
+			channelKeyMode(server, channel, client, sign, modeArgs);
+			break;
+		case 'l':
+			userLimitMode(server, channel, client, sign, modeArgs);
+			break;
+		case 'o':
+			operatorMode(server, channel, client, sign, modeArgs);
+			break;
 	
-	default:
-		break;
+		default:
+			// 未対応のモード文字列の場合はエラー
+			addToClientSendBuf(server, client.getClientFd(), ERR_UNKNOWNMODE(client.getNickname(), modeString));
+			break;
 	}
 }
 
@@ -151,7 +168,7 @@ void mode(Server *server, int const clientFd, s_ircCommand cmdInfo)
 		modeArgs = words[2];
 
 	// 9. MODEコマンドの処理
-	processModeChanges(server, channel, client, modeString, modeArgs);
+	processModeChanges(server, client, channel, modeString, modeArgs);
 
 	// 10. 変更されたモード情報をチャンネル内全メンバーに通知する
 	// ※ 具体的なブロードキャスト処理は、各オプションの実装後に追加する可能性がある
