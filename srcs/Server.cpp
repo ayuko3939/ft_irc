@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:18 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/16 23:26:24 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/17 15:45:46 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,15 @@ std::map<std::string, Channel>& Server::getChannelList() { return (_channelList)
 /*                       Server Functions                          */
 /*******************************************************************/
 
+bool Server::_signal = false;
+
+void Server::signalHandler(int signal)
+{
+	(void)signal;
+	std::cout << INDIGO "Server shutdown..." END << std::endl;
+	Server::_signal = true;
+}
+
 void Server::readConfigFile()
 {
 	// ファイルが開けられるか
@@ -139,7 +148,7 @@ void Server::launchServer()
 
 	// ソケットにアドレスをバインド
 	if (bind(_serverSockFd, _serverInfo->ai_addr, _serverInfo->ai_addrlen) < 0)
-		throw (ERROR_SERVER_BIND + _port);
+		throw (ERROR_SERVER_BIND(_port));
 
 	// 待ち受け状態にする
 	if (listen(_serverSockFd, 10) < 0)

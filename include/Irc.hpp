@@ -81,7 +81,7 @@
 # define NUM_OF_CMD 12
 
 // サーバー停止フラグ
-extern bool g_ServerShutdown;
+// extern bool g_ServerShutdown;
 
 // コマンド関連
 struct s_ircCommand

@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 21:43:54 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/17 14:54:23 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/17 15:49:11 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,18 +22,13 @@ void Server::manageServerLoop()
 	setServerPollFd(pollFds);
 	
 	// サーバーがシャットダウンされるまでループ
-	while (g_ServerShutdown == false)
+	while (Server::_signal == false)
 	{
 		tmpPollFds.clear();
 
 		// pollFdsの接続に変化があるまで待機（-1:タイムアウトなし）
-		if (poll((pollfd *)&pollFds[0], pollFds.size(), -1) <= 0)
-		{
-			// シグナル（Ctrl + C）が発生した場合、ループを抜ける
-			if (errno == EINTR)
-				break;
+		if (poll((pollfd *)&pollFds[0], pollFds.size(), -1) <= 0 && Server::_signal == false)
 			throw ("Error: poll"); // ERROR_POLL
-		}
 		
 		// pollFdsの中身を状態を順番に確認し、処理を行う
 		std::vector<pollfd>::iterator it = pollFds.begin();

@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:18 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/16 23:25:37 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/17 15:32:45 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,8 @@ class Server
     std::map<std::string, Channel>	_channelList;
     struct addrinfo				        	_addrInfo; // アドレス情報
     struct addrinfo*			        	_serverInfo; // サーバー情報
-
+    static bool											_signal;
+  
     // manageServerLoop
     void setServerPollFd(std::vector<pollfd> &pollFds);
 
@@ -59,6 +60,8 @@ class Server
   public:
 	  Server(std::string port, std::string password, struct tm *timeinfo);
 	  ~Server();
+
+    static void signalHandler(int signum);
 
     // Setters
     // void setServerSockFd(int serverSockFd);
