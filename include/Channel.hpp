@@ -47,7 +47,8 @@ class Channel
     // Setters
 	// void setName(const std::string &name);
 	void setTopic(const std::string &topic);
-	void setMode(const std::string &mode);
+	// void setMode(const std::string &mode); // 複数のモードを設定する場合
+	void setMode(const char mode, bool sign); // 1つのモードを設定する場合
 	void setPassword(const std::string &password);
 	// void setCapacity(int capacity);
 	// void setClientList(Client &client);

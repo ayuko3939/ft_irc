@@ -35,49 +35,71 @@ void Channel::setPassword(const std::string &password) { _password = password; }
 // void Channel::setKickedUsers(int clientFd) { _kickedUsers.push_back(clientFd); }
 void Channel::setOperatorList(int clientFd) { _operatorList.push_back(clientFd); }
 
-void Channel::setMode(const std::string &mode)
-{
-	std::string::const_iterator it = mode.begin();
-	bool flag;
+// void Channel::setMode(const std::string &mode)
+// {
+// 	std::string::const_iterator it = mode.begin();
+// 	bool flag;
 
-	// チャンネルモードの先頭文字が+か-かでフラグを立てる
-	switch (*it)
+// 	// チャンネルモードの先頭文字が+か-かでフラグを立てる
+// 	switch (*it)
+// 	{
+// 		case '-':
+// 			flag = false;
+// 			break;
+// 		case '+':
+// 			flag = true;
+// 			break;
+// 		default:
+// 			std::cerr << "invalid option" << std::endl;
+// 			return ;
+// 	}
+// 	++it;
+	
+// 	// チャンネルモードの文字列を解析してフラグを立てる
+// 	for (; it != mode.end(); ++it)
+// 	{
+// 		switch (*it)
+// 		{
+// 			case 'i':
+// 				_mode.invite = flag;
+// 				break;
+// 			case 't':
+// 				_mode.topic = flag;
+// 				break;
+// 			case 'k':
+// 				_mode.key = flag;
+// 				break;
+// 			case 'o':
+// 				break;
+// 			case 'l':
+// 				_mode.limit = flag;
+// 				break;
+// 			default:
+// 				std::cerr << "invalid option" << std::endl;
+// 				return ;
+// 		}
+// 	}
+// }
+
+void Channel::setMode(const char mode, bool sign)
+{
+	switch (mode)
 	{
-		case '-':
-			flag = false;
+		case 'i':
+			_mode.invite = sign;
 			break;
-		case '+':
-			flag = true;
+		case 't':
+			_mode.topic = sign;
+			break;
+		case 'k':
+			_mode.key = sign;
+			break;
+		case 'l':
+			_mode.limit = sign;
 			break;
 		default:
 			std::cerr << "invalid option" << std::endl;
 			return ;
-	}
-	++it;
-	
-	// チャンネルモードの文字列を解析してフラグを立てる
-	for (; it != mode.end(); ++it)
-	{
-		switch (*it)
-		{
-			case 'i':
-				_mode.invite = flag;
-				break;
-			case 't':
-				_mode.topic = flag;
-				break;
-			case 'k':
-				_mode.key = flag;
-				break;
-			case 'o':
-				break;
-			case 'l':
-				_mode.limit = flag;
-				break;
-			default:
-				std::cerr << "invalid option" << std::endl;
-				return ;
-		}
 	}
 }
 

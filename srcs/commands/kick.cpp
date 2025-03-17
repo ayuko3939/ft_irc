@@ -20,6 +20,12 @@ static bool checkArguments(Server *server, int clientFd, std::vector<std::string
         addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(KICK_USAGE));
         return (false);
     }
+	// <comment> が指定されている場合、文字数が30文字以内か確認
+	if (words.size() == 3 && words[2].size() > 30)
+	{
+		addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(KICK_REQUIREMENTS));
+		return (false);
+	}
     return (true);
 }
 
@@ -55,14 +61,14 @@ bool isValid(Server *server, int const clientFd, std::string targetNick, std::st
 	return (true);
 }
 
-static void broadcastNewMember(Server *server, Channel &channel, std::string &issuer, std::string &target)
+static void broadcastNewMember(Server *server, Channel &channel, std::string &issuer, std::string &target, std::string &comment)
 {
-	// チャンネルメンバー全員に新しいメンバーの参加を通知
+	// チャンネルメンバー全員に追放を通知
 	std::map<const int, Client> &clientList = channel.getClientList();
 
 	for (std::map<int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
 	{
-		addToClientSendBuf(server, it->second.getClientFd(), RPL_INVITE(issuer, target, channel.getName()));
+		addToClientSendBuf(server, it->second.getClientFd(), RPL_KICK(issuer, target, channel.getName(), comment));
 	}
 }
 
@@ -119,7 +125,7 @@ void kick(Server *server, int const clientFd, s_ircCommand cmdInfo)
 	}
 
 	// 9. チャンネルメンバー全員に追放を通知
-	broadcastNewMember(server, channel, issuerNick, targetNick);
+	broadcastNewMember(server, channel, issuerNick, targetNick, comment);
 
 	// 10. 対象ユーザーをチャンネルから削除する
 	channel.removeClient(targetFd);

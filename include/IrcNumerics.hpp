@@ -46,9 +46,11 @@
 # define RPL_NICK(client, newNick) (":" + client + " :Your nickname is " + newNick + "\r\n")
 # define RPL_USER(client, user, real) (":" + client + " :Your username is " + user + ", realname is " + real + "\r\n")
 # define RPL_PASS(client) (":" + client + " :Password accepted\r\n")
-# define RPL_JOIN(client, channel) (":" + client + " : joined " + channel + "\r\n")
+# define RPL_JOIN(client, channel) (":" + client + " :joined " + channel + "\r\n")
 # define RPL_TOPI(client, channel, topic) (":" + client + " : #" + channel + " topic has been changed to: " + topic + "\r\n")
 # define RPL_INVITE(inviter, guest, channelName) (":" + inviter + " :invited " + guest + " to " + channelName + "\r\n")
+# define RPL_KICK(client, channel, target, comment) (":" + client + " :kicked " + target + " from " + channel + " (" + comment + ")\r\n")
+// # define RPL_MODE(client, channel, modestring) (":" + client + " :channel mode " + modestring + " set to #" + channel + "\r\n")
 
 # define DELIMITER_LINE "-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-\r\n"
 // # define DELIMITER_LINE "=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=\r\n"
@@ -271,6 +273,8 @@
 
 // // (391) RPL_TIME : サーバ時刻（人間向けのみ）
 // # define RPL_TIME(client, server, time_str) (":" + client + " " + server + " :" + time_str + "\r\n")
+
+
 
 // // (400) ERR_UNKNOWNERROR : 一般的エラー
 // # define ERR_UNKNOWNERROR(client, command, info) (":" + client + " " + command + " :" + info + "\r\n")

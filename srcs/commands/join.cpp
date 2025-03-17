@@ -139,7 +139,7 @@ void join(Server *server, const int clientFd, s_ircCommand cmdInfo)
 			it->second.setOperatorList(clientFd);
 			if (key != "")
 			{
-				it->second.setMode("+k");
+				it->second.setMode('k', true);
 				it->second.setPassword(key);
 			}
 		}
