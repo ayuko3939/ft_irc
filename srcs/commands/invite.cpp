@@ -23,7 +23,7 @@ static bool checkArguments(Server *server, int clientFd, std::vector<std::string
     return true;
 }
 
-bool isValid(Server *server, int const clientFd, std::string targetNick, std::string channelName)
+static bool isValid(Server *server, int const clientFd, std::string targetNick, std::string channelName)
 {
 	Client &client = retrieveClient(server, clientFd);
 	std::string inviterNick = client.getNickname();

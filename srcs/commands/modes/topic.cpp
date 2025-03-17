@@ -25,7 +25,7 @@ static bool isAlreadySet(Server *server, Channel &channel, Client &client, bool 
     return false;
 }
 
-void broadcastModeChange(Server *server, Channel &channel, Client &client, bool sign)
+static void broadcastModeChange(Server *server, Channel &channel, Client &client, bool sign)
 {
     std::string modeString = "Topic protect mode ";
     modeString += (sign ? "on" : "off");
