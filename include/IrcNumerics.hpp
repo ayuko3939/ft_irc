@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 22:07:12 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/16 23:17:50 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/17 22:40:37 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 # define IRCNUMERICS_HPP
 
 // エラーメッセージ
-# define ERR_INVALID_PARM	"Error: Invalid parameters. Usage: "
+# define ERR_INVALID_PARM	"Error: Invalid parameters.\r\n"
 # define ERR_ALREADYDONE(client) (":" + client + " :You are already done\r\n")
 # define ERR_PASS_AUTH_YET		"Error: Password authentication is not complete. Please \"PASS\".\r\n"
 # define ERR_REGISTRATION_YET	"Error: Registration is not complete. Please \"NICK\" and \"USER\".\r\n"
@@ -22,22 +22,25 @@
 # define ERR_PARM_EMPTY			"Error: Parameter is empty.\r\n"
 
 // コマンド要件
-# define NICK_USAGE			"NICK <nickname>\r\n"
+# define NICK_USAGE			"Usage: NICK <nickname>\r\n"
 # define NICK_REQUIREMENTS	"[!] nickname requirements: len(1-10), char(a-z, A-Z, 0-9)\r\n"
-# define USER_USAGE			"USER <username> <realname>\r\n"
+# define USER_USAGE			"Usage: USER <username> <realname>\r\n"
 # define USER_REQUIREMENTS	"[!] username requirements: len(1-10), char(a-z, A-Z, 0-9)\r\n    realname requirements: len(1-10), char(a-z, A-Z)\r\n"
-# define PASS_USAGE			"PASS <password>\r\n"
+# define PASS_USAGE			"Usage: PASS <password>\r\n"
 # define PASS_REQUIREMENTS	"[!] \r\n"
-# define JOIN_USAGE			"JOIN <channel> [key]  or  JOIN <channel>{,<channel>} [<key>{,<key>}]\r\n"
+# define JOIN_USAGE			"Usage: JOIN <channel> [key]  or  JOIN <channel>{,<channel>} [<key>{,<key>}]\r\n"
 # define JOIN_REQUIREMENTS	"[!] channel/key requirements: len(1-20), char(a-z, A-Z, 0-9)\r\n"
-# define TOPIC_USAGE		"TOPIC <channel> [<topic>]   If <topic> is not given, display topic\r\n"
+# define TOPIC_USAGE		"Usage: TOPIC <channel> [<topic>]   If <topic> is not given, display topic\r\n"
 # define TOPIC_REQUIREMENTS	"[!] topic requirements: len(50), char(a-z, A-Z, 0-9)\r\n"
-# define INVITE_USAGE		"INVITE <nickname> <channel>\r\n"
-# define KICK_USAGE			"KICK <channel> <nickname> [<comment>]\r\n"
+# define INVITE_USAGE		"Usage: INVITE <nickname> <channel>\r\n"
+# define KICK_USAGE			"Usage: KICK <channel> <nickname> [<comment>]\r\n"
 # define KICK_REQUIREMENTS	"[!] comment requirements: len(1-30)\r\n"
+# define MODE_USAGE			"MODE <channel> [modestring> [<mode arguments>]]\r\n"
+# define MODE_USAGE_K_O_L	"Usage: MODE <channel> +k <password>  |  +o <nickname>  |  -o <nickname>  |  +l <limit>\r\n"
+# define MODE_REQUIREMENTS	"[!] modestring requirements: option sign( + , - ) + frag( i, t, k, o, l )\r\n"
+# define MODE_REQ_K_PASS	"[!] password requirements: len(1-20), char(a-z, A-Z, 0-9)\r\n"
+# define MODE_REQ_L_LIMIT	"[!] limit requirements: (1-10)\r\n"
 
-# define MODE_USAGE			"MODE <channel> <modestring> [<mode arguments>]\r\n"
-# define MODE_REQUIREMENTS	"[!] modestring requirements: len(2-6), char(\'+\' or \'-\' + \'i\', \'t\', \'k\', \'o\', \'l\')\r\n"
 
 // 成功通知
 # define RPL_NICK(client, newNick) (":" + client + " :Your nickname is " + newNick + "\r\n")
@@ -171,7 +174,7 @@
 // # define RPL_LISTEND(client) (":" + client + " :End of /LIST\r\n")
 
 // // (324) RPL_CHANNELMODEIS : チャネルモード（モード文字列のみ）
-// # define RPL_CHANNELMODEIS(client, channel, modes) (":" + client + " " + channel + " " + modes + "\r\n")
+# define RPL_CHANNELMODEIS(client, channel, modes) (":" + client + " " + channel + " " + modes + "\r\n")
 
 // // (329) RPL_CREATIONTIME : チャネル作成時刻
 // # define RPL_CREATIONTIME(client, channel, ts) (":" + client + " " + channel + " " + ts + "\r\n")

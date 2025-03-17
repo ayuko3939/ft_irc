@@ -1,122 +1,156 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   invite.cpp                                         :+:      :+:    :+:   */
+/*   mode.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/16 23:30:04 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/17 23:11:30 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Command.hpp"
 
-// コマンド形式: MODE <channel> <modestring> [<mode arguments>...]
-static bool checkArguments(Server *server, int clientFd, std::vector<std::string> &words)
-{
-    // MODEコマンドでは、最低でもチャンネル名とモード文字列の2個の引数が必要
-    if (words.size() < 2)
-    {
-        addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(MODE_USAGE));
-        return (false);
-    }
-    return (true);
-}
-
-static bool isValid(Server *server, int const clientFd, std::string channelName, std::string modeString)
+// コマンド形式: MODE <channel> [<modestring> [<mode arguments>...]]
+static bool checkArguments(Server *server, int const clientFd, std::vector<std::string> &words)
 {
 	Client &client = retrieveClient(server, clientFd);
-	std::string issuerNick = client.getNickname();
+	std::string clientNick = client.getNickname();
+	int wordsSize = words.size();
 
-	if (channelName.empty() || modeString.empty())
+	// 引数がない場合はエラー
+	if (wordsSize == 0)
 	{
-		addToClientSendBuf(server, clientFd, ERR_PARM_EMPTY);
+		addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(MODE_USAGE));
 		return (false);
 	}
-	// チャンネルの存在確認
-	if (!server->isChannelExist(channelName))
+
+	// チャンネル名のみならモード説明なのでOK
+	if (wordsSize == 1)
+		return (true);
+
+	// モード文字列が正しいか確認
+	std::string modeString = words[1];
+	if (modeString.empty() || modeString.size() != 2 ||
+		(modeString[0] != '+' && modeString[0] != '-') ||
+		(modeString[1] != 'i' && modeString[1] != 't' && modeString[1] != 'k' && modeString[1] != 'o' && modeString[1] != 'l'))
 	{
-		addToClientSendBuf(server, clientFd, ERR_NOSUCHCHANNEL(issuerNick, channelName));
+		addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(MODE_REQUIREMENTS));
 		return (false);
 	}
-	// 先頭が '+' または '-' であること
-	if (modeString[0] != '+' && modeString[0] != '-')
+	
+	// <mode arguments> が必要なモード文字列の場合、引数があるか確認
+	// +k <password>  ,  +l <limit>  ,  +o <nickname>  は引数が必要
+	if (modeString == "+k" || modeString == "+o" || modeString == "-o" || modeString == "+l")
 	{
-		addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(" MODE: Modestring must start with '+' or '-'"));
-		return (false);
+		if (wordsSize != 3 || words[2].empty())
+		{
+			addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(MODE_USAGE_K_O_L));
+			return (false);
+		}
 	}
-	// モード文字列が2文字以上であること
-	if (modeString.size() < 2)
+	// それ以外のモード文字列は引数不要
+	else
 	{
-		addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(" MODE: Modestring must have at least 2 characters"));
-		return (false);
-	}
-	// モード文字列が正しい文字列であること
-	std::string modeChars = modeString.substr(1);
-	if (modeChars.find_first_not_of("itkol") != std::string::npos)
-	{
-		addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(" MODE: Invalid mode character"));
-		return (false);
+		if (wordsSize != 2)
+		{
+			addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(MODE_USAGE));
+			return (false);
+		}
 	}
 	return (true);
 }
 
-// MODEコマンドで、各オプションの具体的な処理は別に実装するため
-// ここでは、モード変更の適用を呼び出すプロトタイプ関数を利用する（oオプションは未実装）
-void processModeChanges(Server *server, Channel &channel, Client &client, const std::string &modeStr, const std::vector<std::string> &modeArgs);
+static void infoChannelMode(Server *server, int const clientFd, Channel &channel, std::string channelName)
+{
+	std::string modeInfo = "========== " + channelName + "'s mode ==========\r\n";
+	modeInfo += " invite only   : ";
+	modeInfo += (channel.getMode("i") ? "on\r\n" : "off\r\n");
+	modeInfo += " topic protect : ";
+	modeInfo += (channel.getMode("t") ? "on\r\n" : "off\r\n");
+	modeInfo += " channel key   : ";
+	modeInfo += (channel.getMode("k") ? "on\r\n" : "off\r\n");
+	modeInfo += " user limit    : ";
+	modeInfo += (channel.getMode("l") ? "on\r\n" : "off\r\n");
+	modeInfo += "\r\n";
+	if (channel.isOperator(clientFd))
+		modeInfo += "You are operator. You can change channel mode.\r\n";
+	else
+		modeInfo += "You are not operator. if you want to change channel mode, you need to ask operator.\r\n";
+
+	addToClientSendBuf(server, clientFd, modeInfo);
+}
+
+static void processModeChanges(Server *server, Channel &channel, Client &client, std::string modeString, std::string modeArgs)
+{
+	std::string mode = modeString.substr(1, 1);
+
+	// モード変更の処理
+	switch (mode)
+	{
+	case 'i':
+		break;
+	
+	default:
+		break;
+	}
+}
 
 // コマンド形式: MODE <channel> <modestring> [<mode arguments>...]
 void mode(Server *server, int const clientFd, s_ircCommand cmdInfo)
 {
 	// 1. 入力パラメータを空白で分割
 	std::vector<std::string> words = splitMessage(cmdInfo.message);
+
+	// 2. 引数の数と形式が正しいか確認
 	if (!checkArguments(server, clientFd, words))
 		return;
 
-	// 2. パラメータからチャンネル名とモード文字列を取得
-	std::string channelName = words[0];
-	std::string modeString = words[1];
-
-	// 3. パラメータの妥当性確認
-	if (!isValid(server, clientFd, channelName, modeString))
-		return;
-
-	// 4. 発行者のクライアント情報を取得
+	// 3. クライアント情報を取得
 	Client &client = retrieveClient(server, clientFd);
-	std::string issuerNick = client.getNickname();
+	std::string clientNick = client.getNickname();
 
+	// 4. チャンネル名が存在するか確認
+	std::string channelName = words[0];
+	if (channelName.empty() || !server->isChannelExist(channelName))
+	{
+		addToClientSendBuf(server, clientFd, ERR_NOSUCHCHANNEL(clientNick, channelName));
+		return ;
+	}
+
+	// 5. クライアントがチャンネルに参加しているか確認
 	std::map<std::string, Channel> &channels = server->getChannelList();
-	std::map<std::string, Channel>::iterator chanIt = channels.find(channelName);
-	Channel &channel = chanIt->second;
+	Channel &channel = channels.find(channelName)->second;
 
-	// 6. 発行者がそのチャンネルに参加しているか確認
 	if (!channel.isClientInChannel(clientFd))
 	{
-		addToClientSendBuf(server, clientFd, ERR_NOTONCHANNEL(issuerNick, channelName));
+		addToClientSendBuf(server, clientFd, ERR_NOTONCHANNEL(clientNick, channelName));
 		return;
 	}
 
-	// 7. 発行者がチャンネルオペレーターであるか確認
+	// チャンネルのモード情報をクライアントに通知
+	if (words.size() == 1)
+	{
+		// チャンネルのモード情報をクライアントに通知
+		infoChannelMode(server, clientFd, channel, channelName);
+		return;
+	}
+
+	// 6. クライアントがチャンネルオペレーターであるか確認
 	if (!channel.isOperator(clientFd))
 	{
-		addToClientSendBuf(server, clientFd, ERR_CHANOPRIVSNEEDED(issuerNick, channelName));
+		addToClientSendBuf(server, clientFd, ERR_CHANOPRIVSNEEDED(clientNick, channelName));
 		return;
 	}
 
 	// 8. 追加パラメータ（mode arguments）の抽出（存在する場合）
-	std::vector<std::string> modeArgs;
+	std::string modeString = words[1];
+	std::string modeArgs = "";
 	if (words.size() > 2)
-	{
-		for (size_t i = 2; i < words.size(); i++)
-		{
-			modeArgs.push_back(words[i]);
-		}
-	}
+		modeArgs = words[2];
 
 	// 9. MODEコマンドの処理
-	// 今回は「o」オプション以外の処理のみ対応するので、processModeChanges関数内で
-	// 各オプション（例: i, t, k, l）を個別に処理し、"o"オプションはスキップするように実装する
 	processModeChanges(server, channel, client, modeString, modeArgs);
 
 	// 10. 変更されたモード情報をチャンネル内全メンバーに通知する
