@@ -39,7 +39,7 @@
 # define MODE_USAGE_K_O_L	"Usage: MODE <channel> +k <password>  |  +o <nickname>  |  -o <nickname>  |  +l <limit>\r\n"
 # define MODE_REQUIREMENTS	"[!] modestring requirements: option sign( + , - ) + frag( i, t, k, o, l )\r\n"
 # define MODE_REQ_K_PASS	"[!] password requirements: len(1-20), char(a-z, A-Z, 0-9)\r\n"
-# define MODE_REQ_L_LIMIT	"[!] limit requirements: (1-10)\r\n"
+# define MODE_REQ_L_LIMIT(max)	("[!] limit requirements: (1-" + max + ")\r\n")
 
 // 成功通知
 # define RPL_NICK(client, newNick) (":" + client + " :Your nickname is " + newNick + "\r\n")

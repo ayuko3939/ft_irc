@@ -50,7 +50,7 @@ class Channel
 	// void setMode(const std::string &mode); // 複数のモードを設定する場合
 	void setMode(const char mode, bool sign); // 1つのモードを設定する場合
 	void setPassword(const std::string &password);
-	// void setCapacity(int capacity);
+	void setCapacity(int capacity);
 	// void setClientList(Client &client);
 	// void setKickedUsers(int clientFd);
 	void setOperatorList(int clientFd);

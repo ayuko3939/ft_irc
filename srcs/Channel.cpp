@@ -30,7 +30,7 @@ Channel::~Channel() {}
 // void Channel::setName(const std::string &name) { _name = name; }
 void Channel::setTopic(const std::string &topic) { _topic = topic; }
 void Channel::setPassword(const std::string &password) { _password = password; }
-// void Channel::setCapacity(int capacity) { _capacity = capacity; }
+void Channel::setCapacity(int capacity) { _capacity = capacity; }
 // void Channel::setClientList(const Client &client) { _clientList.insert(std::make_pair(client.getClientFd(), client)); }
 // void Channel::setKickedUsers(int clientFd) { _kickedUsers.push_back(clientFd); }
 void Channel::setOperatorList(int clientFd) { _operatorList.push_back(clientFd); }
