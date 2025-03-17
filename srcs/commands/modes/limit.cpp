@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "Command.hpp"
+
 static bool isAlreadySetLimit(Server *server, Channel &channel, Client &client, bool sign, const std::string &limitStr)
 {
 	// 文字列を整数に変換
