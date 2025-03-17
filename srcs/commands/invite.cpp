@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/16 23:30:04 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/17 14:43:29 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ void invite(Server *server, int const clientFd, s_ircCommand cmdInfo)
 	}
 
 	// 7. チャンネルが招待制限されている場合、招待対象のユーザーがチャンネルに参加できるかチェックする
-	if (channel.getMode("limit") && channel.getCapacity() <= channel.getClientList().size())
+	if (channel.getMode("limit") && channel.getClientList().size() >= channel.getCapacity())
 	{
 		addToClientSendBuf(server, clientFd, ERR_CHANNELISFULL(inviterNick, channelName));
 		return;

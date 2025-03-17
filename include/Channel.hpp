@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:04 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/16 18:55:22 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/17 14:44:42 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ class Channel
 	std::string						_topic;
 	s_mode							_mode;
 	std::string						_password;
-	int						        _capacity; // チャンネルに参加できる最大クライアント数
+	size_t							_capacity; // チャンネルに参加できる最大クライアント数
 	std::map<const int, Client>		_clientList;
 	std::vector<int>				_kickedUsers;
 	std::vector<int>				_operatorList;
@@ -59,7 +59,7 @@ class Channel
 	const std::string &getTopic() const;
 	bool getMode(const std::string mode) const;
 	const std::string &getPassword() const;
-	int getCapacity() const;
+	size_t getCapacity() const;
 	std::map<const int, Client> &getClientList();
 	// std::vector<int> &getKickedUsers();
 	std::vector<int> getOperatorList();

@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:04 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/16 18:59:06 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/17 14:44:48 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void Channel::setMode(const std::string &mode)
 const std::string &Channel::getName() const { return (_name);}
 const std::string &Channel::getTopic() const { return (_topic);}
 const std::string &Channel::getPassword() const { return (_password);}
-int Channel::getCapacity() const { return (_capacity);}
+size_t Channel::getCapacity() const { return (_capacity);}
 std::map<const int, Client> &Channel::getClientList() { return (_clientList);}
 // int Channel::getKickedUsers() { return (_kickedUsers);}
 std::vector<int> Channel::getOperatorList() { return (_operatorList);}

@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/16 22:38:07 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/17 14:45:38 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ static bool checkJoinEligibility(Server *server, Client client, Channel &channel
 		}
 	}
 	
-	// 招待制(mode:i)されている場合、招待されているか確認する
+	// 招待制(mode:i)されている場合、はJOINできない
 	if (channel.getMode("invite"))
 	{
 		addToClientSendBuf(server, clientFd, ERR_INVITEONLYCHAN(clientNickname, channelName));
@@ -67,8 +67,7 @@ static bool checkJoinEligibility(Server *server, Client client, Channel &channel
 	}
 
 	// 参加人数制限チェック
-	if (channel.getMode("limit") &&
-		static_cast<int>(channel.getClientList().size()) >= channel.getCapacity())
+	if (channel.getMode("limit") && channel.getClientList().size() >= channel.getCapacity())
 	{
 		addToClientSendBuf(server, clientFd, ERR_CHANNELISFULL(clientNickname, channelName));
 		return (false);
