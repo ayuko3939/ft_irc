@@ -41,7 +41,6 @@
 # define MODE_REQ_K_PASS	"[!] password requirements: len(1-20), char(a-z, A-Z, 0-9)\r\n"
 # define MODE_REQ_L_LIMIT	"[!] limit requirements: (1-10)\r\n"
 
-
 // 成功通知
 # define RPL_NICK(client, newNick) (":" + client + " :Your nickname is " + newNick + "\r\n")
 # define RPL_USER(client, user, real) (":" + client + " :Your username is " + user + ", realname is " + real + "\r\n")
@@ -51,6 +50,7 @@
 # define RPL_INVITE(inviter, guest, channelName) (":" + inviter + " :invited " + guest + " to " + channelName + "\r\n")
 # define RPL_KICK(client, channel, target, comment) (":" + client + " :kicked " + target + " from " + channel + " (" + comment + ")\r\n")
 // # define RPL_MODE(client, channel, modestring) (":" + client + " :channel mode " + modestring + " set to #" + channel + "\r\n")
+
 
 # define DELIMITER_LINE "-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-\r\n"
 // # define DELIMITER_LINE "=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=\r\n"

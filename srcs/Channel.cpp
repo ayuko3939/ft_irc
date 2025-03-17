@@ -21,7 +21,7 @@ _clientList(),
 _kickedUsers(),
 _operatorList()
 {
-	setMode("+t");
+	setMode('t', true);
 }
 
 Channel::~Channel() {}
