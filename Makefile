@@ -5,20 +5,26 @@ CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 
 SRC_DIR = srcs
 SRCS = main.cpp \
+		Server.cpp \
 		Client.cpp \
+		Channel.cpp \
 		ManageServer.cpp \
 		ManageServerUtils.cpp \
-		Server.cpp \
-		Channel.cpp \
 		parsing.cpp \
 		utils.cpp \
 		commands/invite.cpp \
 		commands/join.cpp \
+		commands/kick.cpp \
+		commands/mode.cpp \
 		commands/nick.cpp \
 		commands/pass.cpp \
 		commands/topic.cpp \
 		commands/user.cpp \
 		commands/cmmandUtils.cpp \
+		commands/modes/invite.cpp \
+		commands/modes/key.cpp \
+		commands/modes/limit.cpp \
+		commands/modes/operator.cpp \
 		commands/modes/topic.cpp
 
 

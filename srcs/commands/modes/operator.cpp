@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   topic.cpp                                          :+:      :+:    :+:   */
+/*   operator.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/12 19:43:58 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/18 22:14:03 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,11 @@ static bool isAlreadySetOperator(Server *server, Channel &channel, Client &clien
 	// 対象ユーザーのFDを取得
 	int targetFd = server->getClientFdFromNick(const_cast<std::string&>(targetNick));
 	if (targetFd == -1)
-    {
-        // 対象ユーザーが存在しない場合
-        addToClientSendBuf(server, client.getClientFd(), ERR_NOSUCHNICK(client.getNickname(), targetNick));
-        return (false);
-    }
+	{
+		// 対象ユーザーが存在しない場合
+		addToClientSendBuf(server, client.getClientFd(), ERR_NOSUCHNICK(client.getNickname(), targetNick));
+		return (false);
+	}
 
 	// 既に対象ユーザーがオペレーター状態であれば、同じ状態の変更は不要
 	if (channel.isOperator(targetFd) == sign)

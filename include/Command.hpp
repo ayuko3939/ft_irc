@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/16 23:00:54 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/18 22:25:25 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,15 @@
 # include "Server.hpp"
 
 // Command functions
-void invite(Server *server, const int clientFd, s_ircCommand cmdInfo);
-void join(Server *server, const int clientFd, s_ircCommand cmdInfo);
-void kick(Server *server, const int clientFd, s_ircCommand cmdInfo);
-void nick(Server *server, const int clientFd, s_ircCommand cmdInfo);
-void mode(Server *server, const int clientFd, s_ircCommand cmdInfo);
-void pass(Server *server, const int clientFd, s_ircCommand cmdInfo);
-// void privmsg(Server *server, const int clientFd, s_ircCommand cmdInfo);
-void topic(Server *server, const int clientFd, s_ircCommand cmdInfo);
-void user(Server *server, const int clientFd, s_ircCommand cmdInfo);
+void invite(Server *server, const int clientFd, s_ircCommand cmdInfo);	// ユーザーをチャンネルに招待
+void join(Server *server, const int clientFd, s_ircCommand cmdInfo);	// チャンネルに参加、作成
+void kick(Server *server, const int clientFd, s_ircCommand cmdInfo);	// チャンネルからユーザーをキック
+void nick(Server *server, const int clientFd, s_ircCommand cmdInfo);	// ニックネームの変更
+void mode(Server *server, const int clientFd, s_ircCommand cmdInfo);	// チャンネルモードの変更
+void pass(Server *server, const int clientFd, s_ircCommand cmdInfo);	// サーバーパスワードの認証（初回のみ）
+// void privmsg(Server *server, const int clientFd, s_ircCommand cmdInfo);	// メッセージ送信
+void topic(Server *server, const int clientFd, s_ircCommand cmdInfo);	// トピックの変更
+void user(Server *server, const int clientFd, s_ircCommand cmdInfo);	// ユーザー情報の登録（変更不可）
 
 // mode option functions
 void inviteOnlyMode(Server *server, Channel &channel, Client &client, bool sign);
