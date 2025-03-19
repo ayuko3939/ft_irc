@@ -277,3 +277,12 @@ bool Server::isClientExist(std::string &nickname)
 	}
 	return (false);
 }
+
+std::string Server::getNickname(int clientFd)
+{
+	// クライアントリストからクライアントのFDに対応するニックネームを取得
+	std::map<const int, Client>::iterator it = _clientList.find(clientFd);
+	if (it == _clientList.end())
+		return ("");
+	return (it->second.getNickname());
+}

@@ -109,8 +109,8 @@ int getCommandType(std::string &cmd)
 {
 	int	type = 0;
 	std::string	cmdList[NUM_OF_CMD] = {
-		"INVITE", "JOIN", "KICK","MODE", "NICK", "PART", "PASS",
-		"PING", "PRIVMSG", "QUIT", "TOPIC", "USER"
+		"INVITE", "JOIN", "KICK", "MODE", "NICK", "PART",
+		"PASS", "PRIVMSG", "QUIT", "TOPIC", "USER"
 	};
 
 	// コマンドリストからコマンドを検索

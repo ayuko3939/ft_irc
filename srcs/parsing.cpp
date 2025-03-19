@@ -176,13 +176,12 @@ void Server::execCommand(int clientFd, std::string &cmd)
 		case 3: kick(this, clientFd, cmdInfo); break;
 		case 4: mode(this, clientFd, cmdInfo); break;
 		case 5: nick(this, clientFd, cmdInfo); break;
-		// case 6: part(this, clientFd, cmdInfo); break; // ★★★
+		case 6: part(this, clientFd, cmdInfo); break;
 		case 7: pass(this, clientFd, cmdInfo); break;
-		// case 8: ping(this, clientFd, cmdInfo); break; // ★★★
-		// case 9: privmsg(this, clientFd, cmdInfo); break;  // ★★★
-		// case 10: quit(this, clientFd, cmdInfo); break; // ★★★
-		case 11: topic(this, clientFd, cmdInfo); std::cout << "!!!" << std::endl; break;
-		case 12: user(this, clientFd, cmdInfo); break;
+		case 8: privmsg(this, clientFd, cmdInfo); break;
+		case 9: quit(this, clientFd, cmdInfo); break;
+		case 10: topic(this, clientFd, cmdInfo); std::cout << "!!!" << std::endl; break;
+		case 11: user(this, clientFd, cmdInfo); break;
 
 		// コマンドが見つからない場合、エラー文を出力して何もしないで処理終了
 		default:

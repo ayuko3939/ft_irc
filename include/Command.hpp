@@ -20,10 +20,12 @@
 void invite(Server *server, const int clientFd, s_ircCommand cmdInfo);	// ユーザーをチャンネルに招待
 void join(Server *server, const int clientFd, s_ircCommand cmdInfo);	// チャンネルに参加、作成
 void kick(Server *server, const int clientFd, s_ircCommand cmdInfo);	// チャンネルからユーザーをキック
-void nick(Server *server, const int clientFd, s_ircCommand cmdInfo);	// ニックネームの変更
 void mode(Server *server, const int clientFd, s_ircCommand cmdInfo);	// チャンネルモードの変更
+void nick(Server *server, const int clientFd, s_ircCommand cmdInfo);	// ニックネームの変更
+void part(Server *server, const int clientFd, s_ircCommand cmdInfo);	// チャンネルから退出
 void pass(Server *server, const int clientFd, s_ircCommand cmdInfo);	// サーバーパスワードの認証（初回のみ）
-// void privmsg(Server *server, const int clientFd, s_ircCommand cmdInfo);	// メッセージ送信
+void privmsg(Server *server, const int clientFd, s_ircCommand cmdInfo);	// メッセージ送信
+void quit(Server *server, const int clientFd, s_ircCommand cmdInfo);	// クライアントの切断
 void topic(Server *server, const int clientFd, s_ircCommand cmdInfo);	// トピックの変更
 void user(Server *server, const int clientFd, s_ircCommand cmdInfo);	// ユーザー情報の登録（変更不可）
 

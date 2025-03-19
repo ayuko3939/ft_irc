@@ -98,6 +98,7 @@ class Server
     bool isChannelExist(std::string &channelName);
     bool isClientExist(int clientFd);
     bool isClientExist(std::string &nick);
+    std::string getNickname(int clientFd);
 };
 
 // utils

@@ -23,23 +23,29 @@
 
 // コマンド要件
 # define NICK_USAGE			"Usage: NICK <nickname>\r\n"
-# define NICK_REQUIREMENTS	"[!] nickname requirements: len(1-10), char(a-z, A-Z, 0-9)\r\n"
+# define NICK_REQUIREMENTS	"[!] nickname requirements: len(10), char(a-z, A-Z, 0-9)\r\n"
 # define USER_USAGE			"Usage: USER <username> <realname>\r\n"
-# define USER_REQUIREMENTS	"[!] username requirements: len(1-10), char(a-z, A-Z, 0-9)\r\n    realname requirements: len(1-10), char(a-z, A-Z)\r\n"
+# define USER_REQUIREMENTS	"[!] username requirements: len(10), char(a-z, A-Z, 0-9)\r\n    realname requirements: len(1-10), char(a-z, A-Z)\r\n"
 # define PASS_USAGE			"Usage: PASS <password>\r\n"
 # define PASS_REQUIREMENTS	"[!] \r\n"
 # define JOIN_USAGE			"Usage: JOIN <channel> [key]  or  JOIN <channel>{,<channel>} [<key>{,<key>}]\r\n"
-# define JOIN_REQUIREMENTS	"[!] channel/key requirements: len(1-20), char(a-z, A-Z, 0-9)\r\n"
+# define JOIN_REQUIREMENTS	"[!] channel/key requirements: len(20), char(a-z, A-Z, 0-9)\r\n"
 # define TOPIC_USAGE		"Usage: TOPIC <channel> [<topic>]   If <topic> is not given, display topic\r\n"
 # define TOPIC_REQUIREMENTS	"[!] topic requirements: len(50), char(a-z, A-Z, 0-9)\r\n"
 # define INVITE_USAGE		"Usage: INVITE <nickname> <channel>\r\n"
 # define KICK_USAGE			"Usage: KICK <channel> <nickname> [<comment>]\r\n"
-# define KICK_REQUIREMENTS	"[!] comment requirements: len(1-30)\r\n"
+# define KICK_REQUIREMENTS	"[!] comment requirements: len(30)\r\n"
 # define MODE_USAGE			"MODE <channel> [modestring> [<mode arguments>]]\r\n"
 # define MODE_USAGE_K_O_L	"Usage: MODE <channel> +k <password>  |  +o <nickname>  |  -o <nickname>  |  +l <limit>\r\n"
 # define MODE_REQUIREMENTS	"[!] modestring requirements: option sign( + , - ) + frag( i, t, k, o, l )\r\n"
 # define MODE_REQ_K_PASS	"[!] password requirements: len(1-20), char(a-z, A-Z, 0-9)\r\n"
 # define MODE_REQ_L_LIMIT(max)	("[!] limit requirements: (1-" + max + ")\r\n")
+# define PRIVMSG_USAGE		"Usage: PRIVMSG <nickname> <message>  or  PRIVMSG <channel> <message>\r\n"
+# define PRIVMSG_REQUIREMENTS	"[!] message requirements: len(200), char(a-z, A-Z, 0-9)\r\n"
+# define PART_USAGE			"Usage: PART <channel> [<reason>]\r\n"
+# define PART_REQUIREMENTS	"[!] reason requirements: len(30)\r\n"
+# define QUIT_USAGE			"Usage: QUIT [<reason>]\r\n"
+# define QUIT_REQUIREMENTS	"[!] reason requirements: len(30)\r\n"
 
 // 成功通知
 # define RPL_NICK(client, newNick) (":" + client + " :Your nickname is " + newNick + "\r\n")
@@ -50,7 +56,10 @@
 # define RPL_INVITE(inviter, guest, channelName) (":" + inviter + " :invited " + guest + " to " + channelName + "\r\n")
 # define RPL_KICK(client, channel, target, comment) (":" + client + " :kicked " + target + " from " + channel + " (" + comment + ")\r\n")
 // # define RPL_MODE(client, channel, modestring) (":" + client + " :channel mode " + modestring + " set to #" + channel + "\r\n")
-
+# define RPL_PRIVMSG(sender, target, message) (":" + sender + " PRIVMSG " + target + " :" + message + "\r\n")
+# define RPL_PART(client, channel, reason) (":" + client + " :left " + channel + " (" + reason + ")\r\n")
+# define RPL_QUIT(client, reason) (":" + client + " :Quit (" + reason + ")\r\n")
+# define SEY_BYE(client) (":" + client + " : .*:+* Thanks for using IRC server. Goodbye! *+:*.\r\n")
 
 # define DELIMITER_LINE "-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-\r\n"
 // # define DELIMITER_LINE "=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=\r\n"
@@ -65,7 +74,7 @@
 // (004) RPL_MYINFO : サーバ名とバージョン情報のみ
 # define RPL_MYINFO(client, server, version) (":" + client + " " + server + " " + version + "\r\n")
 // (005) RPL_ISUPPORT : サポートトークンの通知
-# define RPL_ISUPPORT(client, tokens) (":" + client + " " + tokens + " :are supported\r\n")
+# define RPL_ISUPPORT(client, tokens) (":" + client + " " + tokens + " :are supported by this server\r\n")
 
 // // (010) RPL_BOUNCE : 別サーバへのリダイレクト
 // # define RPL_BOUNCE(client, host, port) (":" + client + " " + host + " " + port + "\r\n")
@@ -300,11 +309,11 @@
 // // (409) ERR_NOORIGIN : オリジン未指定
 // # define ERR_NOORIGIN(client) (":" + client + " :No origin specified\r\n")
 
-// // (411) ERR_NORECIPIENT : 宛先未指定
-// # define ERR_NORECIPIENT(client, command) (":" + client + " :No recipient given (" + command + ")\r\n")
+// (411) ERR_NORECIPIENT : 宛先未指定
+# define ERR_NORECIPIENT(client, command) (":" + client + " :No recipient given (" + command + ")\r\n")
 
-// // (412) ERR_NOTEXTTOSEND : 送信テキストなし
-// # define ERR_NOTEXTTOSEND(client) (":" + client + " :No text to send\r\n")
+// (412) ERR_NOTEXTTOSEND : 送信テキストなし
+# define ERR_NOTEXTTOSEND(client) (":" + client + " :No text to send\r\n")
 
 // // (417) ERR_INPUTTOOLONG : 入力行が長すぎる
 // # define ERR_INPUTTOOLONG(client) (":" + client + " :Input line too long\r\n")
