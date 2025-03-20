@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:43:40 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/18 21:19:54 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/20 23:10:29 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,14 @@ void sendClientRegistrationMsg(Server *server, int clientFd, Client *client)
 
 void Server::fillClientInfo(Client *client, int clientFd, s_ircCommand cmdInfo)
 {
+	// irssiからの"CAP LS"リクエストを無視
+	if (cmdInfo.name == "CAP" && cmdInfo.message == "LS")
+	{
+		// CAP LS に対して空の応答を返す（または必要な機能を指定する）
+		addToClientSendBuf(this, clientFd, "CAP * LS :\r\n");
+		return;
+	}
+
 	// パスワード認証が完了していない場合
 	if (!client->getConnexionPassword())
 	{
@@ -171,17 +179,18 @@ void Server::execCommand(int clientFd, std::string &cmd)
 	// コマンドに応じた処理を実行
 	switch (type)
 	{
-		case 1: invite(this, clientFd, cmdInfo); break;
-		case 2: join(this, clientFd, cmdInfo); break;
-		case 3: kick(this, clientFd, cmdInfo); break;
-		case 4: mode(this, clientFd, cmdInfo); break;
-		case 5: nick(this, clientFd, cmdInfo); break;
-		case 6: part(this, clientFd, cmdInfo); break;
-		case 7: pass(this, clientFd, cmdInfo); break;
-		case 8: privmsg(this, clientFd, cmdInfo); break;
-		case 9: quit(this, clientFd, cmdInfo); break;
-		case 10: topic(this, clientFd, cmdInfo); std::cout << "!!!" << std::endl; break;
-		case 11: user(this, clientFd, cmdInfo); break;
+		case 1: std::cout << "debug: here!" << std::endl; break; // CAP
+		case 2: invite(this, clientFd, cmdInfo); break;
+		case 3: join(this, clientFd, cmdInfo); break;
+		case 4: kick(this, clientFd, cmdInfo); break;
+		case 5: mode(this, clientFd, cmdInfo); break;
+		case 6: nick(this, clientFd, cmdInfo); break;
+		case 7: part(this, clientFd, cmdInfo); break;
+		case 8: pass(this, clientFd, cmdInfo); break;
+		case 9: privmsg(this, clientFd, cmdInfo); break;
+		case 10: quit(this, clientFd, cmdInfo); break;
+		case 11: topic(this, clientFd, cmdInfo); break;
+		case 12: user(this, clientFd, cmdInfo); break;
 
 		// コマンドが見つからない場合、エラー文を出力して何もしないで処理終了
 		default:

@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/12 15:30:39 by yohasega           #+#    #+#            */
-/*   Updated: 2025/03/18 22:49:07 by yohasega         ###   ########.fr       */
+/*   Created: 2025/03/12 15:30:39 by yohasega          #+#    #+#             */
+/*   Updated: 2025/03/20 20:55:23 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,10 +71,7 @@ void part(Server *server, int const clientFd, s_ircCommand cmdInfo)
 	// 	}
 	// }
 
-	// 8. クライアントをチャンネルから削除する
-	channel.removeClient(clientFd);
-
-	// 9. PARTメッセージを作成し、チャンネル内全メンバーに通知
+	// 8. PARTメッセージを作成し、チャンネル内全メンバーに通知
 	std::string partMsg = ":" + clientNick + " PART " + channelName;
 	if (!reason.empty())
 		partMsg += " :" + reason;
@@ -85,4 +82,7 @@ void part(Server *server, int const clientFd, s_ircCommand cmdInfo)
 	{
 		addToClientSendBuf(server, it->second.getClientFd(), partMsg);
 	}
+
+	// 9. クライアントをチャンネルから削除する
+	channel.removeClient(clientFd);
 }

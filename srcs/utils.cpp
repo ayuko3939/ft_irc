@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 12:58:58 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/16 21:20:12 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/20 22:52:59 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void sendServerReply(int clientFd, std::string &message)
 	{
 		  // ===== ★後で表示を整える★ =====
 		std::cout << "[Server] "
-				  << clientFd << " >" << line << std::endl;
+				  << clientFd << " > " << line << std::endl;
 	}
 }
 
@@ -109,8 +109,8 @@ int getCommandType(std::string &cmd)
 {
 	int	type = 0;
 	std::string	cmdList[NUM_OF_CMD] = {
-		"INVITE", "JOIN", "KICK", "MODE", "NICK", "PART",
-		"PASS", "PRIVMSG", "QUIT", "TOPIC", "USER"
+		"CAP", "INVITE", "JOIN", "KICK", "MODE", "NICK",
+		"PART", "PASS", "PRIVMSG", "QUIT", "TOPIC", "USER"
 	};
 
 	// コマンドリストからコマンドを検索
