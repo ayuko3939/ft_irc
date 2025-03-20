@@ -15,6 +15,7 @@
 
 # include <netdb.h> // getaddrinfo
 # include <poll.h> // poll
+# include <fcntl.h> // fcntl
 
 # include <vector>
 # include <map>

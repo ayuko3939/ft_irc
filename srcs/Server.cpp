@@ -141,6 +141,13 @@ void Server::launchServer()
 	if ((_serverSockFd = socket(_serverInfo->ai_family, _serverInfo->ai_socktype, _serverInfo->ai_protocol)) < 0)
 		throw (ERROR_SERVER_SOCKET);
 	
+	// ソケットをノンブロッキングモードに設定
+	int flags = fcntl(_serverSockFd, F_GETFL, 0);
+	if (flags == -1)
+		throw (ERROR_SERVER_SETSOCKETOPT);
+	if (fcntl(_serverSockFd, F_SETFL, flags | O_NONBLOCK) == -1)
+		throw (ERROR_SERVER_SETSOCKETOPT);
+
 	// ソケットオプションを設定
 	int socketOpt = 1;
 	if (setsockopt(_serverSockFd, SOL_SOCKET, SO_REUSEADDR, &socketOpt, sizeof(socketOpt)) < 0)
