@@ -9,7 +9,7 @@ def main():
     port = 6667
 
     # 送信するPASSコマンド（最後の \r\n が必須）
-    full_command = "PASS mypassword\r\nNICK mynick\r\nUSER myuser 0 * :myrealname\r\n"
+    full_command = "PASS mypassword\r\nNICK mynick\r\nUSER myuser myuser 127.0.0.1 :myrealname\r\n"
     # 複数回に分けるため、任意の部分に分割（例）
     parts = ["PAS", "S my", "pass", "word\r", "\n",
              "NI", "CK my", "nick\r\n",
