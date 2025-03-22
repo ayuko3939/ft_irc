@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:43:40 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/20 23:10:29 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/22 18:54:12 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,56 +106,114 @@ int parseCommand(std::string &cmdLine, s_ircCommand &cmdInfo)
 
 void sendClientRegistrationMsg(Server *server, int clientFd, Client *client)
 {
-	addToClientSendBuf(server, clientFd, DELIMITER_LINE);
+	// addToClientSendBuf(server, clientFd, DELIMITER_LINE);
 	addToClientSendBuf(server, clientFd, RPL_WELCOME(client->getNickname(), client->getNickname()));
 	addToClientSendBuf(server, clientFd, RPL_YOURHOST(client->getNickname(), "ft_irc", "1.0"));
 	addToClientSendBuf(server, clientFd, RPL_CREATED(client->getNickname(), server->getDateTime()));
 	addToClientSendBuf(server, clientFd, RPL_MYINFO(client->getNickname(), "ft_irc", "1.0"));
 	addToClientSendBuf(server, clientFd, RPL_ISUPPORT(client->getNickname(), SEVER_REQUIREMENTS));
-	addToClientSendBuf(server, clientFd, DELIMITER_LINE);
+	// addToClientSendBuf(server, clientFd, DELIMITER_LINE);
 }
+
+// void Server::fillClientInfo(Client *client, int clientFd, s_ircCommand cmdInfo)
+// {
+// 	// irssiからの"CAP LS"リクエストを無視
+// 	if (cmdInfo.name == "CAP" && cmdInfo.message == "LS")
+// 	{
+// 		// CAP LS に対して空の応答を返す（または必要な機能を指定する）
+// 		addToClientSendBuf(this, clientFd, "CAP * LS :\r\n");
+// 		return;
+// 	}
+
+// 	// パスワード認証が完了していない場合
+// 	if (!client->getConnexionPassword())
+// 	{
+// 		if (cmdInfo.name != "PASS")
+// 			addToClientSendBuf(this, clientFd, ERR_PASS_AUTH_YET);
+// 		else
+// 			pass(this, clientFd, cmdInfo);
+// 		return ;
+// 	}
+// 	else
+// 	{
+// 		// クライアント情報が全て揃っていない場合、クライアント情報を取得する
+// 		if (cmdInfo.name != "NICK" && cmdInfo.name != "USER")
+// 			addToClientSendBuf(this, clientFd, ERR_REGISTRATION_YET);
+// 		else
+// 		{
+// 			if (cmdInfo.name == "NICK")
+// 				nick(this, clientFd, cmdInfo);
+// 			else if (cmdInfo.name == "USER")
+// 				user(this, clientFd, cmdInfo);
+// 		}
+
+// 		// クライアント情報が全て揃った場合、登録処理を行う
+// 		if (client->getNmInfo() == 3 && client->isRegistrationDone() == false)
+// 		{
+// 			sendClientRegistrationMsg(this, clientFd, client);
+// 			client->setRegistrationDone();
+// 		}
+// 		return ;
+// 	}
+// }
+
+
 
 void Server::fillClientInfo(Client *client, int clientFd, s_ircCommand cmdInfo)
 {
-	// irssiからの"CAP LS"リクエストを無視
-	if (cmdInfo.name == "CAP" && cmdInfo.message == "LS")
-	{
-		// CAP LS に対して空の応答を返す（または必要な機能を指定する）
-		addToClientSendBuf(this, clientFd, "CAP * LS :\r\n");
-		return;
-	}
+    // irssiからの"CAP LS"リクエストに対しては空応答を返す
+    if (cmdInfo.name == "CAP" && cmdInfo.message == "LS")
+    {
+        // addToClientSendBuf(this, clientFd, "CAP * LS :\r\n");
+        return;
+    }
 
-	// パスワード認証が完了していない場合
-	if (!client->getConnexionPassword())
-	{
-		if (cmdInfo.name != "PASS")
-			addToClientSendBuf(this, clientFd, ERR_PASS_AUTH_YET);
-		else
-			pass(this, clientFd, cmdInfo);
-		return ;
-	}
-	else
-	{
-		// クライアント情報が全て揃っていない場合、クライアント情報を取得する
-		if (cmdInfo.name != "NICK" && cmdInfo.name != "USER")
-			addToClientSendBuf(this, clientFd, ERR_REGISTRATION_YET);
-		else
-		{
-			if (cmdInfo.name == "NICK")
-				nick(this, clientFd, cmdInfo);
-			else if (cmdInfo.name == "USER")
-				user(this, clientFd, cmdInfo);
-		}
+    // CAP END を受信した場合は、登録情報が揃っていれば登録完了処理を実行する
+    if (cmdInfo.name == "CAP" && cmdInfo.message == "END")
+    {
+        // // PASS、NICK、USER の各情報が揃っていれば登録完了
+        // if (client->getNmInfo() == 3 && client->isRegistrationDone() == false)
+        // {
+        //     sendClientRegistrationMsg(this, clientFd, client);
+        //     client->setRegistrationDone();
+        // }
+        return;
+    }
 
-		// クライアント情報が全て揃った場合、登録処理を行う
-		if (client->getNmInfo() == 3 && client->isRegistrationDone() == false)
-		{
-			sendClientRegistrationMsg(this, clientFd, client);
-			client->setRegistrationDone();
-		}
-		return ;
-	}
+    // パスワード認証が完了していない場合
+    if (!client->getConnexionPassword())
+    {
+        if (cmdInfo.name != "PASS")
+            addToClientSendBuf(this, clientFd, ERR_PASS_AUTH_YET);
+        else
+            pass(this, clientFd, cmdInfo);
+        return;
+    }
+    else
+    {
+        // 登録情報が未完の場合、NICKおよびUSERコマンドのみ受け付ける
+        if (cmdInfo.name != "NICK" && cmdInfo.name != "USER")
+        {
+            addToClientSendBuf(this, clientFd, ERR_REGISTRATION_YET);
+        }
+        else
+        {
+            if (cmdInfo.name == "NICK")
+                nick(this, clientFd, cmdInfo);
+            else if (cmdInfo.name == "USER")
+                user(this, clientFd, cmdInfo);
+        }
+
+        // 登録情報が全て揃っていれば、登録完了処理を実行する
+        if (client->getNmInfo() == 3 && client->isRegistrationDone() == false)
+        {
+            sendClientRegistrationMsg(this, clientFd, client);
+            client->setRegistrationDone();
+        }
+        return;
+    }
 }
+
 
 void Server::execCommand(int clientFd, std::string &cmd)
 {
@@ -175,6 +233,7 @@ void Server::execCommand(int clientFd, std::string &cmd)
 
 	// コマンドリストからコマンドを検索
 	int	type = getCommandType(cmdInfo.name);
+	std::cout << "type: " << type << std::endl;
 
 	// コマンドに応じた処理を実行
 	switch (type)

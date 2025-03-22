@@ -1,7 +1,7 @@
 NAME = ircserv
 
-CXX = c++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98
+CXX = g++
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -g
 
 SRC_DIR = srcs
 SRCS = main.cpp \

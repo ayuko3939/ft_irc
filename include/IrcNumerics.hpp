@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 22:07:12 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/17 22:40:37 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/22 21:10:18 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@
 // コマンド要件
 # define NICK_USAGE			"Usage: NICK <nickname>\r\n"
 # define NICK_REQUIREMENTS	"[!] nickname requirements: len(10), char(a-z, A-Z, 0-9)\r\n"
-# define USER_USAGE			"Usage: USER <username> <realname>\r\n"
-# define USER_REQUIREMENTS	"[!] username requirements: len(10), char(a-z, A-Z, 0-9)\r\n    realname requirements: len(1-10), char(a-z, A-Z)\r\n"
+# define USER_USAGE			"Usage: USER <user> <mode> <unused> <realname>\r\n"
+# define USER_REQUIREMENTS	"[!] username requirements: len(20), char(a-z, A-Z, 0-9)\r\n    realname requirements: len(2-10), char(a-z, A-Z, ' ')\r\n"
 # define PASS_USAGE			"Usage: PASS <password>\r\n"
 # define PASS_REQUIREMENTS	"[!] \r\n"
 # define JOIN_USAGE			"Usage: JOIN <channel> [key]  or  JOIN <channel>{,<channel>} [<key>{,<key>}]\r\n"

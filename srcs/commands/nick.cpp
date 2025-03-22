@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/18 22:22:14 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/22 18:51:22 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,5 +93,6 @@ void nick(Server *server, const int clientFd, s_ircCommand cmdInfo)
 	}
 
 	// 6. 成功通知の送信
-	addToClientSendBuf(server, clientFd, RPL_NICK(client.getNickname(), newNick));
+	// addToClientSendBuf(server, clientFd, RPL_NICK(client.getNickname(), newNick));
+	std::cout << INDIGO "[Server] Nickname : " << client.getNickname() << END << std::endl;
 }
