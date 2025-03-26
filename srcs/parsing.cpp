@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:43:40 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/22 18:54:12 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/26 21:22:29 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,105 +115,47 @@ void sendClientRegistrationMsg(Server *server, int clientFd, Client *client)
 	// addToClientSendBuf(server, clientFd, DELIMITER_LINE);
 }
 
-// void Server::fillClientInfo(Client *client, int clientFd, s_ircCommand cmdInfo)
-// {
-// 	// irssiからの"CAP LS"リクエストを無視
-// 	if (cmdInfo.name == "CAP" && cmdInfo.message == "LS")
-// 	{
-// 		// CAP LS に対して空の応答を返す（または必要な機能を指定する）
-// 		addToClientSendBuf(this, clientFd, "CAP * LS :\r\n");
-// 		return;
-// 	}
-
-// 	// パスワード認証が完了していない場合
-// 	if (!client->getConnexionPassword())
-// 	{
-// 		if (cmdInfo.name != "PASS")
-// 			addToClientSendBuf(this, clientFd, ERR_PASS_AUTH_YET);
-// 		else
-// 			pass(this, clientFd, cmdInfo);
-// 		return ;
-// 	}
-// 	else
-// 	{
-// 		// クライアント情報が全て揃っていない場合、クライアント情報を取得する
-// 		if (cmdInfo.name != "NICK" && cmdInfo.name != "USER")
-// 			addToClientSendBuf(this, clientFd, ERR_REGISTRATION_YET);
-// 		else
-// 		{
-// 			if (cmdInfo.name == "NICK")
-// 				nick(this, clientFd, cmdInfo);
-// 			else if (cmdInfo.name == "USER")
-// 				user(this, clientFd, cmdInfo);
-// 		}
-
-// 		// クライアント情報が全て揃った場合、登録処理を行う
-// 		if (client->getNmInfo() == 3 && client->isRegistrationDone() == false)
-// 		{
-// 			sendClientRegistrationMsg(this, clientFd, client);
-// 			client->setRegistrationDone();
-// 		}
-// 		return ;
-// 	}
-// }
-
-
-
 void Server::fillClientInfo(Client *client, int clientFd, s_ircCommand cmdInfo)
 {
-    // irssiからの"CAP LS"リクエストに対しては空応答を返す
-    if (cmdInfo.name == "CAP" && cmdInfo.message == "LS")
-    {
-        // addToClientSendBuf(this, clientFd, "CAP * LS :\r\n");
-        return;
-    }
+	// irssiからの"CAP LS"リクエストを無視
+	if (cmdInfo.name == "CAP" && cmdInfo.message == "LS")
+	{
+		// CAP LS に対して空の応答を返す（または必要な機能を指定する）
+		addToClientSendBuf(this, clientFd, "CAP * LS :\r\n");
+		return;
+	}
 
-    // CAP END を受信した場合は、登録情報が揃っていれば登録完了処理を実行する
-    if (cmdInfo.name == "CAP" && cmdInfo.message == "END")
-    {
-        // // PASS、NICK、USER の各情報が揃っていれば登録完了
-        // if (client->getNmInfo() == 3 && client->isRegistrationDone() == false)
-        // {
-        //     sendClientRegistrationMsg(this, clientFd, client);
-        //     client->setRegistrationDone();
-        // }
-        return;
-    }
+	// パスワード認証が完了していない場合
+	if (!client->getConnexionPassword())
+	{
+		if (cmdInfo.name != "PASS")
+			addToClientSendBuf(this, clientFd, ERR_PASS_AUTH_YET);
+		else
+			pass(this, clientFd, cmdInfo);
+		return ;
+	}
+	else
+	{
+		// クライアント情報が全て揃っていない場合、クライアント情報を取得する
+		if (cmdInfo.name != "NICK" && cmdInfo.name != "USER")
+			addToClientSendBuf(this, clientFd, ERR_REGISTRATION_YET);
+		else
+		{
+			if (cmdInfo.name == "NICK")
+				nick(this, clientFd, cmdInfo);
+			else if (cmdInfo.name == "USER")
+				user(this, clientFd, cmdInfo);
+		}
 
-    // パスワード認証が完了していない場合
-    if (!client->getConnexionPassword())
-    {
-        if (cmdInfo.name != "PASS")
-            addToClientSendBuf(this, clientFd, ERR_PASS_AUTH_YET);
-        else
-            pass(this, clientFd, cmdInfo);
-        return;
-    }
-    else
-    {
-        // 登録情報が未完の場合、NICKおよびUSERコマンドのみ受け付ける
-        if (cmdInfo.name != "NICK" && cmdInfo.name != "USER")
-        {
-            addToClientSendBuf(this, clientFd, ERR_REGISTRATION_YET);
-        }
-        else
-        {
-            if (cmdInfo.name == "NICK")
-                nick(this, clientFd, cmdInfo);
-            else if (cmdInfo.name == "USER")
-                user(this, clientFd, cmdInfo);
-        }
-
-        // 登録情報が全て揃っていれば、登録完了処理を実行する
-        if (client->getNmInfo() == 3 && client->isRegistrationDone() == false)
-        {
-            sendClientRegistrationMsg(this, clientFd, client);
-            client->setRegistrationDone();
-        }
-        return;
-    }
+		// クライアント情報が全て揃った場合、登録処理を行う
+		if (client->getNmInfo() == 3 && client->isRegistrationDone() == false)
+		{
+			sendClientRegistrationMsg(this, clientFd, client);
+			client->setRegistrationDone();
+		}
+		return ;
+	}
 }
-
 
 void Server::execCommand(int clientFd, std::string &cmd)
 {
@@ -238,7 +180,7 @@ void Server::execCommand(int clientFd, std::string &cmd)
 	// コマンドに応じた処理を実行
 	switch (type)
 	{
-		case 1: std::cout << "debug: here!" << std::endl; break; // CAP
+		case 1: break; // CAP
 		case 2: invite(this, clientFd, cmdInfo); break;
 		case 3: join(this, clientFd, cmdInfo); break;
 		case 4: kick(this, clientFd, cmdInfo); break;
@@ -246,10 +188,11 @@ void Server::execCommand(int clientFd, std::string &cmd)
 		case 6: nick(this, clientFd, cmdInfo); break;
 		case 7: part(this, clientFd, cmdInfo); break;
 		case 8: pass(this, clientFd, cmdInfo); break;
-		case 9: privmsg(this, clientFd, cmdInfo); break;
-		case 10: quit(this, clientFd, cmdInfo); break;
-		case 11: topic(this, clientFd, cmdInfo); break;
-		case 12: user(this, clientFd, cmdInfo); break;
+		case 9: break; //PING
+		case 10: privmsg(this, clientFd, cmdInfo); break;
+		case 11: quit(this, clientFd, cmdInfo); break;
+		case 12: topic(this, clientFd, cmdInfo); break;
+		case 13: user(this, clientFd, cmdInfo); break;
 
 		// コマンドが見つからない場合、エラー文を出力して何もしないで処理終了
 		default:
@@ -272,4 +215,3 @@ void Server::parseMessage(int clientFd, std::string &message)
 		execCommand(clientFd, cmd);
 	}
 }
-

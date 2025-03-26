@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 21:07:05 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/17 15:48:30 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/26 18:30:24 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ int main(int ac, char **av)
 	try
 	{
 		// オペレーターリストを読み込む
-		ircServer.readConfigFile();
+		// ircServer.readConfigFile();
 		// サーバーの情報を取得
 		ircServer.getServerInfo();
 		// サーバーを起動

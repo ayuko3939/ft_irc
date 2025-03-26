@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 12:58:58 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/20 22:52:59 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/26 21:52:21 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void sendServerReply(int clientFd, std::string &message)
 	{
 		  // ===== ★後で表示を整える★ =====
 		std::cout << "[Server] "
-				  << clientFd << " > " << line << std::endl;
+				  << clientFd << " > " << line << std::endl; 
 	}
 }
 
@@ -56,26 +56,6 @@ Client *getClient(Server *server, int clientFd)
 		return (NULL);
 	return (&it->second);
 }
-
-// std::string getChannelMemberList(std::string client, Channel &channel)
-// {
-// 	std::map<const int, Client> &clientList = channel.getClientList();
-// 	std::map<const int, Client>::iterator it = clientList.begin();
-// 	std::string memberList;
-// 	std::string nickname;
-
-
-// 	(void)client;
-	
-// 	while (it != clientList.end())
-// 	{
-// 		memberList += it->first;
-// 		++it;
-// 		if (it != clientList.end())
-// 			memberList += " ";
-// 	}
-// 	return (memberList);
-// }
 
 std::string getChannelName(std::string &msgToParse)
 {
@@ -110,7 +90,7 @@ int getCommandType(std::string &cmd)
 	int	type = 0;
 	std::string	cmdList[NUM_OF_CMD] = {
 		"CAP", "INVITE", "JOIN", "KICK", "MODE", "NICK",
-		"PART", "PASS", "PRIVMSG", "QUIT", "TOPIC", "USER"
+		"PART", "PING", "PASS", "PRIVMSG", "QUIT", "TOPIC", "USER"
 	};
 
 	// コマンドリストからコマンドを検索

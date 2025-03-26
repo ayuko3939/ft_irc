@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:18 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/17 15:32:45 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/26 21:19:46 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,6 @@ class Server
 
 
     // Other functions
-    void readConfigFile();
     void getServerInfo();
     void launchServer();
     void manageServerLoop();
@@ -109,9 +108,7 @@ void splitMessage(std::string &message, std::vector<std::string> &cmds);
 void sendServerReply(int clientFd, std::string &message);
 void addToClientSendBuf(Server *server, int clientFd, std::string message);
 void sendClientRegistrationMsg(Server *server, int clientFd, Client *client);
-std::string getChannelMemberList(std::string client, Channel &channel);
 std::string getChannelName(std::string &msgToParse);
-// std::string getSymbol(Channel &channel);
 int getCommandType(std::string &cmd);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:18 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/20 23:09:32 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/26 21:18:32 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,48 +82,6 @@ void Server::signalHandler(int signal)
 	(void)signal;
 	std::cout << INDIGO "Server shutdown..." END << std::endl;
 	Server::_signal = true;
-}
-
-void Server::readConfigFile()
-{
-	// ファイルが開けられるか
-	std::ifstream configFile(CONFG_FILE);
-	if (!configFile.is_open())
-		throw (ERROR_OPEN_FILE);
-
-	std::string		line;
-
-	// １行目はヘッダーなのでスキップ
-	std::getline(configFile, line);
-
-	// ２行目以降をオペレーターリストに格納する
-    while (std::getline(configFile, line))
-	{
-        std::istringstream			iss(line);
-		std::string					str;
-		std::vector<std::string>	elements;
-        serverOperator				op;
-
-		// " "区切りで１つずつベクトル格納する、要素が３つなければエラー
-		while (iss >> str)
-			elements.push_back(str);
-		
-		if (elements.size() != 3)
-			throw (ERROR_FILE_CONTENTS);
-
-		// 各要素をオペレーターの情報として格納し、リストに追加する
-		op.name = elements[0];
-		op.host = elements[1];
-		op.password = elements[2];
-
-        _operatorList.push_back(op);
-	}
-
-	// もしファイルが空ならエラー
-	if (_operatorList.empty())
-		throw (ERROR_FILE_EMPTY);
-
-	configFile.close();
 }
 
 void Server::getServerInfo()

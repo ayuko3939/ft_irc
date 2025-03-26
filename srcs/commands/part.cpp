@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/20 20:55:23 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/26 21:26:12 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void part(Server *server, int const clientFd, s_ircCommand cmdInfo)
 	std::string clientNick = client.getNickname();
 
 	// 3. パラメータから対象のチャンネル名と（あれば）理由を取得
-	std::string channelName = words[0];
+	std::string channelName = (words[0].at(0) == '#' ? words[0].substr(1) : words[0]);
 	std::string reason = (words.size() == 2 ? words[1] : "");
 
 	// 4. チャンネルが存在するか確認

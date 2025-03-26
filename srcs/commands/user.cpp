@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/22 21:09:35 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/26 20:00:07 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,8 @@ static bool checkArguments(Server *server, int clientFd, std::string cmdLine)
 
 static std::string getUsername(std::string &cmdLine)
 {
-	std::string trimedstr = trim(cmdLine);
-	std::size_t pos = trimedstr.find(" ");
-	return (cmdLine.substr(0, pos));
+	std::vector<std::string> words = splitMessage(cmdLine);
+	return (words[0]);	
 }
 
 // yohasega yohasega 127.0.0.1 :Yoka Hasegawa

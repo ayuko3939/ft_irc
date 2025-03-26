@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 15:51:11 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/16 15:52:41 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/25 22:37:39 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@ std::vector<std::string> splitByComma(const std::string &str)
     while (std::getline(iss, token, ','))
     {
         trim(token);
+        if (token[0] == '#')
+            token = token.substr(1);
         if (!token.empty())
             result.push_back(token);
     }

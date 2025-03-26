@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 21:43:54 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/22 18:42:44 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/26 21:03:41 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ void Server::manageServerLoop()
 {
 	std::vector<pollfd>		pollFds;
 	std::vector<pollfd>		tmpPollFds;
-	int						eventCount;
 
 	// サーバーのソケットを監視対象に追加
 	setServerPollFd(pollFds);
@@ -28,11 +27,10 @@ void Server::manageServerLoop()
 		tmpPollFds.clear();
 
 		// pollFdsの接続に変化があるまで待機（-1:タイムアウトなし）
-		if ((eventCount = poll(pollFds.data(), pollFds.size(), -1)) <= 0 && Server::_signal == false)
+		if ((poll(pollFds.data(), pollFds.size(), -1)) <= 0 && Server::_signal == false)
 			throw ("Error: poll"); // ERROR_POLL
 		
 		// pollFdsの中身を状態を順番に確認し、処理を行う
-		// std::cout << "debug: poll loop" << std::endl;
 		std::vector<pollfd>::iterator it = pollFds.begin();
 		while (it != pollFds.end())
 		{
@@ -48,7 +46,6 @@ void Server::manageServerLoop()
 				// 既存クライアントからのデータ受信
 				else
 				{
-					std::cout << "debug: handleClientData!" << std::endl;
 					if (handleClientData(pollFds, it))
 						break;
 				}

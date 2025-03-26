@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 22:07:12 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/22 21:10:18 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/26 21:51:19 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 # define NICK_USAGE			"Usage: NICK <nickname>\r\n"
 # define NICK_REQUIREMENTS	"[!] nickname requirements: len(10), char(a-z, A-Z, 0-9)\r\n"
 # define USER_USAGE			"Usage: USER <user> <mode> <unused> <realname>\r\n"
-# define USER_REQUIREMENTS	"[!] username requirements: len(20), char(a-z, A-Z, 0-9)\r\n    realname requirements: len(2-10), char(a-z, A-Z, ' ')\r\n"
+# define USER_REQUIREMENTS	"[!] username requirements: len(20), char(a-z, A-Z, 0-9)\r\n    realname requirements: len(2-20), char(a-z, A-Z, ' ')\r\n"
 # define PASS_USAGE			"Usage: PASS <password>\r\n"
 # define PASS_REQUIREMENTS	"[!] \r\n"
 # define JOIN_USAGE			"Usage: JOIN <channel> [key]  or  JOIN <channel>{,<channel>} [<key>{,<key>}]\r\n"
@@ -51,7 +51,7 @@
 # define RPL_NICK(client, newNick) (":" + client + " :Your nickname is " + newNick + "\r\n")
 # define RPL_USER(client, user, real) (":" + client + " :Your username is " + user + ", realname is " + real + "\r\n")
 # define RPL_PASS(client) (":" + client + " :Password accepted\r\n")
-# define RPL_JOIN(client, channel) (":" + client + " :joined " + channel + "\r\n")
+# define RPL_JOIN(client, channel) (":" + client + " :joined #" + channel + "\r\n")
 # define RPL_TOPI(client, channel, topic) (":" + client + " : #" + channel + " topic has been changed to: " + topic + "\r\n")
 # define RPL_INVITE(inviter, guest, channelName) (":" + inviter + " :invited " + guest + " to " + channelName + "\r\n")
 # define RPL_KICK(client, channel, target, comment) (":" + client + " :kicked " + target + " from " + channel + " (" + comment + ")\r\n")
@@ -66,15 +66,15 @@
 
 
 // (001) RPL_WELCOME : クライアント登録直後の歓迎メッセージ
-# define RPL_WELCOME(client, nick) (":" + client + " :Welcome to the Internet Relay Network, " + nick + "\r\n")
+# define RPL_WELCOME(client, nick) (":ircserv 001 " + client + " :Welcome to the Internet Relay Network, " + nick + "\r\n")
 // (002) RPL_YOURHOST : 接続中のサーバ名とバージョン情報
-# define RPL_YOURHOST(client, server, version) (":" + client + " :Your host is " + server + ", running version " + version + "\r\n")
+# define RPL_YOURHOST(client, server, version) (":ircserv 002 " + client + " :Your host is " + server + ", running version " + version + "\r\n")
 // (003) RPL_CREATED : サーバ生成日時の通知
-# define RPL_CREATED(client, datetime) (":" + client + " :This server was created " + datetime + "\r\n")
+# define RPL_CREATED(client, datetime) (":ircserv 003 " + client + " :This server was created " + datetime + "\r\n")
 // (004) RPL_MYINFO : サーバ名とバージョン情報のみ
-# define RPL_MYINFO(client, server, version) (":" + client + " " + server + " " + version + "\r\n")
+# define RPL_MYINFO(client, server, version) (":ircserv 004 " + client + " " + server + " " + version + "\r\n")
 // (005) RPL_ISUPPORT : サポートトークンの通知
-# define RPL_ISUPPORT(client, tokens) (":" + client + " " + tokens + " :are supported by this server\r\n")
+# define RPL_ISUPPORT(client, tokens) (":ircserv 005 " + client + " " + tokens + " :are supported by this server\r\n")
 
 // // (010) RPL_BOUNCE : 別サーバへのリダイレクト
 // # define RPL_BOUNCE(client, host, port) (":" + client + " " + host + " " + port + "\r\n")
@@ -257,16 +257,16 @@
 // # define RPL_INFO(client, info) (":" + client + " :" + info + "\r\n")
 
 // // (372) RPL_MOTD : MOTDの1行
-// # define RPL_MOTD(client, line) (":" + client + " :" + line + "\r\n")
+# define RPL_MOTD(client, line) (":" + client + " :" + line + "\r\n")
 
 // // (374) RPL_ENDOFINFO : INFO終了
 // # define RPL_ENDOFINFO(client) (":" + client + " :End of INFO\r\n")
 
 // // (375) RPL_MOTDSTART : MOTD開始
-// # define RPL_MOTDSTART(client, server) (":" + client + " :- " + server + " MOTD -\r\n")
+# define RPL_MOTDSTART(client, server) (":" + client + " :- " + server + " MOTD -\r\n")
 
 // // (376) RPL_ENDOFMOTD : MOTD終了
-// # define RPL_ENDOFMOTD(client) (":" + client + " :End of MOTD\r\n")
+# define RPL_ENDOFMOTD(client) (":" + client + " :End of MOTD\r\n")
 
 // // (378) RPL_WHOISHOST : WHOISHOST情報
 // # define RPL_WHOISHOST(client, nick, hostinfo) (":" + client + " " + nick + " :" + hostinfo + "\r\n")
@@ -350,7 +350,7 @@
 // # define ERR_NOTREGISTERED(client) (":" + client + " :You have not registered\r\n")
 
 // // (461) ERR_NEEDMOREPARAMS : パラメータ不足
-// # define ERR_NEEDMOREPARAMS(client, command) (":" + client + " " + command + " :Not enough parameters\r\n")
+# define ERR_NEEDMOREPARAMS(client, command) (":" + client + " " + command + " :Not enough parameters\r\n")
 
 // (462) ERR_ALREADYREGISTERED : 再登録不可
 # define ERR_ALREADYREGISTERED(client) (":" + client + " :You may not reregister\r\n")

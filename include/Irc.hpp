@@ -76,13 +76,9 @@
 # define DEFAULT_KICK_COMMENT		"Kicked by channel operator"
 
 // Settings
-# define CONFG_FILE "config/operators.conf"
 # define MAX_CLIENTS 4
 # define BUF_SIZE_MSG 1024
-# define NUM_OF_CMD 12
-
-// サーバー停止フラグ
-// extern bool g_ServerShutdown;
+# define NUM_OF_CMD 13
 
 // コマンド関連
 struct s_ircCommand
@@ -91,6 +87,5 @@ struct s_ircCommand
 	std::string		name; // コマンド名
 	std::string		message; // メッセージ
 };
-
 
 #endif
