@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/17 14:43:29 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/27 23:01:17 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,13 @@ static bool checkArguments(Server *server, int clientFd, std::vector<std::string
         return false;
     }
     return true;
+}
+
+static std::string getChannelNameFromWord(std::string &word)
+{
+	if (word[0] == '#')
+		return (word.substr(1));
+	return (word);
 }
 
 static bool isValid(Server *server, int const clientFd, std::string targetNick, std::string channelName)
@@ -80,7 +87,7 @@ void invite(Server *server, int const clientFd, s_ircCommand cmdInfo)
 
 	// 3. パラメータから招待対象のニックネームとチャンネル名を取得する
 	std::string targetNick = words[0];
-	std::string channelName = words[1];
+	std::string channelName = getChannelNameFromWord(words[1]);
 
 	// 4. パラメータの妥当性を確認する
 	if (!isValid(server, clientFd, targetNick, channelName))

@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/26 20:00:07 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/27 16:24:30 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static bool checkArguments(Server *server, int clientFd, std::string cmdLine)
 	std::vector<std::string> words = splitMessage(cmdLine);
 
 	// 引数が5つであることを確認
-	if (words.size() < 5)
+	if (words.size() < 4)
 	{
 		addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(USER_USAGE));
 		return (false);
@@ -35,16 +35,13 @@ static std::string getUsername(std::string &cmdLine)
 static std::string getRealname(std::string &cmdLine)
 {
 	std::size_t pos = cmdLine.find(":");
-	std::string realname;
 	if (pos == std::string::npos)
 	{
 		std::vector<std::string> words = splitMessage(cmdLine);
 		return (words[3]);
 	}
-	else
-	{
-		return (cmdLine.substr(pos + 1));
-	}
+
+	return (cmdLine.substr(pos + 1));
 }
 
 static bool	isValid(std::string username, std::string realname)

@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 22:07:12 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/26 21:51:19 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/27 21:44:30 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 # define IRCNUMERICS_HPP
 
 // エラーメッセージ
-# define ERR_INVALID_PARM	"Error: Invalid parameters.\r\n"
+# define ERR_INVALID_PARM		"Error: Invalid parameters.\r\n"
 # define ERR_ALREADYDONE(client) (":" + client + " :You are already done\r\n")
 # define ERR_PASS_AUTH_YET		"Error: Password authentication is not complete. Please \"PASS\".\r\n"
 # define ERR_REGISTRATION_YET	"Error: Registration is not complete. Please \"NICK\" and \"USER\".\r\n"
@@ -24,7 +24,7 @@
 // コマンド要件
 # define NICK_USAGE			"Usage: NICK <nickname>\r\n"
 # define NICK_REQUIREMENTS	"[!] nickname requirements: len(10), char(a-z, A-Z, 0-9)\r\n"
-# define USER_USAGE			"Usage: USER <user> <mode> <unused> <realname>\r\n"
+# define USER_USAGE			"Usage: USER <username> 0 * <realname>\r\n"
 # define USER_REQUIREMENTS	"[!] username requirements: len(20), char(a-z, A-Z, 0-9)\r\n    realname requirements: len(2-20), char(a-z, A-Z, ' ')\r\n"
 # define PASS_USAGE			"Usage: PASS <password>\r\n"
 # define PASS_REQUIREMENTS	"[!] \r\n"
@@ -40,7 +40,7 @@
 # define MODE_REQUIREMENTS	"[!] modestring requirements: option sign( + , - ) + frag( i, t, k, o, l )\r\n"
 # define MODE_REQ_K_PASS	"[!] password requirements: len(1-20), char(a-z, A-Z, 0-9)\r\n"
 # define MODE_REQ_L_LIMIT(max)	("[!] limit requirements: (1-" + max + ")\r\n")
-# define PRIVMSG_USAGE		"Usage: PRIVMSG <nickname> <message>  or  PRIVMSG <channel> <message>\r\n"
+# define PRIVMSG_USAGE		"Usage: PRIVMSG <nickname/channel> <message>\r\n"
 # define PRIVMSG_REQUIREMENTS	"[!] message requirements: len(200), char(a-z, A-Z, 0-9)\r\n"
 # define PART_USAGE			"Usage: PART <channel> [<reason>]\r\n"
 # define PART_REQUIREMENTS	"[!] reason requirements: len(30)\r\n"
@@ -57,7 +57,7 @@
 # define RPL_KICK(client, channel, target, comment) (":" + client + " :kicked " + target + " from " + channel + " (" + comment + ")\r\n")
 // # define RPL_MODE(client, channel, modestring) (":" + client + " :channel mode " + modestring + " set to #" + channel + "\r\n")
 # define RPL_PRIVMSG(sender, target, message) (":" + sender + " PRIVMSG " + target + " :" + message + "\r\n")
-# define RPL_PART(client, channel, reason) (":" + client + " :left " + channel + " (" + reason + ")\r\n")
+# define RPL_PART(nickname, username, channel, reason) (":" + nickname + "!" + username + "@localhost :is leaving the channel #" + channel + " (" + reason + ")\r\n")
 # define RPL_QUIT(client, reason) (":" + client + " :Quit (" + reason + ")\r\n")
 # define SEY_BYE(client) (":" + client + " : .*:+* Thanks for using IRC server. Goodbye! *+:*.\r\n")
 
@@ -73,8 +73,8 @@
 # define RPL_CREATED(client, datetime) (":ircserv 003 " + client + " :This server was created " + datetime + "\r\n")
 // (004) RPL_MYINFO : サーバ名とバージョン情報のみ
 # define RPL_MYINFO(client, server, version) (":ircserv 004 " + client + " " + server + " " + version + "\r\n")
-// (005) RPL_ISUPPORT : サポートトークンの通知
-# define RPL_ISUPPORT(client, tokens) (":ircserv 005 " + client + " " + tokens + " :are supported by this server\r\n")
+// // (005) RPL_ISUPPORT : サポートトークンの通知
+// # define RPL_ISUPPORT(client, tokens) (":ircserv 005 " + client + " " + tokens + " :are supported by this server\r\n")
 
 // // (010) RPL_BOUNCE : 別サーバへのリダイレクト
 // # define RPL_BOUNCE(client, host, port) (":" + client + " " + host + " " + port + "\r\n")

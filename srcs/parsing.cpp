@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:43:40 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/26 21:22:29 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/27 19:59:10 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,13 +106,13 @@ int parseCommand(std::string &cmdLine, s_ircCommand &cmdInfo)
 
 void sendClientRegistrationMsg(Server *server, int clientFd, Client *client)
 {
-	// addToClientSendBuf(server, clientFd, DELIMITER_LINE);
+	addToClientSendBuf(server, clientFd, DELIMITER_LINE);
 	addToClientSendBuf(server, clientFd, RPL_WELCOME(client->getNickname(), client->getNickname()));
-	addToClientSendBuf(server, clientFd, RPL_YOURHOST(client->getNickname(), "ft_irc", "1.0"));
+	addToClientSendBuf(server, clientFd, RPL_YOURHOST(client->getNickname(), "ircserv", "1.0"));
 	addToClientSendBuf(server, clientFd, RPL_CREATED(client->getNickname(), server->getDateTime()));
-	addToClientSendBuf(server, clientFd, RPL_MYINFO(client->getNickname(), "ft_irc", "1.0"));
-	addToClientSendBuf(server, clientFd, RPL_ISUPPORT(client->getNickname(), SEVER_REQUIREMENTS));
-	// addToClientSendBuf(server, clientFd, DELIMITER_LINE);
+	addToClientSendBuf(server, clientFd, RPL_MYINFO(client->getNickname(), "ircserv", "1.0"));
+	// addToClientSendBuf(server, clientFd, RPL_ISUPPORT(client->getNickname(), SEVER_REQUIREMENTS));
+	addToClientSendBuf(server, clientFd, DELIMITER_LINE);
 }
 
 void Server::fillClientInfo(Client *client, int clientFd, s_ircCommand cmdInfo)
@@ -175,7 +175,7 @@ void Server::execCommand(int clientFd, std::string &cmd)
 
 	// コマンドリストからコマンドを検索
 	int	type = getCommandType(cmdInfo.name);
-	std::cout << "type: " << type << std::endl;
+	// std::cout << "type: " << type << std::endl;
 
 	// コマンドに応じた処理を実行
 	switch (type)

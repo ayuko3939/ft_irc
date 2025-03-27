@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 12:58:58 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/26 21:52:21 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/27 16:37:44 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ int getCommandType(std::string &cmd)
 	int	type = 0;
 	std::string	cmdList[NUM_OF_CMD] = {
 		"CAP", "INVITE", "JOIN", "KICK", "MODE", "NICK",
-		"PART", "PING", "PASS", "PRIVMSG", "QUIT", "TOPIC", "USER"
+		"PART", "PASS", "PING", "PRIVMSG", "QUIT", "TOPIC", "USER"
 	};
 
 	// コマンドリストからコマンドを検索

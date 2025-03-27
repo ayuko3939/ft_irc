@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   invite.cpp                                         :+:      :+:    :+:   */
+/*   kick.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/16 23:30:04 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/27 23:01:26 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,11 @@
 static bool checkArguments(Server *server, int clientFd, std::vector<std::string> &words)
 {
 	// <channel> <user> [<comment>]
-    if (words.size() < 2 || words.size() > 3)
-    {
-        addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(KICK_USAGE));
-        return (false);
-    }
+	if (words.size() < 2 || words.size() > 3)
+	{
+		addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(KICK_USAGE));
+		return (false);
+	}
 	// <comment> が指定されている場合、文字数が30文字以内か確認
 	if (words.size() == 3 && words[2].size() > 30)
 	{
@@ -27,6 +27,13 @@ static bool checkArguments(Server *server, int clientFd, std::vector<std::string
 		return (false);
 	}
     return (true);
+}
+
+static std::string getChannelNameFromWord(std::string &word)
+{
+	if (word[0] == '#')
+		return (word.substr(1));
+	return (word);
 }
 
 static bool isValid(Server *server, int const clientFd, std::string targetNick, std::string channelName)
@@ -85,7 +92,7 @@ void kick(Server *server, int const clientFd, s_ircCommand cmdInfo)
 	std::string issuerNick = client.getNickname();
 
 	// 3. パラメータから対象のチャンネル名と追放対象ユーザーのニックネームを取得
-	std::string channelName = words[0];
+	std::string channelName = getChannelNameFromWord(words[0]);
 	std::string targetNick = words[1];
 
 	// 4. コメントが指定されていなければデフォルトメッセージを使用

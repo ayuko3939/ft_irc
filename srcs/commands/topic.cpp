@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/16 22:07:54 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/27 23:02:36 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,13 @@ static bool checkTopicArguments(Server *server, int clientFd, std::vector<std::s
 		return false;
 	}
 	return true;
+}
+
+static std::string getChannelNameFromWord(std::string &word)
+{
+	if (word[0] == '#')
+		return (word.substr(1));
+	return (word);
 }
 
 static bool isValidTopic(const std::string &topic)
@@ -57,7 +64,7 @@ void topic(Server *server, const int clientFd, s_ircCommand cmdInfo)
 		return;
 
 	// 2. チャンネル名とクライアント情報の取得
-	std::string channelName = words[0];
+	std::string channelName = getChannelNameFromWord(words[0]);
 	Client &client = retrieveClient(server, clientFd);
 	std::string clientNick = client.getNickname();
 

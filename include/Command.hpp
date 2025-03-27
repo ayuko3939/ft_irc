@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/18 22:25:25 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/27 18:23:46 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,6 @@ void topicProtectMode(Server *server, Channel &channel, Client &client, bool sig
 
 // Command utils
 std::vector<std::string> splitMessage(std::string message);
-std::vector<std::string> splitByComma(const std::string &str);
+// std::vector<std::string> splitByComma(const std::string &str);
 
 #endif

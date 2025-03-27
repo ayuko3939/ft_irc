@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/17 14:45:38 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/27 23:02:06 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,14 @@ static bool checkArguments(Server *server, int clientFd, std::vector<std::string
 	return true;
 }
 
-static bool	isValid(std::string word)
+static std::string getChannelNameFromWord(std::string &word)
+{
+	if (word[0] == '#')
+		return (word.substr(1));
+	return (word);
+}
+
+static bool	isValid(std::string &word, std::string &key)
 {
 	if (word.empty() || (word.size() > 10))
 		return (false);
@@ -31,6 +38,11 @@ static bool	isValid(std::string word)
 	for (std::size_t i = 0; i < word.size(); i++)
 	{
 		if (!isalnum(word[i]))
+			return (false);
+	}
+	for (std::size_t i = 0; i < key.size(); i++)
+	{
+		if (!isalnum(key[i]))
 			return (false);
 	}
 	return (true);
@@ -89,71 +101,59 @@ static void broadcastNewMember(Server *server, Channel &channel,const std::strin
 	}
 }
 
-// JOIN <channel>{,<channel>} [<key>{,<key>}]
+// JOIN <channel> [<key>]
 void join(Server *server, const int clientFd, s_ircCommand cmdInfo)
 {
 	// 1. ユーザー入力をスペース区切りで取得し、引数の数をチェック
 	std::vector<std::string> words = splitMessage(cmdInfo.message);
-
 	if (!checkArguments(server, clientFd, words))
 		return;
 
-	// 2. チャンネル名リストとキーリストをカンマ区切りで取得
-	std::vector<std::string> channelNames = splitByComma(words[0]);
-	std::vector<std::string> keyList;
+	// 2. チャンネル名とキーを取得
+	std::string channelName = getChannelNameFromWord(words[0]);
+	std::string key = "";
 	if (words.size() > 1)
-		keyList = splitByComma(words[1]);
+		key = words[1];
 
-	// キーリストのサイズがチャンネル数と合わなければ、不足分は空文字とする
-	while (keyList.size() < channelNames.size())
-		keyList.push_back("");
+	// 3. チャンネル名の妥当性をチェック
+	if (!isValid(channelName, key))
+	{
+		addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(JOIN_REQUIREMENTS));
+		return ;
+	}
 
-	// 3. クライアント情報の取得
+	// 4. クライアント情報の取得
 	Client &client = retrieveClient(server, clientFd);
 
-	// 各チャンネルについて処理
-	for (std::size_t i = 0; i < channelNames.size(); i++)
+	// 5. サーバーのチャンネルリストから対象チャンネルを探す
+	std::map<std::string, Channel> &channels = server->getChannelList();
+	std::map<std::string, Channel>::iterator it = channels.find(channelName);
+
+	// 6-1. 存在しない場合は新規作成
+	if (it == channels.end())
 	{
-		std::string channelName = channelNames[i];
-		std::string key = keyList[i];
+		// チャンネルを作成
+		server->addChannel(channelName);
+		it = channels.find(channelName);
 
-		// 4. チャンネル名の妥当性をチェック
-		if (!isValid(channelName))
+		// チャンネルの初期設定（オペレーター、パスワード等）
+		it->second.setOperatorList(clientFd);
+		if (key != "")
 		{
-			addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(JOIN_REQUIREMENTS));
-			continue;
+			it->second.setMode('k', true);
+			it->second.setPassword(key);
 		}
-
-		// 5. サーバーのチャンネルリストから対象チャンネルを探す（追加してitがずれる可能性があるので毎回取得する）
-		std::map<std::string, Channel> &channels = server->getChannelList();
-		std::map<std::string, Channel>::iterator it = channels.find(channelName);
-
-		// 6-1. 存在しない場合は新規作成
-		if (it == channels.end())
-		{
-			// チャンネルを作成
-			server->addChannel(channelName);
-			it = channels.find(channelName);
-
-			// チャンネルの初期設定（オペレーター、パスワード等）
-			it->second.setOperatorList(clientFd);
-			if (key != "")
-			{
-				it->second.setMode('k', true);
-				it->second.setPassword(key);
-			}
-		}
-		// 6-2. 既存のチャンネルに参加できるかチェック
-		else
-		{
-			if (!checkJoinEligibility(server, client, it->second, key))
-				continue;
-		}
-
-		// 7. クライアントをチャンネルに追加
-		server->addClientToChannel(channelName, client);
-
-		// 8. チャンネル参加後、JOINメッセージ、トピック、参加者一覧などの情報を送信
-		broadcastNewMember(server, it->second, channelName, client);
 	}
+	// 6-2. 既存のチャンネルに参加できるかチェック
+	else
+	{
+		if (!checkJoinEligibility(server, client, it->second, key))
+			return ;
+	}
+
+	// 7. クライアントをチャンネルに追加
+	server->addClientToChannel(channelName, client);
+
+	// 8. チャンネル参加後、JOINメッセージ、トピック、参加者一覧などの情報を送信
+	broadcastNewMember(server, it->second, channelName, client);
 }

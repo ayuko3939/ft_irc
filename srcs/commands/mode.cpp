@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/17 23:11:30 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/27 23:01:52 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,13 @@ static bool checkArguments(Server *server, int const clientFd, std::vector<std::
 		}
 	}
 	return (true);
+}
+
+static std::string getChannelNameFromWord(std::string &word)
+{
+	if (word[0] == '#')
+		return (word.substr(1));
+	return (word);
 }
 
 static void infoChannelMode(Server *server, int const clientFd, Channel &channel, std::string channelName)
@@ -129,7 +136,7 @@ void mode(Server *server, int const clientFd, s_ircCommand cmdInfo)
 	std::string clientNick = client.getNickname();
 
 	// 4. チャンネル名が存在するか確認
-	std::string channelName = words[0];
+	std::string channelName = getChannelNameFromWord(words[0]);
 	if (channelName.empty() || !server->isChannelExist(channelName))
 	{
 		addToClientSendBuf(server, clientFd, ERR_NOSUCHCHANNEL(clientNick, channelName));

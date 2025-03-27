@@ -6,27 +6,12 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 21:07:05 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/26 18:30:24 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/27 20:01:58 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "Server.hpp"
-
 # include <iostream>
-
-// bool g_ServerShutdown = false;
-
-// static void signalHandler(int signal)
-// {
-// 	(void)signal;
-// 	g_ServerShutdown = true;
-// }
-
-// void signalHandler(int signal)
-// {
-// 	(void)signal;
-// 	std::cout << INDIGO "[Server] Signal received. " END << std::endl;
-// }
 
 int main(int ac, char **av)
 {
@@ -55,8 +40,6 @@ int main(int ac, char **av)
 
 	try
 	{
-		// オペレーターリストを読み込む
-		// ircServer.readConfigFile();
 		// サーバーの情報を取得
 		ircServer.getServerInfo();
 		// サーバーを起動
