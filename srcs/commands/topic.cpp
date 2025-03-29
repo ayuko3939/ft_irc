@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/27 23:02:36 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/29 19:14:47 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,14 +44,14 @@ static bool isValidTopic(const std::string &topic)
 	return true;
 }
 
-static void broadcastNewTopic(Server *server, Channel &channel, const std::string clientNick, std::string topic)
+static void broadcastNewTopic(Server *server, Channel &channel, Client &client, std::string topic)
 {
 	// チャンネルメンバー全員に新しいメンバーの参加を通知
 	std::map<const int, Client> &clientList = channel.getClientList();
 
 	for (std::map<int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
 	{
-		addToClientSendBuf(server, it->second.getClientFd(), RPL_TOPI(clientNick, channel.getName(), topic));
+		addToClientSendBuf(server, it->second.getClientFd(), RPL_TOPI(IRC_PREFIX(client.getNickname(), client.getUserName()), channel.getName(), topic));
 	}
 }
 
@@ -92,7 +92,7 @@ void topic(Server *server, const int clientFd, s_ircCommand cmdInfo)
 		if (currentTopic.empty())
 			addToClientSendBuf(server, clientFd, RPL_NOTOPIC(clientNick, channelName));
 		else
-			addToClientSendBuf(server, clientFd, RPL_TOPIC(clientNick, channelName, currentTopic));
+			addToClientSendBuf(server, clientFd, RPL_TOPIC(IRC_PREFIX(clientNick, client.getUserName()), channelName, currentTopic));
 		return;
 	}
 	// 5-2. 変更要求の場合、トピック変更処理を実行
@@ -125,6 +125,6 @@ void topic(Server *server, const int clientFd, s_ircCommand cmdInfo)
 		}
 
 		// 7. チャンネル内全クライアントに、TOPICコマンドとして変更通知をブロードキャスト
-		broadcastNewTopic(server, channel, clientNick, newTopic);
+		broadcastNewTopic(server, channel, client, newTopic);
 	}
 }

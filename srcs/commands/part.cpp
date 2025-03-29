@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/27 21:55:49 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/29 19:21:52 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,11 +81,11 @@
 // 	// }
 
 // 	// 8. チャンネル内全メンバーに通知
-// 	addToClientSendBuf(server, clientFd, RPL_PART(clientNick, client.getUserName(), channelName, reason));
+// 	addToClientSendBuf(server, clientFd, RPL_PART(IRC_PREFIX(clientNick, client.getUserName()), channelName, reason));
 // 	std::map<const int, Client> &clientList = channel.getClientList();
 // 	for (std::map<int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
 // 	{
-// 		addToClientSendBuf(server, it->second.getClientFd(), RPL_PART(clientNick, client.getUserName(), channelName, reason));
+// 		addToClientSendBuf(server, it->second.getClientFd(), RPL_PART(IRC_PREFIX(clientNick, client.getUserName()), channelName, reason));
 // 	}
 
 // 	// 9. クライアントをチャンネルから削除する
@@ -132,7 +132,7 @@ static void broadcastToAllChannelMembers(Server *server, Channel &channel, std::
 	while (member != channel.getClientList().end())
 	{
 		// 2. 各メンバーに、PART通知メッセージ（送信者のユーザ情報、チャンネル名、退出理由）を送信する。
-		addToClientSendBuf(server, member->second.getClientFd(), RPL_PART(nick, user, channel.getName(), reason));
+		addToClientSendBuf(server, member->second.getClientFd(), RPL_PART(IRC_PREFIX(nick, user), channel.getName(), reason));
 		member++;
 	}
 }
@@ -184,7 +184,7 @@ void part(Server *server, int const clientFd, s_ircCommand cmd_infos)
 		else
 		{
 			it->second.getClientList().erase(clientFd);
-			addToClientSendBuf(server, clientFd, RPL_PART(nick, client.getUserName(), channel, reason));
+			addToClientSendBuf(server, clientFd, RPL_PART(IRC_PREFIX(nick, client.getUserName()), channel, reason));
 			// 5-7. チャンネル内の他のメンバーにも退出通知をブロードキャストする。
 			broadcastToAllChannelMembers(server, it->second, client.getUserName(), nick, reason);
 		}

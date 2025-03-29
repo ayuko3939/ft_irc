@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pass.cpp                                           :+:      :+:    :+:   */
+/*   quit.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/12 15:30:39 by yohasega           #+#    #+#            */
-/*   Updated: 2025/03/16 18:18:02 by yohasega         ###   ########.fr       */
+/*   Created: 2025/03/12 15:30:39 by yohasega          #+#    #+#             */
+/*   Updated: 2025/03/29 19:25:34 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include <set>
 
 // ブロードキャスト用関数：対象チャンネル内の全メンバーにQUIT通知を送信
-static void broadcastQuit(Server *server, Channel &channel, int const clientFd, const std::string &reason)
+static void broadcastQuit(Server *server, Channel &channel, Client &client, const std::string &reason)
 {
 	// std::set を使ってファイルディスクリプタを重複なく格納する
 	std::set<int> uniqueFds;
@@ -25,12 +25,12 @@ static void broadcastQuit(Server *server, Channel &channel, int const clientFd, 
 		uniqueFds.insert(it->first);
 	}
 
-	uniqueFds.erase(clientFd);
+	uniqueFds.erase(client.getClientFd());
 
 	// 重複を除いた各FDにQUIT通知を送信
 	for (std::set<int>::iterator it = uniqueFds.begin(); it != uniqueFds.end(); ++it)
 	{
-		addToClientSendBuf(server, *it, RPL_QUIT(server->getNickname(clientFd), reason));
+		addToClientSendBuf(server, *it, RPL_QUIT(IRC_PREFIX(client.getNickname(), client.getUserName()), reason));
 	}
 }
 
@@ -47,6 +47,7 @@ void quit(Server *server, int const clientFd, s_ircCommand cmdInfo)
 		reason = "Quit: " + reason;
 
 	// 2. 発行者が参加している各チャンネルに対してQUIT通知を送信
+	Client &client = retrieveClient(server, clientFd);
 	std::map<std::string, Channel> &channels = server->getChannelList();
 	for (std::map<std::string, Channel>::iterator it = channels.begin(); it != channels.end(); ++it)
 	{
@@ -54,7 +55,7 @@ void quit(Server *server, int const clientFd, s_ircCommand cmdInfo)
 		if (channel.isClientInChannel(clientFd))
 		{
 			// ブロードキャスト関数を呼び出して各メンバーにQUIT通知を送る
-			broadcastQuit(server, channel, clientFd, reason);
+			broadcastQuit(server, channel, client, reason);
 		}
 	}
 		
@@ -66,8 +67,7 @@ void quit(Server *server, int const clientFd, s_ircCommand cmdInfo)
 	}
 
 	// 4. 発行者に最終通知を送信して接続を閉じる
-	Client &client = retrieveClient(server, clientFd);
-	addToClientSendBuf(server, clientFd, SEY_BYE(client.getNickname()));
+	addToClientSendBuf(server, clientFd, SEY_BYE(IRC_PREFIX(client.getNickname(), client.getUserName())));
 
 	client.setToDeconnect();
 }

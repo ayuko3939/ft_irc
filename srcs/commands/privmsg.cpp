@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/29 16:39:46 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/29 19:20:51 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,15 +43,15 @@ static bool checkArguments(Server *server, int clientFd, std::string &target, st
 	return (true);
 }
 
-static void broadcastMSG(Server *server, Channel &channel, std::string &senderNick, std::string &target, std::string &message)
+static void broadcastMSG(Server *server, Channel &channel, Client &client, std::string &target, std::string &message)
 {
 	// チャンネルメンバー全員に
 	std::map<const int, Client> &clientList = channel.getClientList();
 
 	for (std::map<int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
 	{
-		if (it->second.getNickname() != senderNick)
-			addToClientSendBuf(server, it->second.getClientFd(), RPL_PRIVMSG(senderNick, target, message));
+		if (it->second.getNickname() != client.getNickname())
+			addToClientSendBuf(server, it->second.getClientFd(), RPL_PRIVMSG(IRC_PREFIX(client.getNickname(), client.getUserName()), target, message));
 	}
 }
 
@@ -100,7 +100,7 @@ void privmsg(Server *server, int const clientFd, s_ircCommand cmdInfo)
 		}
 
 		// 8. チャンネル内の全メンバー（送信元以外）に対して、メッセージをブロードキャスト
-		broadcastMSG(server, channel, senderNick, target, message);
+		broadcastMSG(server, channel, client, target, message);
 	}
 	// 5-2. ターゲットがユーザーの場合
 	else
@@ -114,7 +114,7 @@ void privmsg(Server *server, int const clientFd, s_ircCommand cmdInfo)
 		
 		// 7. ターゲットにメッセージを送信
 		int targetFd = server->getClientFdFromNick(target);
-		addToClientSendBuf(server, targetFd, RPL_PRIVMSG(senderNick, target, message));
+		addToClientSendBuf(server, targetFd, RPL_PRIVMSG(IRC_PREFIX(senderNick, client.getUserName()), target, message));
 	}
 }
 

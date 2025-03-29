@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/27 23:01:17 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/29 19:16:36 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,14 +62,14 @@ static bool isValid(Server *server, int const clientFd, std::string targetNick, 
 	return (true);
 }
 
-static void broadcastNewMember(Server *server, Channel &channel, std::string &inviter, std::string &target)
+static void broadcastNewMember(Server *server, Channel &channel, Client &client, std::string &target)
 {
 	// チャンネルメンバー全員に新しいメンバーの参加を通知
 	std::map<const int, Client> &clientList = channel.getClientList();
 
 	for (std::map<int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
 	{
-		addToClientSendBuf(server, it->second.getClientFd(), RPL_INVITE(inviter, target, channel.getName()));
+		addToClientSendBuf(server, it->second.getClientFd(), RPL_INVITE(IRC_PREFIX(client.getNickname(), client.getUserName()), target, channel.getName()));
 	}
 }
 
@@ -123,5 +123,5 @@ void invite(Server *server, int const clientFd, s_ircCommand cmdInfo)
 	channel.addClientToChannel(target);
 
 	// 9. チャンネルメンバー全員に新しいメンバーの参加を通知
-	broadcastNewMember(server, channel, inviterNick, targetNick);
+	broadcastNewMember(server, channel, client, targetNick);
 }

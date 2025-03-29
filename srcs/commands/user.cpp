@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/27 16:24:30 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/29 18:41:30 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,17 +63,6 @@ static bool	isValid(std::string username, std::string realname)
 	return (true);
 }
 
-static bool	isAlreadyUsed(Server *server, int clientFd, std::string nickname)
-{
-	std::map<int, Client>::iterator it = server->getClientList().begin();
-	for (; it != server->getClientList().end(); ++it)
-	{
-		if (it->first != clientFd && it->second.getNickname() == nickname)
-			return (true);
-	}
-	return (false);
-}
-
 void user(Server *server, const int clientFd,s_ircCommand cmdInfo)
 {
 	// クライアント情報の取得
@@ -99,18 +88,11 @@ void user(Server *server, const int clientFd,s_ircCommand cmdInfo)
 		return ;
 	}
 
-	// 4. 重複チェック（他のユーザーが既に使用しているか）
-	if (isAlreadyUsed(server, clientFd, username)) {
-		addToClientSendBuf(server, clientFd, ERR_USERNAMEINUSE(client.getNickname(), username));
-		return ;
-	}
-
-	// 7. ニックネームの更新
+	// 4. ニックネームの更新
 	client.setUserName(username);
 	client.setRealName(realname);
 	client.incrementNmInfo();
 
-	// 8. 成功通知の送信
-	// addToClientSendBuf(server, clientFd, RPL_USER(client.getNickname(), username, realname));
-	std::cout << INDIGO "[Server] User registration success" END << std::endl;
+	// 5. 成功通知の送信
+	addToClientSendBuf(server, clientFd, RPL_USER(client.getNickname(), username, realname));
 }

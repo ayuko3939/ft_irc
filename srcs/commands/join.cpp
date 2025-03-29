@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/27 23:02:06 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/29 19:12:01 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,14 +90,12 @@ static bool checkJoinEligibility(Server *server, Client client, Channel &channel
 
 static void broadcastNewMember(Server *server, Channel &channel,const std::string channelName, Client client)
 {
-	std::string newClientNick = client.getNickname();
-
 	// チャンネルメンバー全員に新しいメンバーの参加を通知
 	std::map<const int, Client> &clientList = channel.getClientList();
 
 	for (std::map<int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
 	{
-		addToClientSendBuf(server, it->second.getClientFd(), RPL_JOIN(newClientNick, channelName));
+		addToClientSendBuf(server, it->second.getClientFd(), RPL_JOIN(IRC_PREFIX(client.getNickname(), client.getUserName()), channelName));
 	}
 }
 

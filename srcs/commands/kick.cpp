@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/27 23:01:26 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/29 19:17:03 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,14 +68,14 @@ static bool isValid(Server *server, int const clientFd, std::string targetNick, 
 	return (true);
 }
 
-static void broadcastNewMember(Server *server, Channel &channel, std::string &issuer, std::string &target, std::string &comment)
+static void broadcastNewMember(Server *server, Channel &channel, Client &client, std::string &target, std::string &comment)
 {
 	// チャンネルメンバー全員に追放を通知
 	std::map<const int, Client> &clientList = channel.getClientList();
 
 	for (std::map<int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
 	{
-		addToClientSendBuf(server, it->second.getClientFd(), RPL_KICK(issuer, target, channel.getName(), comment));
+		addToClientSendBuf(server, it->second.getClientFd(), RPL_KICK(IRC_PREFIX(client.getNickname(), client.getUserName()), target, channel.getName(), comment));
 	}
 }
 
@@ -132,7 +132,7 @@ void kick(Server *server, int const clientFd, s_ircCommand cmdInfo)
 	}
 
 	// 9. チャンネルメンバー全員に追放を通知
-	broadcastNewMember(server, channel, issuerNick, targetNick, comment);
+	broadcastNewMember(server, channel, client, targetNick, comment);
 
 	// 10. 対象ユーザーをチャンネルから削除する
 	channel.removeClient(targetFd);
