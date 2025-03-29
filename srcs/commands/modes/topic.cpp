@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/18 22:15:40 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/28 18:37:53 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void topicProtectMode(Server *server, Channel &channel, Client &client, bool sig
 		return;
 
 	// 1. チャンネルのモードフラグを更新（'t' オプション）
-	channel.setMode('t', sign);
+	channel.setMode(sign, 't');
 
 	// 2. 変更内容をチャンネル内全メンバーに通知する
 	broadcastModeChange(server, channel, client, sign);

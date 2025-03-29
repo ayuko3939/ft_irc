@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/18 22:20:14 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/28 18:37:22 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,13 +88,13 @@ void userLimitMode(Server *server, Channel &channel, Client &client, bool sign, 
 		}
 		int limit = std::atoi(modeArgs.c_str());
 		// 制限人数を更新（例：channel.setCapacity()でユーザー数制限を設定）
-		channel.setMode('l', sign);
+		channel.setMode(sign, 'l');
 		channel.setCapacity(limit);
 	}
 	// 2-2. -l（無効化）の場合、制限を解除する
 	else
 	{
-		channel.setMode('l', sign);
+		channel.setMode(sign, 'l');
 		// 制限解除時は、デフォルトの最大人数（例：MAX_CLIENTS）に戻す
 		channel.setCapacity(MAX_CLIENTS);
 	}

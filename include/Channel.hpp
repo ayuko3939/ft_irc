@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:04 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/17 14:44:42 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/29 16:45:41 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,8 @@ class Channel
     // Setters
 	// void setName(const std::string &name);
 	void setTopic(const std::string &topic);
-	// void setMode(const std::string &mode); // 複数のモードを設定する場合
-	void setMode(const char mode, bool sign); // 1つのモードを設定する場合
+	// void setMultMode(const std::string &mode); // 複数のモードを設定する場合
+	void setMode(bool sign, const char mode); // 1つのモードを設定する場合
 	void setPassword(const std::string &password);
 	void setCapacity(int capacity);
 	// void setClientList(Client &client);

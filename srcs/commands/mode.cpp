@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/27 23:01:52 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/28 18:50:21 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,8 @@ static void processModeChanges(Server *server, Client &client, Channel &channel,
 	bool sign = modeString[0] == '+'; // true: +, false: -
 	char mode = modeString[1];
 
+	std::cout << "[processModeChanges] sign: " << sign << ", mode: " << mode << ", modeArgs: " << modeArgs << std::endl;
+
 	// モード変更の処理
 	switch (mode)
 	{
@@ -176,7 +178,4 @@ void mode(Server *server, int const clientFd, s_ircCommand cmdInfo)
 
 	// 9. MODEコマンドの処理
 	processModeChanges(server, client, channel, modeString, modeArgs);
-
-	// 10. 変更されたモード情報をチャンネル内全メンバーに通知する
-	// ※ 具体的なブロードキャスト処理は、各オプションの実装後に追加する可能性がある
 }

@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:04 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/17 14:44:48 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/29 16:48:01 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,10 @@ _clientList(),
 _kickedUsers(),
 _operatorList()
 {
-	setMode('t', true);
+	_mode.invite = false;
+	_mode.topic = true;
+	_mode.key = false;
+	_mode.limit = true;
 }
 
 Channel::~Channel() {}
@@ -35,31 +38,30 @@ void Channel::setCapacity(int capacity) { _capacity = capacity; }
 // void Channel::setKickedUsers(int clientFd) { _kickedUsers.push_back(clientFd); }
 void Channel::setOperatorList(int clientFd) { _operatorList.push_back(clientFd); }
 
-// void Channel::setMode(const std::string &mode)
+// void Channel::setMultMode(const std::string &mode)
 // {
 // 	std::string::const_iterator it = mode.begin();
-// 	bool flag;
+// 	bool flag = true;
 
 // 	// チャンネルモードの先頭文字が+か-かでフラグを立てる
-// 	switch (*it)
+// 	if (*it != '+' && *it != '-')
 // 	{
-// 		case '-':
-// 			flag = false;
-// 			break;
-// 		case '+':
-// 			flag = true;
-// 			break;
-// 		default:
-// 			std::cerr << "invalid option" << std::endl;
-// 			return ;
+// 		std::cerr << "invalid option" << std::endl;
+// 		return ;
 // 	}
-// 	++it;
 	
 // 	// チャンネルモードの文字列を解析してフラグを立てる
 // 	for (; it != mode.end(); ++it)
 // 	{
 // 		switch (*it)
 // 		{
+// 			case '-':
+// 				flag = false;
+// 				break;
+// 			case '+':
+// 				flag = true;
+// 				break;
+
 // 			case 'i':
 // 				_mode.invite = flag;
 // 				break;
@@ -81,8 +83,9 @@ void Channel::setOperatorList(int clientFd) { _operatorList.push_back(clientFd);
 // 	}
 // }
 
-void Channel::setMode(const char mode, bool sign)
+void Channel::setMode(bool sign, const char mode)
 {
+	std::cout << "[setMode] mode: " << mode << ", sign: " << sign << std::endl;
 	switch (mode)
 	{
 		case 'i':

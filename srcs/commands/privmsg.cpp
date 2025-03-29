@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/27 22:55:28 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/29 16:39:46 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static bool checkArguments(Server *server, int clientFd, std::string &target, st
 		addToClientSendBuf(server, clientFd, ERR_NORECIPIENT(target, "PRIVMSG"));
 		return (false);
 	}
-	if (message.size() > 200)
+	if (message.size() > 400)
 	{
 		addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(PRIVMSG_REQUIREMENTS));
 		return (false);

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   topic.cpp                                          :+:      :+:    :+:   */
+/*   key.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/12 19:43:58 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/28 18:36:57 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,13 +66,13 @@ void channelKeyMode(Server *server, Channel &channel, Client &client, bool sign,
 			return;
 		}
 		// キーが有効なら、チャンネルのキー情報を更新
-		channel.setMode('k', sign);
+		channel.setMode(sign, 'k');
 		channel.setPassword(modeArgs);
 	}
 	// 2-2. -k（無効化）の場合、キー情報をクリア
 	else
 	{
-		channel.setMode('k', sign);
+		channel.setMode(sign, 'k');
 		channel.setPassword("");
 	}
 

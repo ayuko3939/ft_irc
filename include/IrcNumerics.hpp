@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 22:07:12 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/27 21:44:30 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/29 16:39:13 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@
 # define MODE_REQ_K_PASS	"[!] password requirements: len(1-20), char(a-z, A-Z, 0-9)\r\n"
 # define MODE_REQ_L_LIMIT(max)	("[!] limit requirements: (1-" + max + ")\r\n")
 # define PRIVMSG_USAGE		"Usage: PRIVMSG <nickname/channel> <message>\r\n"
-# define PRIVMSG_REQUIREMENTS	"[!] message requirements: len(200), char(a-z, A-Z, 0-9)\r\n"
+# define PRIVMSG_REQUIREMENTS	"[!] message requirements: len(400)\r\n"
 # define PART_USAGE			"Usage: PART <channel> [<reason>]\r\n"
 # define PART_REQUIREMENTS	"[!] reason requirements: len(30)\r\n"
 # define QUIT_USAGE			"Usage: QUIT [<reason>]\r\n"
@@ -185,7 +185,7 @@
 // # define RPL_LISTEND(client) (":" + client + " :End of /LIST\r\n")
 
 // // (324) RPL_CHANNELMODEIS : チャネルモード（モード文字列のみ）
-# define RPL_CHANNELMODEIS(client, channel, modes) (":" + client + " " + channel + " " + modes + "\r\n")
+# define RPL_CHANNELMODEIS(client, channel, modes) (":" + client + " #" + channel + " :" + modes + "\r\n")
 
 // // (329) RPL_CREATIONTIME : チャネル作成時刻
 // # define RPL_CREATIONTIME(client, channel, ts) (":" + client + " " + channel + " " + ts + "\r\n")
@@ -194,10 +194,10 @@
 // # define RPL_WHOISACCOUNT(client, nick, account) (":" + client + " " + nick + " " + account + "\r\n")
 
 // (331) RPL_NOTOPIC : トピック未設定
-# define RPL_NOTOPIC(client, channel) (":" + client + " " + channel + " :No topic is set\r\n")
+# define RPL_NOTOPIC(client, channel) (":" + client + " #" + channel + " :No topic is set\r\n")
 
 // (332) RPL_TOPIC : チャネルトピック
-# define RPL_TOPIC(client, channel, topic) (":" + client + " " + channel + " :" + topic + "\r\n")
+# define RPL_TOPIC(client, channel, topic) (":" + client + " #" + channel + " :" + topic + "\r\n")
 
 // // (333) RPL_TOPICWHOTIME : トピック設定者と時刻
 // # define RPL_TOPICWHOTIME(client, channel, nick, ts) (":" + client + " " + channel + " " + nick + " " + ts + "\r\n")

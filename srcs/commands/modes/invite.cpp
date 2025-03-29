@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   topic.cpp                                          :+:      :+:    :+:   */
+/*   invite.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/12 19:43:58 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/28 18:51:31 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,11 +41,11 @@ static void broadcastModeChange(Server *server, Channel &channel, Client &client
 void inviteOnlyMode(Server *server, Channel &channel, Client &client, bool sign)
 {
 	// 1. 現在の状態をチェック
-	if (!isAlreadySet(server, channel, client, sign))
+	if (isAlreadySet(server, channel, client, sign))
 		return;
 
 	// 2.モードを変更
-	channel.setMode('i', sign);
+	channel.setMode(sign, 'i');
 
 	// 3. モード変更を全員に通知
 	broadcastModeChange(server, channel, client, sign);
