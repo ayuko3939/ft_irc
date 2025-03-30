@@ -51,7 +51,7 @@ static void broadcastMSG(Server *server, Channel &channel, Client &client, std::
 	for (std::map<int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
 	{
 		if (it->second.getNickname() != client.getNickname())
-			addToClientSendBuf(server, it->second.getClientFd(), RPL_PRIVMSG(IRC_PREFIX(client.getNickname(), client.getUserName()), target, message));
+			addToClientSendBuf(server, it->second.getClientFd(), RPL_PRIVMSG(IRC_PREFIX(client.getNickname(), client.getUserName()), '#' + target, message));
 	}
 }
 

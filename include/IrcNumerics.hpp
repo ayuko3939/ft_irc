@@ -49,7 +49,7 @@
 
 # define IRC_PREFIX(nickname, username) (":" + nickname + "!" + username + "@localhost")
 // 成功通知
-# define RPL_NICK(client, newNick) (":" + client + " :Your nickname is " + newNick + "\r\n")
+# define RPL_NICK(client, newNick) (":" + client + " NICK " + newNick + "\r\n")
 # define RPL_USER(client, user, real) (":" + client + " :Your username is " + user + ", realname is " + real + "\r\n")
 # define RPL_PASS() ("Password accepted\r\n")
 # define RPL_JOIN(IRC_PREFIX, channel) (IRC_PREFIX + " :joined #" + channel + "\r\n")
@@ -57,8 +57,8 @@
 # define RPL_INVITE(IRC_PREFIX, guest, channelName) (IRC_PREFIX + " :invited " + guest + " to " + channelName + "\r\n")
 # define RPL_KICK(IRC_PREFIX, channel, target, comment) (IRC_PREFIX + " :kicked " + target + " from " + channel + " (" + comment + ")\r\n")
 // # define RPL_MODE(IRC_PREFIX, channel, modestring) (IRC_PREFIX + " :channel mode " + modestring + " set to #" + channel + "\r\n")
-# define RPL_PRIVMSG(IRC_PREFIX, target, message) (IRC_PREFIX + " :PRIVMSG " + target + " :" + message + "\r\n")
-# define RPL_PART(IRC_PREFIX, channel, reason) (IRC_PREFIX + " :PART #" + channel + " (" + reason + ")\r\n")
+# define RPL_PRIVMSG(IRC_PREFIX, target, message) (IRC_PREFIX + " PRIVMSG " + target + " :" + message + "\r\n")
+# define RPL_PART(IRC_PREFIX, channel, reason) (IRC_PREFIX + " PART #" + channel + " ;" + reason + "\r\n")
 # define RPL_QUIT(IRC_PREFIX, reason) (IRC_PREFIX + " :Quit (" + reason + ")\r\n")
 # define SEY_BYE(IRC_PREFIX) (IRC_PREFIX + " : .*:+* Thanks for using IRC server. Goodbye! *+:*.")
 

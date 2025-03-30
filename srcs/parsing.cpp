@@ -118,7 +118,7 @@ void sendClientRegistrationMsg(Server *server, int clientFd, Client *client)
 void Server::fillClientInfo(Client *client, int clientFd, s_ircCommand cmdInfo)
 {
 	// irssiからの"CAP LS"リクエストを無視
-	if (cmdInfo.name == "CAP" && cmdInfo.message == "LS")
+	if (cmdInfo.name == "CAP" && cmdInfo.message.find("LS") != std::string::npos)
 	{
 		// CAP LS に対して空の応答を返す（または必要な機能を指定する）
 		addToClientSendBuf(this, clientFd, "CAP * LS :\r\n");
