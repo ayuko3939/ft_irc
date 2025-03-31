@@ -85,7 +85,7 @@ void Channel::setOperatorList(int clientFd) { _operatorList.push_back(clientFd);
 
 void Channel::setMode(bool sign, const char mode)
 {
-	std::cout << "[setMode] mode: " << mode << ", sign: " << sign << std::endl;
+	// std::cout << "[setMode] mode: " << mode << ", sign: " << sign << std::endl;
 	switch (mode)
 	{
 		case 'i':

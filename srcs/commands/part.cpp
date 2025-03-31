@@ -48,7 +48,7 @@ void part(Server *server, int const clientFd, s_ircCommand cmdInfo)
 	std::string channelName = getChannelNameFromWords(words[0]);
 	std::string reason = "";
 	if (words.size() == 2)
-		reason = words[1];
+		reason = " (" + words[1] + ")";
 
 	// 4. チャンネルが存在するか確認
 	if (!server->isChannelExist(channelName))
@@ -68,28 +68,16 @@ void part(Server *server, int const clientFd, s_ircCommand cmdInfo)
 		return;
 	}
 
-	// // 7. チャンネル内の唯一のオペレーターである場合、PARTを拒否
-	// if (channel.isOperator(clientFd))
-	// {
-	// 	std::vector<int> opList = channel.getOperatorList();
-	// 	if (opList.size() == 1)
-	// 	{
-	// 		std::string msg = ":" + clientNick + " :You are the only operator in " + channelName + ", you cannot part.\r\n";
-	// 		addToClientSendBuf(server, clientFd, msg);
-	// 		return;
-	// 	}
-	// }
+	// 7. クライアントをチャンネルから削除する
+	addToClientSendBuf(server, clientFd, RPL_PART(IRC_PREFIX(clientNick, client.getUserName()), channelName, clientNick, reason));
+	channel.removeClient(clientFd);
 
 	// 8. チャンネル内全メンバーに通知
-	addToClientSendBuf(server, clientFd, RPL_PART(IRC_PREFIX(clientNick, client.getUserName()), channelName, reason));
 	std::map<const int, Client> &clientList = channel.getClientList();
 	for (std::map<int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
 	{
-		addToClientSendBuf(server, it->second.getClientFd(), RPL_PART(IRC_PREFIX(clientNick, client.getUserName()), channelName, reason));
+		addToClientSendBuf(server, it->second.getClientFd(), RPL_PART(IRC_PREFIX(clientNick, client.getUserName()), channelName, clientNick, reason));
 	}
-
-	// 9. クライアントをチャンネルから削除する
-	channel.removeClient(clientFd);
 }
 
 

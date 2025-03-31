@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/29 19:16:36 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/03/31 22:21:29 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,24 @@
 // INVITEコマンドの引数数チェック (INVITE <nickname> <channel> であること)
 static bool checkArguments(Server *server, int clientFd, std::vector<std::string> &words)
 {
-    if (words.size() != 2)
+	std::string nickname = server->getNickname(clientFd);
+	std::string errMessage = "";
+
+    if (words.size() < 2)
     {
-        addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(INVITE_USAGE));
+		errMessage = ERR_NEEDMOREPARAMS(nickname, "INVITE");
+		errMessage += INVITE_USAGE;
+        addToClientSendBuf(server, clientFd, errMessage);
         return false;
     }
+	// 引数が複数ある場合
+	if (words.size() > 2)
+	{
+		errMessage = ERR_INVALID_PARM;
+		errMessage += INVITE_USAGE;
+		addToClientSendBuf(server, clientFd, errMessage);
+		return ;
+	}
     return true;
 }
 
@@ -94,8 +107,8 @@ void invite(Server *server, int const clientFd, s_ircCommand cmdInfo)
 		return;
 
 	// 5. 招待したユーザーが対象チャンネルに参加しているかチェックする
-	std::map<std::string, Channel> &channels = server->getChannelList();
-	Channel &channel = channels.find(channelName)->second;
+	std::map<std::string, Channel> &channelList = server->getChannelList();
+	Channel &channel = channelList.find(channelName)->second;
 
 	if (!channel.isClientInChannel(clientFd))
 	{
@@ -125,3 +138,13 @@ void invite(Server *server, int const clientFd, s_ircCommand cmdInfo)
 	// 9. チャンネルメンバー全員に新しいメンバーの参加を通知
 	broadcastNewMember(server, channel, client, targetNick);
 }
+
+/*
+Numeric Replies:
+	// RPL_INVITING (341)
+	// ERR_NEEDMOREPARAMS (461)
+	// ERR_NOSUCHCHANNEL (403)
+	// ERR_NOTONCHANNEL (442)
+	// ERR_CHANOPRIVSNEEDED (482)
+	// ERR_USERONCHANNEL (443)
+*/

@@ -23,7 +23,9 @@ void getArgument(std::string &argument, std::string &target, std::string &messag
 	else
 	{
 		target = argument.substr(0, pos);
-		message = trim(argument.substr(pos + 1));
+		message = argument.substr(pos + 1);
+		if (message[0] == ':')
+			message = message.substr(1);
 	}
 }
 
@@ -117,8 +119,6 @@ void privmsg(Server *server, int const clientFd, s_ircCommand cmdInfo)
 		addToClientSendBuf(server, targetFd, RPL_PRIVMSG(IRC_PREFIX(senderNick, client.getUserName()), target, message));
 	}
 }
-
-
 
 // PRIVMSG <target> <text to be sent>
 // void privmsg(Server *server, int const clientFd, s_ircCommand cmdInfo)

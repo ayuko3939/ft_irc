@@ -20,7 +20,7 @@ static bool checkArguments(Server *server, int const clientFd, std::vector<std::
 	int wordsSize = words.size();
 
 	// 引数がない場合はエラー
-	if (wordsSize == 0)
+	if (wordsSize == 0 || words[0].empty())
 	{
 		addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(MODE_USAGE));
 		return (false);
@@ -62,13 +62,6 @@ static bool checkArguments(Server *server, int const clientFd, std::vector<std::
 	return (true);
 }
 
-static std::string getChannelNameFromWord(std::string &word)
-{
-	if (word[0] == '#')
-		return (word.substr(1));
-	return (word);
-}
-
 static void infoChannelMode(Server *server, int const clientFd, Channel &channel, std::string channelName)
 {
 	std::string modeInfo = "========== " + channelName + "'s mode ==========\r\n";
@@ -94,8 +87,6 @@ static void processModeChanges(Server *server, Client &client, Channel &channel,
 	// モード変更の内容を取得
 	bool sign = modeString[0] == '+'; // true: +, false: -
 	char mode = modeString[1];
-
-	std::cout << "[processModeChanges] sign: " << sign << ", mode: " << mode << ", modeArgs: " << modeArgs << std::endl;
 
 	// モード変更の処理
 	switch (mode)
@@ -137,45 +128,59 @@ void mode(Server *server, int const clientFd, s_ircCommand cmdInfo)
 	Client &client = retrieveClient(server, clientFd);
 	std::string clientNick = client.getNickname();
 
-	// 4. チャンネル名が存在するか確認
-	std::string channelName = getChannelNameFromWord(words[0]);
-	if (channelName.empty() || !server->isChannelExist(channelName))
+	// 4. チャンネル名（ニックネーム）を取得
+	bool		isChannel = false;
+	std::string target = words[0];
+	if (target[0] == '#')
 	{
-		addToClientSendBuf(server, clientFd, ERR_NOSUCHCHANNEL(clientNick, channelName));
+		isChannel = true;
+		target = target.substr(1);
+	}
+
+	// 5. ターゲットが存在するか確認
+	// クライアントの場合：存在しなければエラー、存在すれば何もしない　チャンネルの場合：存在しなければエラー、存在すれば処理を続行
+	if (!isChannel)
+	{
+		if (!server->isClientExist(target))
+			addToClientSendBuf(server, clientFd, ERR_NOSUCHNICK(clientNick, target));
+		return ;
+	}
+	else if (!server->isChannelExist(target))
+	{
+		addToClientSendBuf(server, clientFd, ERR_NOSUCHCHANNEL(clientNick, target));
 		return ;
 	}
 
-	// 5. クライアントがチャンネルに参加しているか確認
+	// 6. クライアントがチャンネルに参加しているか確認
 	std::map<std::string, Channel> &channels = server->getChannelList();
-	Channel &channel = channels.find(channelName)->second;
-
+	Channel &channel = channels.find(target)->second;
 	if (!channel.isClientInChannel(clientFd))
 	{
-		addToClientSendBuf(server, clientFd, ERR_NOTONCHANNEL(clientNick, channelName));
+		addToClientSendBuf(server, clientFd, ERR_NOTONCHANNEL(clientNick, target));
 		return;
 	}
 
-	// チャンネルのモード情報をクライアントに通知
+	// 7. 「MODE #channelname」の場合、チャンネルのモード情報をクライアントに通知
 	if (words.size() == 1)
 	{
 		// チャンネルのモード情報をクライアントに通知
-		infoChannelMode(server, clientFd, channel, channelName);
+		infoChannelMode(server, clientFd, channel, target);
 		return;
 	}
 
-	// 6. クライアントがチャンネルオペレーターであるか確認
+	// 8. クライアントがチャンネルオペレーターであるか確認
 	if (!channel.isOperator(clientFd))
 	{
-		addToClientSendBuf(server, clientFd, ERR_CHANOPRIVSNEEDED(clientNick, channelName));
+		addToClientSendBuf(server, clientFd, ERR_CHANOPRIVSNEEDED(clientNick, target));
 		return;
 	}
 
-	// 8. 追加パラメータ（mode arguments）の抽出（存在する場合）
+	// 9. 追加パラメータ（mode arguments）の抽出（存在する場合）
 	std::string modeString = words[1];
 	std::string modeArgs = "";
 	if (words.size() > 2)
 		modeArgs = words[2];
 
-	// 9. MODEコマンドの処理
+	// 10. MODEコマンドの処理
 	processModeChanges(server, client, channel, modeString, modeArgs);
 }
