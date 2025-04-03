@@ -12,20 +12,16 @@
 
 #include "Command.hpp"
 
-static std::string getUsername(std::string &cmdLine)
-{
-	std::vector<std::string> words = splitMessage(cmdLine);
-	return (words[0]);	
-}
-
 // yohasega yohasega 127.0.0.1 :Yoka Hasegawa
-static std::string getRealname(std::string &cmdLine)
+static std::string getRealname(std::string &cmdLine, std::string &thirdArgument)
 {
 	std::size_t pos = cmdLine.find(":");
 	if (pos == std::string::npos)
 	{
-		std::vector<std::string> words = splitMessage(cmdLine);
-		return (words[3]);
+		pos = cmdLine.find(thirdArgument);
+		if (pos == std::string::npos)
+			return ("");
+		return (cmdLine.substr(pos));
 	}
 
 	return (cmdLine.substr(pos + 1));
@@ -33,8 +29,8 @@ static std::string getRealname(std::string &cmdLine)
 
 static bool	isValid(std::string username, std::string realname)
 {
-	if (username.empty() || (realname.size() > 20) ||
-		realname.empty() || (realname.size() > 20))
+	if (username.empty() || (username.size() > USERNAMELEN) ||
+		realname.empty() || (realname.size() > REALNAMELEN))
 		return (false);
 	
 	for (std::size_t i = 0; i < username.size(); i++)
@@ -50,7 +46,7 @@ static bool	isValid(std::string username, std::string realname)
 	return (true);
 }
 
-static bool checkArguments(Server *server, int clientFd, 
+static bool checkAndGetArguments(Server *server, int clientFd, 
 	std::string &cmdLine , std::string &username, std::string &realname)
 {
 	std::vector<std::string> words = splitMessage(cmdLine);
@@ -67,8 +63,8 @@ static bool checkArguments(Server *server, int clientFd,
 	}
 
 	// ユーザー名と実名の取得
-	username = getUsername(cmdLine);
-	realname = getRealname(cmdLine);
+	username = words[0];
+	realname = getRealname(cmdLine, words[3]);
 
 	// ユーザー名と実名の妥当性チェック
 	if (!isValid(username, realname))
@@ -76,7 +72,7 @@ static bool checkArguments(Server *server, int clientFd,
 		errMessage = ERR_INVALID_PARM;
 		errMessage += USER_REQUIREMENTS;
 		addToClientSendBuf(server, clientFd, errMessage);
-		return ;
+		return (false);
 	}
 	return (true);
 }
@@ -98,8 +94,8 @@ void user(Server *server, const int clientFd,s_ircCommand cmdInfo)
 	std::string username = "";
 	std::string realname = "";
 
-	// 2. 入力内容の妥当性チェック（ニックネームの文字数、文字種）
-	if (!checkArguments(server, clientFd, cmdInfo.message, username, realname))
+	// 2. ユーザー入力から引数を取得し、引数をチェック
+	if (!checkAndGetArguments(server, clientFd, cmdInfo.message, username, realname))
 		return ;
 
 	// 3. ユーザー名と実名の設定

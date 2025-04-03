@@ -12,13 +12,6 @@
 
 #include "Command.hpp"
 
-static std::string getChannelNameFromWord(std::string &word)
-{
-	if (word[0] == '#')
-		return (word.substr(1));
-	return (word);
-}
-
 static bool	isValid(std::string &channelName, std::string &key)
 {
 	if (channelName.empty() || channelName.size() > 20 || key.size() > 10)
@@ -37,10 +30,9 @@ static bool	isValid(std::string &channelName, std::string &key)
 	return (true);
 }
 
-static bool checkArguments(Server *server, int clientFd, 
-	std::vector<std::string> &words, std::string &channelName, std::string &key)
+static bool checkAndGetArguments(Server *server, int clientFd, std::vector<std::string> &words, 
+	std::string &nickname, std::string &channelName, std::string &key)
 {
-	std::string nickname = server->getNickname(clientFd);
 	std::string errMessage = "";
 
 	// 引数がないまたは空の場合
@@ -49,7 +41,7 @@ static bool checkArguments(Server *server, int clientFd,
 		errMessage = ERR_NEEDMOREPARAMS(nickname, "JOIN");
 		errMessage += JOIN_USAGE;
 		addToClientSendBuf(server, clientFd, errMessage);
-		return false;
+		return (false);
 	}
 	// 引数が複数ある場合
 	if (words.size() > 2)
@@ -57,7 +49,7 @@ static bool checkArguments(Server *server, int clientFd,
 		errMessage = ERR_INVALID_PARM;
 		errMessage += JOIN_USAGE;
 		addToClientSendBuf(server, clientFd, errMessage);
-		return ;
+		return (false);
 	}
 	
 	// チャンネル名とキーを取得
@@ -68,18 +60,17 @@ static bool checkArguments(Server *server, int clientFd,
 	// チャンネル名とキーの妥当性をチェック
 	if (!isValid(channelName, key))
 	{
-		errMessage = ERR_INVALID_PARM;
+		errMessage = ERR_INVALIDKEY(nickname, channelName);
 		errMessage += JOIN_REQUIREMENTS;
 		addToClientSendBuf(server, clientFd, errMessage);
-		return ;
+		return (false);
 	}
-	return true;
+	return (true);
 }
 
 static bool checkJoinEligibility(Server *server, int clientFd, 
-	Channel &channel, std::string key)
+	std::string &nickname, Channel &channel, std::string key)
 {
-	std::string nickname = server->getNickname(clientFd);
 	std::string channelName = channel.getName();
 	std::string errMessage = "";
 
@@ -103,7 +94,7 @@ static bool checkJoinEligibility(Server *server, int clientFd,
 	}
 	
 	// 招待制(mode:i)されている場合、はJOINできない
-	if (channel.getMode("invite"))
+	if (channel.getMode("invite") && !channel.isInvited(clientFd))
 	{
 		errMessage = ERR_INVITEONLYCHAN(nickname, channelName);
 		addToClientSendBuf(server, clientFd, errMessage);
@@ -113,7 +104,7 @@ static bool checkJoinEligibility(Server *server, int clientFd,
 	// 参加人数制限チェック
 	if (channel.getMode("limit") && channel.getClientList().size() >= channel.getCapacity())
 	{
-		errMessage = ERR_CHANNELISFULL(nickname, channelName);
+		errMessage = ERR_TOOMANYCHANNELS(nickname, channelName);
 		addToClientSendBuf(server, clientFd, errMessage);
 		return (false);
 	}
@@ -121,37 +112,42 @@ static bool checkJoinEligibility(Server *server, int clientFd,
 	return (true);
 }
 
-static void broadcastNewMember(Server *server, Channel &channel,const std::string channelName, Client client)
+/*
+  :nickname!username@localhost JOIN #channelName
+*/
+static void broadcastJoin(Server *server, Channel &channel, 
+	std::string &nickname, std::string &userName, std::string &channelName)
 {
-	std::string notice = RPL_JOIN(IRC_PREFIX(client.getNickname(), client.getUserName()), channelName);
-	std::map<const int, Client> &clientList = channel.getClientList();
+	std::string notice = RPL_JOIN(IRC_PREFIX(nickname, userName), channelName);
 
-	// チャンネルメンバー全員に新しいメンバーの参加を通知
-	for (std::map<int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
+	std::map<const int, Client>	&clientList = channel.getClientList();
+	for (std::map<const int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
 	{
-		addToClientSendBuf(server, it->second.getClientFd(), notice);
+		addToClientSendBuf(server, it->first, notice);
 	}
+	// トピック情報を送信
+	if (!channel.getTopic().empty())
+		addToClientSendBuf(server, server->getClientFdByNick(nickname) , RPL_TOPIC(nickname, channelName, channel.getTopic()));
 }
 
 // JOIN <channel> [<key>]
 void join(Server *server, const int clientFd, s_ircCommand cmdInfo)
 {
 	Client &client = retrieveClient(server, clientFd);
+	std::string nickname = client.getNickname();
 	std::string channelName = "";
 	std::string key = "";
 
 	// 1. ユーザー入力をスペース区切りで取得し、引数の数をチェック
 	std::vector<std::string> words = splitMessage(cmdInfo.message);
-	
-	// 2. 引数のチェック
-	if (!checkArguments(server, clientFd, words, channelName, key))
+	if (!checkAndGetArguments(server, clientFd, words, nickname, channelName, key))
 		return;
 
-	// 3. サーバーのチャンネルリストから対象チャンネルを探す
+	// 2. サーバーのチャンネルリストから対象チャンネルを探す
 	std::map<std::string, Channel> &channelList = server->getChannelList();
 	std::map<std::string, Channel>::iterator it = channelList.find(channelName);
 
-	// 4-1. 存在しない場合は新規作成
+	// 3-1. 存在しない場合は新規作成
 	if (it == channelList.end())
 	{
 		// チャンネルを作成
@@ -159,41 +155,43 @@ void join(Server *server, const int clientFd, s_ircCommand cmdInfo)
 		it = channelList.find(channelName);
 
 		// チャンネルの初期設定（オペレーター、パスワード等）
-		it->second.setOperatorList(clientFd);
+		it->second.addOperatorList(clientFd);
 		if (key != "")
 		{
 			it->second.setMode(true, 'k');
 			it->second.setPassword(key);
 		}
 	}
-	// 4-2. 既存のチャンネルに参加できるかチェック
+	// 3-2. 既存のチャンネルに参加できるかチェック
 	else
 	{
-		if (!checkJoinEligibility(server, clientFd, it->second, key))
+		if (!checkJoinEligibility(server, clientFd, nickname, it->second, key))
 			return ;
 		// チャンネルに誰も参加していない場合、オペレーターリストに追加
 		if (it->second.getClientList().empty())
-			it->second.setOperatorList(clientFd);
+			it->second.addOperatorList(clientFd);
 	}
 
-	// 5. クライアントをチャンネルに追加
+	// 4. クライアントをチャンネルに追加（招待されていた場合は招待リストから削除）
 	server->addClientToChannel(channelName, client);
+	if (it->second.isInvited(clientFd))
+		it->second.removeInvited(clientFd);
 
-	// 6. チャンネル参加後、JOINメッセージ、トピック、参加者一覧などの情報を送信
-	broadcastNewMember(server, it->second, channelName, client);
+	// 5. チャンネル参加後、JOINメッセージ、トピック、参加者一覧などの情報を送信
+	broadcastJoin(server, it->second, nickname, client.getUserName(), channelName);
 }
 
 /*
 Numeric Replies:
 	ERR_NEEDMOREPARAMS (461)
 	// ERR_NOSUCHCHANNEL (403)
-	// ERR_TOOMANYCHANNELS (405)
+	ERR_TOOMANYCHANNELS (405)
 	ERR_BADCHANNELKEY (475)
-	// ERR_BANNEDFROMCHAN (474) // BAN
+	// ERR_BANNEDFROMCHAN (474)
 	ERR_CHANNELISFULL (471)
 	ERR_INVITEONLYCHAN (473)
 	// ERR_BADCHANMASK (476)
-	// RPL_TOPIC (332)
+	RPL_TOPIC (332)
 	// RPL_TOPICWHOTIME (333)
 	// RPL_NAMREPLY (353)
 	// RPL_ENDOFNAMES (366)

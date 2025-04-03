@@ -16,15 +16,15 @@ Channel::Channel(const std::string &name):
 _name(name),
 _topic(""),
 _password(""),
-_capacity(MAX_CLIENTS),
+_capacity(0),
 _clientList(),
-_kickedUsers(),
+_invitedList(),
 _operatorList()
 {
 	_mode.invite = false;
 	_mode.topic = true;
 	_mode.key = false;
-	_mode.limit = true;
+	_mode.limit = false;
 }
 
 Channel::~Channel() {}
@@ -35,8 +35,8 @@ void Channel::setTopic(const std::string &topic) { _topic = topic; }
 void Channel::setPassword(const std::string &password) { _password = password; }
 void Channel::setCapacity(int capacity) { _capacity = capacity; }
 // void Channel::setClientList(const Client &client) { _clientList.insert(std::make_pair(client.getClientFd(), client)); }
-// void Channel::setKickedUsers(int clientFd) { _kickedUsers.push_back(clientFd); }
-void Channel::setOperatorList(int clientFd) { _operatorList.push_back(clientFd); }
+// void Channel::setInvitedList(int clientFd) { _invitedList.push_back(clientFd); }
+// void Channel::setOperatorList(int clientFd) { _operatorList.push_back(clientFd); }
 
 // void Channel::setMultMode(const std::string &mode)
 // {
@@ -111,8 +111,8 @@ const std::string &Channel::getTopic() const { return (_topic);}
 const std::string &Channel::getPassword() const { return (_password);}
 size_t Channel::getCapacity() const { return (_capacity);}
 std::map<const int, Client> &Channel::getClientList() { return (_clientList);}
-// int Channel::getKickedUsers() { return (_kickedUsers);}
-std::vector<int> Channel::getOperatorList() { return (_operatorList);}
+// std::vector<int> Channel::getInvitedList() { return (_invitedList);}
+// std::vector<int> Channel::getOperatorList() { return (_operatorList);}
 
 bool Channel::getMode(const std::string mode) const
 {
@@ -136,6 +136,16 @@ bool Channel::isClientInChannel(const int clientFd)
 	return (true);
 }
 
+bool Channel::isInvited(const int clientFd)
+{
+	for (std::vector<int>::iterator it = _invitedList.begin(); it != _invitedList.end(); ++it)
+	{
+		if (*it == clientFd)
+			return (true);
+	}
+	return (false);
+}
+
 bool Channel::isOperator(int clientFd)
 {
 	for (std::vector<int>::iterator it = _operatorList.begin(); it != _operatorList.end(); ++it)
@@ -146,17 +156,28 @@ bool Channel::isOperator(int clientFd)
 	return (false);
 }
 
-void Channel::addClientToChannel(Client &client)
-{
-	_clientList.insert(std::make_pair(client.getClientFd(), client));
-}
+void Channel::addClientToChannel(Client &client) { _clientList.insert(std::make_pair(client.getClientFd(), client)); }
+void Channel::addOperatorList(int clientFd) { _operatorList.push_back(clientFd); }
+void Channel::addInvitedList(int clientFd){ _invitedList.push_back(clientFd); }
 
 void Channel::removeClient(int clientFd)
 {
 	_clientList.erase(clientFd);
-
+	
 	if (isOperator(clientFd))
-		removeOperator(clientFd);
+	removeOperator(clientFd);
+}
+
+void Channel::removeInvited(int clientFd)
+{
+	for (std::vector<int>::iterator it = _invitedList.begin(); it != _invitedList.end(); ++it)
+	{
+		if (*it == clientFd)
+		{
+			_invitedList.erase(it);
+			return ;
+		}
+	}
 }
 
 void Channel::removeOperator(int clientFd)

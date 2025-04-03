@@ -12,55 +12,35 @@
 
 #include "Command.hpp"
 
-#include <set>
-
-// ブロードキャスト用関数：対象チャンネル内の全メンバーにQUIT通知を送信
-static void broadcastQuit(Server *server, Channel &channel, Client &client, const std::string &reason)
+static std::string getReason(std::string &cmdLine)
 {
-	// std::set を使ってファイルディスクリプタを重複なく格納する
-	std::set<int> uniqueFds;
-	std::map<const int, Client> &clientList = channel.getClientList();
-	for (std::map<int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
-	{
-		uniqueFds.insert(it->first);
-	}
+	std::string reason = trim(cmdLine);
 
-	uniqueFds.erase(client.getClientFd());
+	if (reason.size() > QUITLEN)
+		reason = reason.substr(0, QUITLEN);
 
-	// 重複を除いた各FDにQUIT通知を送信
-	for (std::set<int>::iterator it = uniqueFds.begin(); it != uniqueFds.end(); ++it)
-	{
-		addToClientSendBuf(server, *it, RPL_QUIT(IRC_PREFIX(client.getNickname(), client.getUserName()), reason));
-	}
+	return ("Quit: " + reason);	
 }
 
-// QUIT コマンドの処理
 // コマンド形式: QUIT [<reason>]
 void quit(Server *server, int const clientFd, s_ircCommand cmdInfo)
 {
-	// 1. 理由（reason）の取得
-	// ※ 理由が指定されていなければデフォルトの理由を使用する
-	std::string reason = trim(cmdInfo.message);
-	if (reason.empty())
-		reason = "Quit: I'm off to hitchhike across the galaxy... Don't panic! I've got my towel! :)";
-	else
-		reason = "Quit: " + reason;
-
-	// 2. 発行者が参加している各チャンネルに対してQUIT通知を送信
 	Client &client = retrieveClient(server, clientFd);
-	std::map<std::string, Channel> &channels = server->getChannelList();
-	for (std::map<std::string, Channel>::iterator it = channels.begin(); it != channels.end(); ++it)
+
+	// 1. 理由（reason）の取得
+	std::string reason = getReason(cmdInfo.message);
+	std::string notice = RPL_QUIT(IRC_PREFIX(client.getNickname(), client.getUserName()), reason);
+
+	// 2. QUIT通知を送信
+	std::map<const int, Client>	&clientList = server->getClientList();
+	for (std::map<int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
 	{
-		Channel &channel = it->second;
-		if (channel.isClientInChannel(clientFd))
-		{
-			// ブロードキャスト関数を呼び出して各メンバーにQUIT通知を送る
-			broadcastQuit(server, channel, client, reason);
-		}
+		addToClientSendBuf(server, it->first, notice);
 	}
 		
 	// 3. 発行者を全チャンネルから削除
-	for (std::map<std::string, Channel>::iterator it = channels.begin(); it != channels.end(); ++it)
+	std::map<std::string, Channel> &channelList = server->getChannelList();
+	for (std::map<std::string, Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it)
 	{
 		if (it->second.isClientInChannel(clientFd))
 			it->second.removeClient(clientFd);
@@ -71,3 +51,10 @@ void quit(Server *server, int const clientFd, s_ircCommand cmdInfo)
 
 	client.setToDeconnect();
 }
+/*
+ :nickname!username@localhost QUIT :Quit: Bye for now!
+ */
+/*
+Numeric Replies:
+	None
+*/

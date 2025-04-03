@@ -27,9 +27,8 @@ static bool isAlreadySet(Server *server, Channel &channel, Client &client, bool 
 
 static void broadcastModeChange(Server *server, Channel &channel, Client &client, bool sign)
 {
-	std::string modeString = "Topic protect mode ";
-	modeString += (sign ? "on" : "off");
-	std::string notify = RPL_CHANNELMODEIS(client.getNickname(), channel.getName(), modeString);
+	std::string modeString = (sign ? "+t" : "-t");
+	std::string notify = RPL_MODE(IRC_PREFIX(client.getNickname(), client.getUserName()), channel.getName(), modeString);
 
 	std::map<const int, Client> &clientList = channel.getClientList();
 	for (std::map<int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
@@ -40,14 +39,14 @@ static void broadcastModeChange(Server *server, Channel &channel, Client &client
 
 void topicProtectMode(Server *server, Channel &channel, Client &client, bool sign)
 {
-	// 0. 既に同じ状態なら通知して終了する
+	// 1. 現在の状態をチェック
 	if (isAlreadySet(server, channel, client, sign))
 		return;
 
-	// 1. チャンネルのモードフラグを更新（'t' オプション）
+	// 2.モードを変更
 	channel.setMode(sign, 't');
 
-	// 2. 変更内容をチャンネル内全メンバーに通知する
+	// 3. モード変更を全員に通知
 	broadcastModeChange(server, channel, client, sign);
 
 	// （オプション）ログ出力（デバッグ用）

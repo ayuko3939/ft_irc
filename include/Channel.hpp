@@ -37,7 +37,7 @@ class Channel
 	std::string						_password;
 	size_t							_capacity; // チャンネルに参加できる最大クライアント数
 	std::map<const int, Client>		_clientList;
-	std::vector<int>				_kickedUsers;
+	std::vector<int>				_invitedList;
 	std::vector<int>				_operatorList;
 
   public:
@@ -52,8 +52,8 @@ class Channel
 	void setPassword(const std::string &password);
 	void setCapacity(int capacity);
 	// void setClientList(Client &client);
-	// void setKickedUsers(int clientFd);
-	void setOperatorList(int clientFd);
+	// void setInvitedList(int clientFd);
+	// void setOperatorList(int clientFd);
 
 	// Getters
 	const std::string &getName() const;
@@ -62,13 +62,17 @@ class Channel
 	const std::string &getPassword() const;
 	size_t getCapacity() const;
 	std::map<const int, Client> &getClientList();
-	// std::vector<int> &getKickedUsers();
-	std::vector<int> getOperatorList();
+	// std::vector<int> getInvitedList();
+	// std::vector<int> getOperatorList();
 	
 	bool isClientInChannel(const int clientFd);
+	bool isInvited(const int clientFd);
 	bool isOperator(const int clientFd);
 	void addClientToChannel(Client &client);
+	void addInvitedList(int clientFd);
+	void addOperatorList(int clientFd);
 	void removeClient(int clientFd);
+	void removeInvited(int clientFd);
 	void removeOperator(int clientFd);
 };
 

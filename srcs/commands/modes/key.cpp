@@ -39,9 +39,8 @@ static bool isValidKey(const std::string &key)
 
 static void broadcastModeChange(Server *server, Channel &channel, Client &client, bool sign, const std::string &key)
 {
-	std::string modeString = "Channel key mode ";
-	modeString += (sign ? ("set to \"" + key + "\"") : "off");
-	std::string notify = RPL_CHANNELMODEIS(client.getNickname(), channel.getName(), modeString);
+	std::string modeString = (sign ? ("+k " + key) : "-k");
+	std::string notify = RPL_MODE(IRC_PREFIX(client.getNickname(), client.getUserName()), channel.getName(), modeString);
 
 	std::map<const int, Client> &clientList = channel.getClientList();
 	for (std::map<int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
@@ -62,7 +61,9 @@ void channelKeyMode(Server *server, Channel &channel, Client &client, bool sign,
 	{
 		if (!isValidKey(modeArgs))
 		{
-			addToClientSendBuf(server, client.getClientFd(), ERR_INVALID_PARM + std::string(MODE_REQ_K_PASS));
+			std::string errMessege = ERR_INVALIDKEY(client.getNickname(), channel.getName());
+			errMessege += MODE_REQ_K_PASS;
+			addToClientSendBuf(server, client.getClientFd(), errMessege);
 			return;
 		}
 		// キーが有効なら、チャンネルのキー情報を更新

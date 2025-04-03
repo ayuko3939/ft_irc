@@ -46,6 +46,8 @@ static bool isValidLimit(const std::string &limitStr)
 	std::istringstream iss(limitStr);
 	int limit;
 	iss >> limit;
+	if (iss.fail())
+		return false;
 
 	// 要件：1～MAX_CLIENTSの整数であること
 	if (limit < 1 || limit > MAX_CLIENTS)
@@ -55,9 +57,8 @@ static bool isValidLimit(const std::string &limitStr)
 
 static void broadcastLimitModeChange(Server *server, Channel &channel, Client &client, bool sign, const std::string &limitStr)
 {
-	std::string modeString = "User limit mode ";
-	modeString += (sign ? ("set to " + limitStr) : "off");
-	std::string notify = RPL_CHANNELMODEIS(client.getNickname(), channel.getName(), modeString);
+	std::string modeString = (sign ? ("+l " + limitStr) : "-l");
+	std::string notify = RPL_MODE(IRC_PREFIX(client.getNickname(), client.getUserName()), channel.getName(), modeString);
 
 	std::map<const int, Client> &clientList = channel.getClientList();
 	for (std::map<int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
@@ -69,36 +70,35 @@ static void broadcastLimitModeChange(Server *server, Channel &channel, Client &c
 // modeArgs：+lの場合は制限人数（文字列で受け取る）
 void userLimitMode(Server *server, Channel &channel, Client &client, bool sign, std::string modeArgs)
 {
-	// 1. 既に同じ制限状態なら、通知して処理終了
+	// 1. 引数の検証
+	if (!isValidLimit(modeArgs))
+	{
+		std::string errMessege = ERR_INVALID_PARM;
+		errMessege += MODE_REQ_L_LIMIT;
+		addToClientSendBuf(server, client.getClientFd(), errMessege);
+		return;
+	}
+
+	// 2. 既に同じ制限状態なら、通知して処理終了
 	if (isAlreadySetLimit(server, channel, client, sign, modeArgs))
 		return;
 
-	// 2-1. +l（有効化）の場合、limitの検証を行う
+	// 3-1. +l（有効化）の場合、limitの検証を行う
 	if (sign)
 	{
-		if (!isValidLimit(modeArgs))
-		{
-			// 最大数を文字列に変換
-			std::ostringstream oss;
-            oss << MAX_CLIENTS;
-			std::string max = oss.str();
-
-			addToClientSendBuf(server, client.getClientFd(), ERR_INVALID_PARM + std::string(MODE_REQ_L_LIMIT(max)));
-			return;
-		}
 		int limit = std::atoi(modeArgs.c_str());
 		// 制限人数を更新（例：channel.setCapacity()でユーザー数制限を設定）
 		channel.setMode(sign, 'l');
 		channel.setCapacity(limit);
 	}
-	// 2-2. -l（無効化）の場合、制限を解除する
+	// 3-2. -l（無効化）の場合、制限を解除する
 	else
 	{
 		channel.setMode(sign, 'l');
-		// 制限解除時は、デフォルトの最大人数（例：MAX_CLIENTS）に戻す
-		channel.setCapacity(MAX_CLIENTS);
+		// 制限解除時は、0に戻す
+		channel.setCapacity(0);
 	}
 
-	// 3. 変更内容をチャンネル全体に通知
+	// 4. 変更内容をチャンネル全体に通知
 	broadcastLimitModeChange(server, channel, client, sign, modeArgs);
 }

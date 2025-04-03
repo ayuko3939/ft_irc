@@ -12,128 +12,151 @@
 
 #include "Command.hpp"
 
-static bool checkArguments(Server *server, int clientFd, std::vector<std::string> &words)
+// <channel>は必須、<comment>はオプション
+static bool checkAndGetArguments(Server *server, int clientFd, std::string &issuerNick, 
+	std::string &argument, std::string &channelName, std::string &targetNick, std::string &comment)
 {
-	// <channel> <user> [<comment>]
-	if (words.size() < 2 || words.size() > 3)
-	{
-		addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(KICK_USAGE));
-		return (false);
-	}
-	// <comment> が指定されている場合、文字数が30文字以内か確認
-	if (words.size() == 3 && words[2].size() > 30)
-	{
-		addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(KICK_REQUIREMENTS));
-		return (false);
-	}
-    return (true);
-}
+	std::string errMessage = "";
 
-static std::string getChannelNameFromWord(std::string &word)
-{
-	if (word[0] == '#')
-		return (word.substr(1));
-	return (word);
-}
+	// 引数がないまたは空の場合
+	if (argument.empty() || argument.find(' ') == std::string::npos)
+	{
+		errMessage = ERR_NEEDMOREPARAMS(issuerNick, "KICK");
+		errMessage += KICK_USAGE;
+		addToClientSendBuf(server, clientFd, errMessage);
+		return (false);
+	}
 
-static bool isValid(Server *server, int const clientFd, std::string targetNick, std::string channelName)
-{
-	Client &client = retrieveClient(server, clientFd);
-	std::string issuerNick = client.getNickname();
+	// チャンネル名とユーザー名とコメントを取得
+	size_t pos = argument.find(' ');
+	channelName = argument.substr(0, pos);
+	channelName = getChannelNameFromWord(channelName);
+	argument.erase(0, pos + 1);
+	getTargetAndText(argument, targetNick, comment);
 
-	// 対象ニックネームとチャンネル名が空文字でないことを確認
-	if (targetNick.empty() || channelName.empty())
+	if (comment.empty())
 	{
-		addToClientSendBuf(server, clientFd, ERR_PARM_EMPTY);
-		return (false);
+		comment = DEFAULT_KICK_COMMENT;
 	}
-	// 対象チャンネルが存在することを確認
-	if (!server->isChannelExist(channelName))
+	else if (comment.size() > KICKLEN)
 	{
-		addToClientSendBuf(server, clientFd, ERR_NOSUCHCHANNEL(targetNick, channelName));
-		return (false);
-	}
-	// 対象クライアントが存在することを確認
-	if (!server->isClientExist(targetNick))
-	{
-		addToClientSendBuf(server, clientFd, ERR_NOSUCHNICK(issuerNick, targetNick));
-		return (false);
-	}
-	// InviterとTargetが同一でないことを確認
-	if (issuerNick == targetNick)
-	{
-		addToClientSendBuf(server, clientFd, ":" + issuerNick + " : Issuer and target are the same.\r\n");
+		errMessage = ERR_INVALID_PARM;
+		errMessage += KICK_REQUIREMENTS;
+		addToClientSendBuf(server, clientFd, errMessage);
 		return (false);
 	}
 	return (true);
 }
 
-static void broadcastNewMember(Server *server, Channel &channel, Client &client, std::string &target, std::string &comment)
+static bool checkKickEligibility(Server *server, int const clientFd, 
+	std::string &issuerNick, std::string &channelName, std::string &targetNick)
+{
+	std::string errMessage = "";
+
+	// 1. 対象チャンネルが存在することを確認
+	if (!server->isChannelExist(channelName))
+	{
+		errMessage = ERR_NOSUCHCHANNEL(issuerNick, channelName);
+		addToClientSendBuf(server, clientFd, errMessage);
+		return (false);
+	}
+
+	std::map<std::string, Channel> &channelList = server->getChannelList();
+	Channel &channel = channelList.find(channelName)->second;
+
+	// 対象クライアントが存在することを確認
+	if (!server->isClientExist(targetNick))
+	{
+		errMessage = ERR_NOSUCHNICK(issuerNick, targetNick);
+		addToClientSendBuf(server, clientFd, ERR_NOSUCHNICK(issuerNick, targetNick));
+		return (false);
+	}
+
+	// 発行者が対象チャンネルに参加していることを確認
+	if (!channel.isClientInChannel(clientFd))
+	{
+		errMessage = ERR_NOTONCHANNEL(issuerNick, channelName);
+		addToClientSendBuf(server, clientFd, errMessage);
+		return (false);
+	}
+
+	// 対象ユーザーがチャンネルに参加していることを確認
+	int targetFd = server->getClientFdByNick(targetNick);
+	if (!channel.isClientInChannel(targetFd))
+	{
+		errMessage = ERR_USERNOTINCHANNEL(issuerNick, targetNick, channelName);
+		addToClientSendBuf(server, clientFd, errMessage);
+		return (false);
+	}
+
+	// 発行者がチャンネルオペレーターであるか確認
+	if (!channel.isOperator(clientFd))
+	{
+		errMessage = ERR_CHANOPRIVSNEEDED(issuerNick, channelName);
+		addToClientSendBuf(server, clientFd, errMessage);
+		return (false);
+	}
+
+	// InviterとTargetが同一でないことを確認
+	if (issuerNick == targetNick)
+	{
+		errMessage = ERR_ERRONEUSTARGET(issuerNick, targetNick, " (Inviter and target are the same)");
+		addToClientSendBuf(server, clientFd, errMessage);
+		return (false);
+	}
+	return (true);
+}
+
+/*
+  :nickname!username@localhost KICK #channelName target comment
+*/
+static void broadcastKick(Server *server, Channel &channel, Client &client, 
+	std::string &issuerNick, std::string &target, std::string &comment)
 {
 	// チャンネルメンバー全員に追放を通知
 	std::map<const int, Client> &clientList = channel.getClientList();
+	std::string notice = RPL_KICK(IRC_PREFIX(issuerNick, client.getUserName()), channel.getName(), target, comment);
 
 	for (std::map<int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
 	{
-		addToClientSendBuf(server, it->second.getClientFd(), RPL_KICK(IRC_PREFIX(client.getNickname(), client.getUserName()), target, channel.getName(), comment));
+		addToClientSendBuf(server, it->second.getClientFd(), notice);
 	}
 }
 
-// コマンド形式: KICK <channel> <user> [<comment>]
+// コマンド形式: KICK <channel> <target> [<comment>]
 void kick(Server *server, int const clientFd, s_ircCommand cmdInfo)
 {
-	// 1. 入力パラメータを空白で分割
-	std::vector<std::string> words = splitMessage(cmdInfo.message);
-	if (!checkArguments(server, clientFd, words))
-		return;
-
-	// 2. 発行者のクライアント情報を取得
 	Client &client = retrieveClient(server, clientFd);
 	std::string issuerNick = client.getNickname();
+	std::string channelName = "";
+	std::string targetNick = "";
+	std::string comment = "";
 
-	// 3. パラメータから対象のチャンネル名と追放対象ユーザーのニックネームを取得
-	std::string channelName = getChannelNameFromWord(words[0]);
-	std::string targetNick = words[1];
+	// 1. ユーザー入力から引数を取得し、引数をチェック
+	if (!checkAndGetArguments(server, clientFd, issuerNick, cmdInfo.message, channelName, targetNick, comment))
+		return ;
 
-	// 4. コメントが指定されていなければデフォルトメッセージを使用
-	std::string comment;
-	if (words.size() == 3)
-		comment = words[2];
-	if (comment.empty())
-		comment = DEFAULT_KICK_COMMENT;
+	// 2. パラメータの妥当性を確認する
+	if (!checkKickEligibility(server, clientFd, issuerNick, channelName, targetNick))
+		return ;
 
-	// 5. パラメータの妥当性を確認
-	if (!isValid(server, clientFd, targetNick, channelName))
-		return;
-
-	// 6. 発行者が対象チャンネルに参加しているか確認
+	// 3. チャンネルメンバー全員に追放を通知
 	std::map<std::string, Channel> &channels = server->getChannelList();
 	Channel &channel = channels.find(channelName)->second;
-
-	if (!channel.isClientInChannel(clientFd))
-	{
-		addToClientSendBuf(server, clientFd, ERR_NOTONCHANNEL(issuerNick, channelName));
-		return;
-	}
-
-	// 7. 発行者がチャンネルオペレーターであるか確認
-	if (!channel.isOperator(clientFd))
-	{
-		addToClientSendBuf(server, clientFd, ERR_CHANOPRIVSNEEDED(issuerNick, channelName));
-		return;
-	}
-
-	// 8. 対象ユーザーがチャンネルに参加しているかチェック
-	int targetFd = server->getClientFdFromNick(targetNick);
-	if (!channel.isClientInChannel(targetFd))
-	{
-		addToClientSendBuf(server, clientFd, ERR_USERNOTINCHANNEL(issuerNick, targetNick, channelName));
-		return;
-	}
-
-	// 9. チャンネルメンバー全員に追放を通知
-	broadcastNewMember(server, channel, client, targetNick, comment);
-
-	// 10. 対象ユーザーをチャンネルから削除する
+	broadcastKick(server, channel, client, issuerNick, targetNick, comment);
+	
+	// 4. 対象ユーザーをチャンネルから削除する
+	int targetFd = server->getClientFdByNick(targetNick);
 	channel.removeClient(targetFd);
 }
+
+/*
+Numeric Replies:
+	ERR_NEEDMOREPARAMS (461)
+	ERR_NOSUCHCHANNEL (403)
+	ERR_CHANOPRIVSNEEDED (482)
+	ERR_USERNOTINCHANNEL (441)
+	ERR_NOTONCHANNEL (442)
+Deprecated Numeric Reply:
+	// ERR_BADCHANMASK (476)
+*/

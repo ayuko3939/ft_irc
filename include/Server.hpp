@@ -84,7 +84,7 @@ class Server
     std::map<std::string, Channel>& getChannelList();
     // struct addrinfo &getAddrInfo();
     // struct addrinfo* getServerInfo();
-    int getClientFdFromNick(std::string &nick);
+    int getClientFdByNick(std::string &nick);
 
 
     // Other functions
@@ -104,7 +104,9 @@ class Server
 std::string trim(const std::string &s);
 Client *getClient(Server *server, int clientSockFd);
 Client &retrieveClient(Server *server, int clientSockFd);
-void splitMessage(std::string &message, std::vector<std::string> &cmds);
+void splitCommandLine(std::string &message, std::vector<std::string> &cmds);
+std::string getChannelNameFromWord(std::string &word);
+void getTargetAndText(std::string &argument, std::string &target, std::string &text);
 void sendServerReply(int clientFd, std::string &message);
 void addToClientSendBuf(Server *server, int clientFd, std::string message);
 void sendClientRegistrationMsg(Server *server, int clientFd, Client *client);

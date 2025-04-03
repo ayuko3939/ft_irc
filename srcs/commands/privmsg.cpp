@@ -12,184 +12,116 @@
 
 #include "Command.hpp"
 
-void getArgument(std::string &argument, std::string &target, std::string &message)
+// <target> <text to be sent> ともに必須
+static bool checkArguments(Server *server, int clientFd, 
+	std::string &nickname, std::string &target, std::string &text)
 {
-	size_t pos = argument.find(' ');
-	if (pos == std::string::npos)
-	{
-		target = "";
-		message = "";
-	}
-	else
-	{
-		target = argument.substr(0, pos);
-		message = argument.substr(pos + 1);
-		if (message[0] == ':')
-			message = message.substr(1);
-	}
-}
+	std::string errMessage = "";
 
-static bool checkArguments(Server *server, int clientFd, std::string &target, std::string &message)
-{
-	// <target> <message>
-	if (target.empty() || message.empty())
+	if (target.empty())
 	{
-		addToClientSendBuf(server, clientFd, ERR_NORECIPIENT(target, "PRIVMSG"));
+		errMessage = ERR_NORECIPIENT(nickname, "PRIVMSG");
+		errMessage += PRIVMSG_USAGE;
+		addToClientSendBuf(server, clientFd, errMessage);
 		return (false);
 	}
-	if (message.size() > 400)
+	if (text.empty())
 	{
-		addToClientSendBuf(server, clientFd, ERR_INVALID_PARM + std::string(PRIVMSG_REQUIREMENTS));
+		errMessage = ERR_NOTEXTTOSEND(nickname);
+		errMessage += PRIVMSG_USAGE;
+		addToClientSendBuf(server, clientFd, errMessage);
+		return (false);
+	}
+	if (text.size() > MSGLEN)
+	{
+		errMessage = ERR_INVALID_PARM;
+		errMessage += PRIVMSG_REQUIREMENTS;
+		addToClientSendBuf(server, clientFd, errMessage);
 		return (false);
 	}
 	return (true);
 }
 
-static void broadcastMSG(Server *server, Channel &channel, Client &client, std::string &target, std::string &message)
+static void broadcastMsg(Server *server, Channel &channel, Client &client, std::string &target, std::string &text)
 {
-	// チャンネルメンバー全員に
-	std::map<const int, Client> &clientList = channel.getClientList();
+	std::string message = RPL_PRIVMSG(IRC_PREFIX(client.getNickname(), client.getUserName()), '#' + target, text);
 
+	std::map<const int, Client> &clientList = channel.getClientList();
 	for (std::map<int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
 	{
 		if (it->second.getNickname() != client.getNickname())
-			addToClientSendBuf(server, it->second.getClientFd(), RPL_PRIVMSG(IRC_PREFIX(client.getNickname(), client.getUserName()), '#' + target, message));
+			addToClientSendBuf(server, it->second.getClientFd(), message);
 	}
 }
 
+// PRIVMSG <target> <text to be sent>
 void privmsg(Server *server, int const clientFd, s_ircCommand cmdInfo)
 {
-	std::string target;
-	std::string message;
-	bool		isChannel = false;
-
-	// 1. ターゲットとメッセージを取得（最初のスペースで区切り、以降はまとめて１つのテキストとする）
-	getArgument(cmdInfo.message, target, message);
-
-	// 2. 入力パラメータをチェック
-	if (!checkArguments(server, clientFd, target, message))
-		return;
-	
-	// 3. ターゲットがチャンネルならば、#を削除してフラグを立てる
-	if (target[0] == '#')
-	{
-		isChannel = true;
-		target = target.substr(1);
-	}
-
-	// 4. 送信元クライアント情報の取得
 	Client &client = retrieveClient(server, clientFd);
 	std::string senderNick = client.getNickname();
+	std::string target = "";
+	std::string text = "";
+	std::string errMessage = "";
 
-	// 5-1. ターゲットがチャンネルの場合
-	if (isChannel)
+	// 1. ターゲットとメッセージを取得（最初のスペースで区切り、以降はまとめて１つのテキストとする）
+	getTargetAndText(cmdInfo.message, target, text);
+
+	// 2. 入力パラメータをチェック
+	if (!checkArguments(server, clientFd, senderNick, target, text))
+		return ;
+
+	// 3-1. ターゲットがチャンネルの場合
+	if (cmdInfo.message[0] == '#')
 	{
-		// 6. ターゲットが存在するか確認
+		// 4. ターゲットが存在するか確認
 		if (!server->isChannelExist(target))
 		{
-			addToClientSendBuf(server, clientFd, ERR_NOSUCHCHANNEL(senderNick, target));
-			return;
+			errMessage = ERR_NOSUCHCHANNEL(senderNick, target);
+			addToClientSendBuf(server, clientFd, errMessage);
+			return ;
 		}
 
 		std::map<std::string, Channel> &channels = server->getChannelList();
 		Channel &channel = channels.find(target)->second;
 
-		// 7. 送信者がそのチャンネルに参加しているか確認
+		// 5. 送信者がそのチャンネルに参加しているか確認
 		if (!channel.isClientInChannel(clientFd))
 		{
-			addToClientSendBuf(server, clientFd, ERR_NOTONCHANNEL(senderNick, target));
-			return;
+			errMessage = ERR_NOTONCHANNEL(senderNick, target);
+			addToClientSendBuf(server, clientFd, errMessage);
+			return ;
 		}
 
-		// 8. チャンネル内の全メンバー（送信元以外）に対して、メッセージをブロードキャスト
-		broadcastMSG(server, channel, client, target, message);
+		// 6. チャンネル内の全メンバー（送信元以外）に対して、メッセージをブロードキャスト
+		broadcastMsg(server, channel, client, target, text);
 	}
-	// 5-2. ターゲットがユーザーの場合
+	// 3-2. ターゲットがユーザーの場合
 	else
 	{
-		// 6. ターゲットが存在するか確認
+		// 4. ターゲットが存在するか確認
 		if (!server->isClientExist(target))
 		{
-			addToClientSendBuf(server, clientFd, ERR_NOSUCHNICK(senderNick, target));
-			return;
+			errMessage = ERR_NOSUCHNICK(senderNick, target);
+			addToClientSendBuf(server, clientFd, errMessage);
+			return ;
 		}
 		
-		// 7. ターゲットにメッセージを送信
-		int targetFd = server->getClientFdFromNick(target);
-		addToClientSendBuf(server, targetFd, RPL_PRIVMSG(IRC_PREFIX(senderNick, client.getUserName()), target, message));
+		// 5. ターゲットにメッセージを送信
+		int targetFd = server->getClientFdByNick(target);
+		std::string message = senderNick + " PRIVMSG " + target + " " + text + "\r\n";
+		addToClientSendBuf(server, targetFd, message);
 	}
 }
 
-// PRIVMSG <target> <text to be sent>
-// void privmsg(Server *server, int const clientFd, s_ircCommand cmdInfo)
-// {
-//     // 1. 送信元クライアントの情報を取得
-//     Client &client = retrieveClient(server, clientFd);
-//     std::string senderNick = client.getNickname();
-
-//     // 2. 入力パラメータを先頭のスペースで区切り、最初のトークンと残りの部分に分割する
-//     std::istringstream iss(cmdInfo.message);
-//     std::string target;
-//     if (!(iss >> target)) {
-//         // ターゲットが指定されていない場合
-//         addToClientSendBuf(server, clientFd, ERR_NORECIPIENT(senderNick, "PRIVMSG"));
-//         return;
-//     }
-//     // 残りの部分を1行として取得
-//     std::string messageText;
-//     std::getline(iss, messageText);
-//     messageText = trim(messageText);
-    
-//     // 3. 送信テキストが空の場合はエラー
-//     if (messageText.empty()) {
-//         addToClientSendBuf(server, clientFd, ERR_NOTEXTTOSEND(senderNick));
-//         return;
-//     }
-    
-//     // 4. ターゲットがチャネルかユーザーかを判定する
-//     if (!target.empty() && target[0] == '#')
-//     {
-//         // ターゲットがチャネルの場合
-//         if (!server->isChannelExist(target))
-//         {
-//             addToClientSendBuf(server, clientFd, ERR_NOSUCHCHANNEL(senderNick, target));
-//             return;
-//         }
-        
-//         // サーバーのチャネルリストから対象チャネルを取得
-//         std::map<std::string, Channel> &channels = server->getChannelList();
-//         Channel &channel = channels.find(target)->second;
-        
-//         // 送信元がチャネルに参加しているか確認
-//         if (!channel.isClientInChannel(clientFd))
-//         {
-//             addToClientSendBuf(server, clientFd, ERR_NOTONCHANNEL(senderNick, target));
-//             return;
-//         }
-        
-//         // 5. チャネル内の全メンバー（送信元以外）にメッセージをブロードキャスト
-//         std::map<const int, Client> &clientList = channel.getClientList();
-//         for (std::map<int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
-//         {
-//             if (it->first != clientFd)
-//             {
-//                 // RPL_PRIVMSG は「:sender PRIVMSG target :message\r\n」の形式を生成するマクロと想定
-//                 std::string notify = RPL_PRIVMSG(senderNick, target, messageText);
-//                 addToClientSendBuf(server, it->second.getClientFd(), notify);
-//             }
-//         }
-//     }
-//     else
-//     {
-//         // ターゲットがユーザーの場合
-//         if (!server->isClientExist(target))
-//         {
-//             addToClientSendBuf(server, clientFd, ERR_NOSUCHNICK(senderNick, target));
-//             return;
-//         }
-//         int targetFd = server->getClientFdFromNick(target);
-//         std::string notify = RPL_PRIVMSG(senderNick, target, messageText);
-//         addToClientSendBuf(server, targetFd, notify);
-//     }
-// }
-
+/*
+Numeric Replies:
+	ERR_NOSUCHNICK (401)
+	// ERR_NOSUCHSERVER (402)
+	// ERR_CANNOTSENDTOCHAN (404)
+	// ERR_TOOMANYTARGETS (407) //
+	ERR_NORECIPIENT (411)
+	ERR_NOTEXTTOSEND (412)
+	// ERR_NOTOPLEVEL (413) //
+	// ERR_WILDTOPLEVEL (414) //
+	// RPL_AWAY (301)
+*/

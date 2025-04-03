@@ -40,3 +40,28 @@ std::vector<std::string> splitMessage(std::string message)
 // 	}
 // 	return result;
 // }
+
+std::string getChannelNameFromWord(std::string &word)
+{
+	if (word[0] == '#')
+		return (word.substr(1));
+	return (word);
+}
+
+void getTargetAndText(std::string &argument, std::string &target, std::string &text)
+{
+	size_t pos = argument.find(' ');
+	if (pos == std::string::npos)
+	{
+		target = getChannelNameFromWord(argument);
+		text = "";
+	}
+	else
+	{
+		target = argument.substr(0, pos);
+		target = getChannelNameFromWord(target);
+		text = argument.substr(pos + 1);
+		if (text[0] != ':')
+			text = ":" + text;
+	}
+}

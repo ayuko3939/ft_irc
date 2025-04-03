@@ -14,7 +14,7 @@
 #include "Server.hpp"
 #include "Command.hpp"
 
-void splitMessage(std::string &message, std::vector<std::string> &cmds)
+void splitCommandLine(std::string &message, std::vector<std::string> &cmds)
 {
 	// 改行コードを"\r\n"から"\n"に変換
 	std::string::size_type pos = 0;
@@ -138,7 +138,7 @@ void Server::fillClientInfo(Client *client, int clientFd, s_ircCommand cmdInfo)
 	{
 		// クライアント情報が全て揃っていない場合、クライアント情報を取得する
 		if (cmdInfo.name != "NICK" && cmdInfo.name != "USER")
-			addToClientSendBuf(this, clientFd, ERR_REGISTRATION_YET);
+			addToClientSendBuf(this, clientFd, ERR_NOTREGISTERED);
 		else
 		{
 			if (cmdInfo.name == "NICK")
@@ -196,7 +196,7 @@ void Server::execCommand(int clientFd, std::string &cmd)
 
 		// コマンドが見つからない場合、エラー文を出力して何もしないで処理終了
 		default:
-			addToClientSendBuf(this, clientFd, ERR_CMD_NOT_FOUND);
+			addToClientSendBuf(this, clientFd, ERR_UNKNOWNCOMMAND(client->getNickname(), cmdInfo.name));
 	}
 }
 
@@ -205,7 +205,7 @@ void Server::parseMessage(int clientFd, std::string &message)
 	std::vector<std::string>	cmds;
 	
 	// 改行毎にメッセージを分割してコマンドリストに格納
-	splitMessage(message, cmds);
+	splitCommandLine(message, cmds);
 	
 	// コマンドリストを順番に処理
 	std::vector<std::string>::iterator cmdIt = cmds.begin();

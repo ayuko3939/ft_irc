@@ -27,9 +27,8 @@ static bool isAlreadySet(Server *server, Channel &channel, Client &client, bool 
 
 static void broadcastModeChange(Server *server, Channel &channel, Client &client, bool sign)
 {
-	std::string modeString = "Invite-only mode ";
-	modeString += (sign ? "on" : "off");
-	std::string notify = RPL_CHANNELMODEIS(client.getNickname(), channel.getName(), modeString);
+	std::string modeString = (sign ? "+i" : "-i");
+	std::string notify = RPL_MODE(IRC_PREFIX(client.getNickname(), client.getUserName()), channel.getName(), modeString);
 
 	std::map<const int, Client> &clientList = channel.getClientList();
 	for (std::map<int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)

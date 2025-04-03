@@ -12,59 +12,27 @@
 
 #include "Command.hpp"
 
-static std::string getChannelNameFromWord(std::string &word)
-{
-	if (word[0] == '#')
-		return (word.substr(1));
-	return (word);
-}
-
-static bool isValid(const std::string &topic)
-{
-	if (topic.size() > 50)
-		return (false);
-
-	for (std::size_t i = 0; i < topic.size(); i++)
-	{
-		if (!isalnum(topic[i]))
-			return (false);
-	}
-	return (true);
-}
-
-// パラメータ検証：<channel>は必須、<topic>はオプション
-static bool checkArguments(Server *server, int clientFd, 
-	std::vector<std::string> &words, std::string &channelName, std::string &topic)
+// <channel>は必須、<topic>はオプション
+static bool checkAndGetArguments(Server *server, int clientFd,
+	std::string &argument, std::string &channelName, std::string &topic)
 {
 	std::string nickname = server->getNickname(clientFd);
 	std::string errMessage = "";
 
 	// 引数がないまたは空の場合
-	if (words.empty() || words[0].empty())
+	if (argument.empty())
 	{
 		errMessage = ERR_NEEDMOREPARAMS(nickname, "TOPIC");
 		errMessage += TOPIC_USAGE;
 		addToClientSendBuf(server, clientFd, errMessage);
 		return (false);
 	}
-	// 引数が複数ある場合
-	if (words.size() > 2)
-	{
-		errMessage = ERR_INVALID_PARM;
-		errMessage += TOPIC_USAGE;
-		addToClientSendBuf(server, clientFd, errMessage);
-		return (false);
-	}
 	
 	// チャンネル名とトピックを取得
-	channelName = getChannelNameFromWord(words[0]);
-	if (words.size() > 1)
-		topic = words[1];
-	else
-		return (true);
+	getTargetAndText(argument, channelName, topic);
 
 	// トピックの妥当性をチェック
-	if (!isValid(topic))
+	if (topic.size() > TOPICLEN)
 	{
 		errMessage = ERR_INVALID_PARM;
 		errMessage += TOPIC_REQUIREMENTS;
@@ -74,9 +42,10 @@ static bool checkArguments(Server *server, int clientFd,
 	return (true);
 }
 	
-static void broadcastNewTopic(Server *server, Channel &channel, Client &client, std::string topic)
+static void broadcastNewTopic(Server *server, Channel &channel, 
+	std::string &nickname, std::string &userName, std::string topic)
 {
-	std::string notice = RPL_TOPIC(IRC_PREFIX(client.getNickname(), client.getUserName()), channel.getName(), topic);
+	std::string notice = RPL_TOPICSET(IRC_PREFIX(nickname, userName), channel.getName(), topic);
 	std::map<const int, Client> &clientList = channel.getClientList();
 
 	// チャンネルメンバー全員に新しいメンバーの参加を通知
@@ -96,14 +65,10 @@ void topic(Server *server, const int clientFd, s_ircCommand cmdInfo)
 	std::string topic = "";
 
 	// 1. ユーザー入力をスペース区切りで取得し、引数の数をチェック
-	std::vector<std::string> words = splitMessage(cmdInfo.message);
-	bool isDisplayTopic = (words.size() == 1);
-	
-	// 2. 引数のチェック
-	if (!checkArguments(server, clientFd, words, channelName, topic))
-		return;
+	if (!checkAndGetArguments(server, clientFd, cmdInfo.message, channelName, topic))
+		return ;
 
-	// 3. サーバーのチャンネルリストから対象チャンネルを検索
+	// 2. サーバーのチャンネルリストから対象チャンネルを検索
 	std::map<std::string, Channel> &channelList = server->getChannelList();
 	std::map<std::string, Channel>::iterator chanIt = channelList.find(channelName);
 	Channel &channel = chanIt->second;
@@ -115,7 +80,7 @@ void topic(Server *server, const int clientFd, s_ircCommand cmdInfo)
 		return ;
 	}
 
-	// 4. クライアントが対象チャンネルに参加しているか確認
+	// 3. クライアントが対象チャンネルに参加しているか確認
 	std::map<const int, Client> clientList = channel.getClientList();
 	if (clientList.find(clientFd) == clientList.end())
 	{
@@ -124,8 +89,8 @@ void topic(Server *server, const int clientFd, s_ircCommand cmdInfo)
 		return ;
 	}
 
-	// 5-1. 表示要求の場合、トピックを返す
-	if (isDisplayTopic)
+	// 4-1. 表示要求の場合、トピックを返す
+	if (topic.empty())
 	{
 		std::string currentTopic = channel.getTopic();
 		if (currentTopic.empty())
@@ -135,20 +100,20 @@ void topic(Server *server, const int clientFd, s_ircCommand cmdInfo)
 		}
 		else
 		{
-			errMessage = RPL_TOPIC(IRC_PREFIX(clientNick, client.getUserName()), channelName, currentTopic);
+			errMessage = RPL_TOPIC(clientNick, channelName, currentTopic);
 			addToClientSendBuf(server, clientFd, errMessage);
 		}
 		return;
 	}
-	// 5-2. 変更要求の場合、トピック変更処理を実行
+	// 4-2. 変更要求の場合、トピック変更処理を実行
 	else
 	{
-		// 6-1. 空文字ならトピックをクリア
+		// 5-1. 空文字ならトピックをクリア
 		if (topic.empty())
 		{
 			channel.setTopic("");
 		}
-		// 6-2. それ以外は、保護されたトピックモードの場合、オペレーター権限をチェックする
+		// 5-2. それ以外は、保護されたトピックモードの場合、オペレーター権限をチェックする
 		else
 		{
 			// 保護されたトピックモード (mode "t") チェック
@@ -162,8 +127,8 @@ void topic(Server *server, const int clientFd, s_ircCommand cmdInfo)
 			channel.setTopic(topic);
 		}
 
-		// 7. チャンネル内全クライアントに、TOPICコマンドとして変更通知をブロードキャスト
-		broadcastNewTopic(server, channel, client, topic);
+		// 6. チャンネル内全クライアントに、TOPICコマンドとして変更通知をブロードキャスト
+		broadcastNewTopic(server, channel, clientNick, client.getUserName(), topic);
 	}
 }
 
@@ -174,6 +139,6 @@ Numeric Replies:
 	ERR_NOTONCHANNEL (442)
 	ERR_CHANOPRIVSNEEDED (482)
 	RPL_NOTOPIC (331)
-	RPL_TOPIC (332)
+	// RPL_TOPIC (332)
 	// RPL_TOPICWHOTIME (333)
 */

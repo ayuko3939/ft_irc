@@ -208,7 +208,7 @@ bool Server::isChannelExist(std::string &channelName)
 	return (true);
 }
 
-int Server::getClientFdFromNick(std::string &nick)
+int Server::getClientFdByNick(std::string &nick)
 {
 	// クライアントリストからニックネームに対応するクライアントのFDを取得
 	std::map<const int, Client>::iterator it = _clientList.begin();

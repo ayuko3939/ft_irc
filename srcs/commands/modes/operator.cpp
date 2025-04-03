@@ -15,7 +15,7 @@
 static bool isAlreadySetOperator(Server *server, Channel &channel, Client &client, bool sign, const std::string &targetNick)
 {
 	// 対象ユーザーのFDを取得
-	int targetFd = server->getClientFdFromNick(const_cast<std::string&>(targetNick));
+	int targetFd = server->getClientFdByNick(const_cast<std::string&>(targetNick));
 	if (targetFd == -1)
 	{
 		// 対象ユーザーが存在しない場合
@@ -36,9 +36,8 @@ static bool isAlreadySetOperator(Server *server, Channel &channel, Client &clien
 
 static void broadcastOperatorModeChange(Server *server, Channel &channel, Client &client, bool sign, const std::string &targetNick)
 {
-	std::string modeString = targetNick;
-	modeString += (sign ? " is now an operator.": " is no longer an operator.");
-	std::string notify = RPL_CHANNELMODEIS(client.getNickname(), channel.getName(), modeString);
+	std::string modeString = (sign ? "+o": "-o");
+	std::string notify = RPL_CHANNELMODEIS(client.getNickname(), channel.getName(), modeString, targetNick);
 
 	std::map<const int, Client> &clientList = channel.getClientList();
 	for (std::map<int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
@@ -55,7 +54,7 @@ void operatorMode(Server *server, Channel &channel, Client &client, bool sign, s
 		return;
 
 	// 2. 対象ユーザーのFDを取得（存在チェックは事前に行っている前提）
-	int targetFd = server->getClientFdFromNick(modeArgs);
+	int targetFd = server->getClientFdByNick(modeArgs);
 	if (targetFd == -1)
 	{
 		// 対象ユーザーが存在しない場合（通常はチェック済みのはず）
@@ -66,7 +65,7 @@ void operatorMode(Server *server, Channel &channel, Client &client, bool sign, s
 	// 3-1. +oの場合：対象ユーザーをオペレーターリストに追加
 	if (sign)
 	{
-		channel.setOperatorList(targetFd);
+		channel.addOperatorList(targetFd);
 	}
     // 3-2. -oの場合：対象ユーザーをオペレーターリストから削除
 	else

@@ -13,7 +13,7 @@ def main():
     # 複数回に分けるため、任意の部分に分割（例）
     parts = ["PAS", "S my", "pass", "word\r", "\n",
              "NI", "CK my", "nick\r\n",
-             "USER m", "yuser 0 *", ":myreal", "name\r\n",]
+             "USER m", "yuser 0 *", " :myreal", "name\r\n",]
 
     # ソケットを作成しサーバーに接続
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

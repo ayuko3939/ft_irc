@@ -12,27 +12,26 @@
 
 #include "Command.hpp"
 
-static bool checkArguments(Server *server, const int clientFd, 
-	std::vector<std::string> &words, std::string &password)
+static bool checkArguments(Server *server, const int clientFd, std::vector<std::string> &words)
 {
 	std::string nickname = server->getNickname(clientFd);
 	std::string errMessage = "";
 
 	// 引数が1つであることを確認
-	if (words.empty() || words[0].empty())
+	if (words.size() != 1 || words[0].empty())
 	{
 		errMessage = ERR_NEEDMOREPARAMS(nickname, "PASS");
 		errMessage += PASS_USAGE;
 		addToClientSendBuf(server, clientFd, errMessage);
 		return (false);
 	}
+
 	// パスワードが一致しない場合
-	password = words[0];
-	if (password != server->getPassword())
+	if (words[0] != server->getPassword())
 	{
 		errMessage = ERR_PASSWDMISMATCH(nickname);
 		addToClientSendBuf(server, clientFd, errMessage);
-		return ;
+		return (false);
 	}
 	return (true);
 }
@@ -52,10 +51,9 @@ void pass(Server *server, const int clientFd,s_ircCommand cmdInfo)
 	}
 
 	std::vector<std::string> words = splitMessage(cmdInfo.message);
-	std::string password = "";
 
 	// 2. 入力内容の妥当性チェック
-	if (!checkArguments(server, clientFd, words, password))
+	if (!checkArguments(server, clientFd, words))
 		return ;
 
 	// 3. パスワード認証成功
