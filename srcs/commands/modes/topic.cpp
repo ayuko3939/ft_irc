@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/28 18:37:53 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/04/04 16:33:29 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static bool isAlreadySet(Server *server, Channel &channel, Client &client, bool 
 	if (channel.getMode("t") == sign)
 	{
 		std::string msg = "Topic protect mode is already ";
-		msg += (sign ? "on\r\n" : "off\r\n");
+		msg += (sign ? "ON\r\n" : "OFF\r\n");
 		addToClientSendBuf(server, client.getClientFd(), msg);
 		return true;
 	}

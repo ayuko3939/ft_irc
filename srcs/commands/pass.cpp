@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/31 19:22:21 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/04/04 21:42:58 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,6 @@ void pass(Server *server, const int clientFd,s_ircCommand cmdInfo)
 	// 4. 成功通知の送信
 	std::string notice = RPL_PASS();
 	addToClientSendBuf(server, clientFd, notice);
-	// std::cout << INDIGO "[Server] Password authentication success" END << std::endl;
 }
 
 /*

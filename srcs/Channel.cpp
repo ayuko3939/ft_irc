@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:04 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/29 16:48:01 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/04/04 22:38:46 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,7 +158,9 @@ void Channel::removeClient(int clientFd)
 	_clientList.erase(clientFd);
 	
 	if (isOperator(clientFd))
-	removeOperator(clientFd);
+		removeOperator(clientFd);
+	if (isInvited(clientFd))
+		removeInvited(clientFd);
 }
 
 void Channel::removeInvited(int clientFd)
@@ -183,4 +185,19 @@ void Channel::removeOperator(int clientFd)
 			return ;
 		}
 	}
+}
+
+std::string Channel::getClientListString()
+{
+	std::string clientListString = "";
+	std::map<const int, Client>::iterator it = _clientList.begin();
+	
+	while (it != _clientList.end())
+	{
+		clientListString += it->second.getNickname() + " ";
+		++it;
+		if (it != _clientList.end())
+			clientListString += " ";
+	}
+	return (clientListString);
 }

@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/31 22:13:43 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/04/04 22:33:54 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,15 +120,24 @@ static void broadcastJoin(Server *server, Channel &channel,
 {
 	std::string notice = RPL_JOIN(IRC_PREFIX(nickname, userName), channelName);
 
+	// チャンネル全体にJOINメッセージを送信
 	std::map<const int, Client>	&clientList = channel.getClientList();
 	for (std::map<const int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
 	{
 		addToClientSendBuf(server, it->first, notice);
 	}
-	// トピック情報を送信
+
+	// 新メンバーにトピック情報を送信
 	if (!channel.getTopic().empty())
-		addToClientSendBuf(server, server->getClientFdByNick(nickname) , RPL_TOPIC(nickname, channelName, channel.getTopic()));
-	std::cout << "debug : topic = " << channel.getTopic() << std::endl;
+	{
+		notice = RPL_TOPIC(nickname, channelName, channel.getTopic());
+		addToClientSendBuf(server, server->getClientFdByNick(nickname) , notice);
+	}
+
+	// 新メンバーに参加者一覧を送信
+	notice = RPL_NAMREPLY(nickname, "=", channelName, channel.getClientListString());
+	notice += RPL_ENDOFNAMES(nickname, channelName);
+	addToClientSendBuf(server, server->getClientFdByNick(nickname) , notice);
 }
 
 // JOIN <channel> [<key>]
@@ -194,6 +203,6 @@ Numeric Replies:
 	// ERR_BADCHANMASK (476)
 	RPL_TOPIC (332)
 	// RPL_TOPICWHOTIME (333)
-	// RPL_NAMREPLY (353)
-	// RPL_ENDOFNAMES (366)
+	RPL_NAMREPLY (353)
+	RPL_ENDOFNAMES (366)
 */

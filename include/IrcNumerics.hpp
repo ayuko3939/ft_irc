@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 22:07:12 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/31 22:18:49 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/04/04 16:41:10 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -249,8 +249,8 @@
 // // (352) RPL_WHOREPLY : WHO応答の詳細情報（チャネル、ユーザ情報等）
 // # define RPL_WHOREPLY(client, channel, username, host, server, nick, flags, hopcount, realname) (":localhost 352 " + client + " " + channel + " " + username + " " + host + " " + server + " " + nick + " " + flags + " :" + hopcount + " " + realname + "\r\n")
 
-// // (353) RPL_NAMREPLY : NAMES応答（チャネル参加者一覧）
-// # define RPL_NAMREPLY(client, symbol, channel, nicks) (":localhost 353 " + client + " " + symbol + " " + channel + " :" + nicks + "\r\n")
+// (353) RPL_NAMREPLY : NAMES応答（チャネル参加者一覧）
+# define RPL_NAMREPLY(client, symbol, channel, nicks) (":localhost 353 " + client + " " + symbol + " " + channel + " :" + nicks + "\r\n")
 
 // // (364) RPL_LINKS : サーバ間リンク情報
 // # define RPL_LINKS(client, server, hopcount, serverInfo) (":localhost 364 " + client + " * " + server + " :" + hopcount + " " + serverInfo + "\r\n")
@@ -258,8 +258,8 @@
 // // (365) RPL_ENDOFLINKS : リンクリストの終了通知
 // # define RPL_ENDOFLINKS(client) (":localhost 365 " + client + " * :End of /LINKS list\r\n")
 
-// // (366) RPL_ENDOFNAMES : NAMES応答の終了通知
-// # define RPL_ENDOFNAMES(client, channel) (":localhost 366 " + client + " " + channel + " :End of /NAMES list\r\n")
+// (366) RPL_ENDOFNAMES : NAMES応答の終了通知
+# define RPL_ENDOFNAMES(client, channel) (":localhost 366 " + client + " " + channel + " :End of /NAMES list\r\n")
 
 // // (367) RPL_BANLIST : チャネルBANリストのエントリ情報（オプション付き）
 // # define RPL_BANLIST(client, channel, mask, who, setts) (":localhost 367 " + client + " " + channel + " " + mask + " " + who + " " + setts + "\r\n")

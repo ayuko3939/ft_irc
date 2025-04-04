@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/28 18:50:21 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/04/04 20:12:14 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,18 +29,22 @@ static bool checkAndGetChannel(Server *server, int const clientFd, std::vector<s
 		return (false);
 	}
 
-	// チャンネルが存在するか確認
 	channelName = getChannelNameFromWord(words[0]);
-	if (!server->isChannelExist(channelName))
-	{
-		// チャンネルではなくクライアントが指定されている場合
-		if (server->isClientExist(channelName))
-			return (false);
 
-		errMessage = ERR_NOSUCHCHANNEL(nickname, channelName);
-		addToClientSendBuf(server, clientFd, errMessage);
-		return (false);
+	// チャンネル名が指定されている場合
+	if (words[0].at(0) == '#')
+	{
+		// チャンネルが存在するか確認
+		if (!server->isChannelExist(channelName))
+		{
+			errMessage = ERR_NOSUCHCHANNEL(nickname, channelName);
+			addToClientSendBuf(server, clientFd, errMessage);
+			return (false);
+		}
 	}
+	// チャンネルではなくクライアントが指定されている場合
+	else if (server->isClientExist(channelName))
+		return (false);
 
 	std::map<std::string, Channel> &channelList = server->getChannelList();
 	Channel &channel = channelList.find(channelName)->second;
@@ -106,7 +110,6 @@ static bool checkModeArguments(Server *server, int const clientFd,
 		addToClientSendBuf(server, clientFd, errMessage);
 		return (false);
 	}
-
 	return (true);
 }
 

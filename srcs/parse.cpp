@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:43:40 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/27 19:59:10 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/04/04 21:43:33 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,11 +87,11 @@ int parseCommand(std::string &cmdLine, s_ircCommand &cmdInfo)
 		cmdInfo.name[i] = std::toupper(cmdInfo.name[i]);
 	
 	// DEBUG
-	std::cout << GREEN;
-	std::cout << "prefix: " << cmdInfo.prefix << std::endl;
-	std::cout << "name: " << cmdInfo.name << std::endl;
-	std::cout << "message: " << cmdInfo.message << std::endl;
-	std::cout << END;
+	// std::cout << GREEN;
+	// std::cout << "prefix: " << cmdInfo.prefix << std::endl;
+	// std::cout << "name: " << cmdInfo.name << std::endl;
+	// std::cout << "message: " << cmdInfo.message << std::endl;
+	// std::cout << END;
 
 	return (EXIT_SUCCESS);
 }

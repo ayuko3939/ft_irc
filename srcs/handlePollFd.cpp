@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 21:43:54 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/22 17:06:28 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/04/04 21:52:10 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ int Server::handleClientData(std::vector<pollfd> &pollFds, std::vector<pollfd>::
 		message.resize(readSize);
 
 		if (message.find_first_not_of(" \t\n\v\f\r") != std::string::npos)
-			std::cout << "[Client] " << it->fd << " > " << message << std::endl;
+			std::cout << YELLOW "[Client] " << it->fd << " < " << message << END << std::endl;
 		
 		// クライアントのバッファに受信したメッセージを追記で格納
 		client->setReadBuf(client->getReadBuf() + message);

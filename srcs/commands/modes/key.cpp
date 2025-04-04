@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/28 18:36:57 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/04/04 16:34:01 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static bool isAlreadySet(Server *server, Channel &channel, Client &client, bool 
 	if (channel.getMode("k") == sign && channel.getPassword() == key)
 	{
 		std::string msg = "Channel key mode is already ";
-		msg += (sign ? ("set to " + key + "\r\n") : "off\r\n");
+		msg += (sign ? ("set to " + key + "\r\n") : "OFF\r\n");
 		addToClientSendBuf(server, client.getClientFd(), msg);
 		return true;
 	}

@@ -21,12 +21,12 @@
 // Color Paretto
 # define RED "\033[38;5;196m"		// fatal error
 # define ORANGE "\033[38;5;208m"	// normal error
-# define YELLOW "\033[38;5;226m"	// warning
+# define YELLOW "\033[38;5;228m"	// client -> server
 # define GREEN "\033[38;5;082m"		// debug
-# define BLUE "\033[38;5;027m"
-# define INDIGO "\033[38;5;025m"	// server
+# define BLUE "\033[38;5;123m"		// server -> client
+# define INDIGO "\033[38;5;025m"	// server message
 # define VIOLET "\033[38;5;062m"
-# define WHITE "\033[38;5;231m"
+# define WHITE "\033[38;5;231m"		
 # define BROWN "\033[38;5;137m"
 # define END "\033[0m"
 

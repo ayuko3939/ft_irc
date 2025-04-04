@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:04 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/29 16:45:41 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/04/04 16:46:52 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,9 @@ class Channel
 	void removeClient(int clientFd);
 	void removeInvited(int clientFd);
 	void removeOperator(int clientFd);
+	
+	// others
+	std::string getClientListString();
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/28 18:37:22 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/04/04 16:33:52 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static bool isAlreadySetLimit(Server *server, Channel &channel, Client &client, 
 	if (channel.getMode("l") == sign && channel.getCapacity() == static_cast<size_t>(limit))
 	{
 		std::string msg = "User limit mode is already ";
-		msg += (sign ? ("set to " + limitStr + "\r\n") : "off\r\n");
+		msg += (sign ? ("set to " + limitStr + "\r\n") : "OFF\r\n");
 		addToClientSendBuf(server, client.getClientFd(), msg);
 		return true;
 	}

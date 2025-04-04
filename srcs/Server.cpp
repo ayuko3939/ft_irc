@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:18 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/26 21:18:32 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/04/04 22:10:30 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ _clientList(),
 _channelList(),
 _serverInfo(NULL)
 {
-    std::cout << INDIGO "Server running..." END << std::endl;
+    std::cout << INDIGO "[Server] Server running..." END << std::endl;
     
     // 時間を文字列として取得（2042-4-2 4:2:42）
     char buf[80];
@@ -80,7 +80,7 @@ bool Server::_signal = false;
 void Server::signalHandler(int signal)
 {
 	(void)signal;
-	std::cout << INDIGO "Server shutdown..." END << std::endl;
+	std::cout << INDIGO "[Server] Server shutdown..." END << std::endl;
 	Server::_signal = true;
 }
 
@@ -192,11 +192,18 @@ void Server::addClient(int clientFd, std::vector<pollfd> &tmpPollFds)
 void Server::deleteClient(std::vector<pollfd> &pollFds, std::vector<pollfd>::iterator &it, int clientFd)
 {
 	std::cout << INDIGO SERVER_DISCONNECT_CLIENT << clientFd << END << std::endl;
-	
+
+	// クライアントが参加しているチャンネルからクライアントを削除
+	for (std::map<std::string, Channel>::iterator it = _channelList.begin(); it != _channelList.end(); ++it)
+	{
+		if (it->second.isClientInChannel(clientFd))
+			it->second.removeClient(clientFd);
+	}
+
 	_clientList.erase(clientFd);
 	close(clientFd);
 	pollFds.erase(it);
-	
+
 	std::cout << INDIGO SERVER_NUMBER_OF_CLIENTS << pollFds.size() - 1 << END << std::endl;
 }
 

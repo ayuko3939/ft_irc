@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/29 19:20:51 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/04/04 21:36:58 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,10 @@ void privmsg(Server *server, int const clientFd, s_ircCommand cmdInfo)
 	}
 }
 
+/*
+  :nickname!username@localhost PRIVMSG #channelName :message string		// for channel
+  :nickname PRIVMSG targetName :message string							// for user
+*/
 /*
 Numeric Replies:
 	ERR_NOSUCHNICK (401)

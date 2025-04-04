@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 15:51:11 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/27 18:23:23 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/04/04 22:28:55 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void getTargetAndText(std::string &argument, std::string &target, std::string &t
 		target = argument.substr(0, pos);
 		target = getChannelNameFromWord(target);
 		text = argument.substr(pos + 1);
-		if (text[0] != ':')
+		if (!text.empty() && text[0] != ':')
 			text = ":" + text;
 	}
 }

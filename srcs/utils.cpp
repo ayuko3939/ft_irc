@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 12:58:58 by yohasega          #+#    #+#             */
-/*   Updated: 2025/03/27 16:37:44 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/04/04 22:21:23 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,8 @@
 void addToClientSendBuf(Server *server, int clientFd, std::string message)
 {
 	Client &client = retrieveClient(server, clientFd);
-	client.setSendBuf(client.getSendBuf() + message);
+	std::string newMessage = client.getSendBuf() + message;
+	client.setSendBuf(newMessage);
 }
 
 void sendServerReply(int clientFd, std::string &message)
@@ -30,9 +31,7 @@ void sendServerReply(int clientFd, std::string &message)
 	// 送信したデータを表示
 	while (getline(iss, line))
 	{
-		  // ===== ★後で表示を整える★ =====
-		std::cout << "[Server] "
-				  << clientFd << " > " << line << std::endl; 
+		std::cout << BLUE "[Server] " << clientFd << " > " << line << END << std::endl; 
 	}
 }
 
