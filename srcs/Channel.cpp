@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:04 by hasega            #+#    #+#             */
-/*   Updated: 2025/04/04 22:38:46 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/04/04 23:11:17 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,6 +156,7 @@ void Channel::addInvitedList(int clientFd){ _invitedList.push_back(clientFd); }
 void Channel::removeClient(int clientFd)
 {
 	_clientList.erase(clientFd);
+	// std::cout << "debug : remove client " << clientFd << " from #" << getName() << std::endl;
 	
 	if (isOperator(clientFd))
 		removeOperator(clientFd);
@@ -170,9 +171,11 @@ void Channel::removeInvited(int clientFd)
 		if (*it == clientFd)
 		{
 			_invitedList.erase(it);
+			// std::cout << "debug : remove invited too" << std::endl;
 			return ;
 		}
 	}
+	// std::cout << "debug : remove invited not found" << std::endl;
 }
 
 void Channel::removeOperator(int clientFd)
@@ -182,9 +185,11 @@ void Channel::removeOperator(int clientFd)
 		if (*it == clientFd)
 		{
 			_operatorList.erase(it);
+			// std::cout << "debug : remove operator too" << std::endl;
 			return ;
 		}
 	}
+	// std::cout << "debug : remove operator not found" << std::endl;
 }
 
 std::string Channel::getClientListString()
