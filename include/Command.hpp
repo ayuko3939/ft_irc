@@ -27,9 +27,9 @@ void pass(Server *server, const int clientFd, s_ircCommand cmdInfo);	// サー�
 void privmsg(Server *server, const int clientFd, s_ircCommand cmdInfo);	// メッセージ送信
 void quit(Server *server, const int clientFd, s_ircCommand cmdInfo);	// クライアントの切断
 void topic(Server *server, const int clientFd, s_ircCommand cmdInfo);	// トピックの変更
-void user(Server *server, const int clientFd, s_ircCommand cmdInfo);	// ユーザー情報の登録（変更不可）
+void user(Server *server, const int clientFd, s_ircCommand cmdInfo);	// ユーザー情報の登録（初回のみ）
 
-// mode option functions
+// Mode option functions
 void inviteOnlyMode(Server *server, Channel &channel, Client &client, bool sign);
 void channelKeyMode(Server *server, Channel &channel, Client &client, bool sign, std::string modeArgs);
 void userLimitMode(Server *server, Channel &channel, Client &client, bool sign, std::string modeArgs);

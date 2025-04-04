@@ -5,41 +5,26 @@
 #include "IrcNumerics.hpp"
 
 # include <iostream>
-# include <fstream> // file
-# include <sstream> // string
+# include <fstream>	// file
+# include <sstream>	// string
 # include <string>
 # include <signal.h>
-# include <cstring> // memset
-# include <ctime> // tm
-# include <cstdlib> // exit
-
-# include <netdb.h> // getaddrinfo
-# include <poll.h> // poll
-# include <fcntl.h> // fcntl
-
+# include <cstring>	// memset
+# include <ctime>	// tm
+# include <cstdlib>	// exit
+# include <netdb.h>	// getaddrinfo
+# include <poll.h>	// poll
+# include <fcntl.h>	// fcntl
 # include <vector>
 # include <map>
 
-
-// # include <sys/types.h>
-// # include <sys/socket.h>
-// # include <netinet/in.h>
-// # include <arpa/inet.h>
-
-
-// # include <unistd.h>
-
-// # include <cerrno>
-
-
-
 // Color Paretto
-# define RED "\033[38;5;196m" // 太字　"\033[38;5;196;1m"
-# define ORANGE "\033[38;5;208m"
-# define YELLOW "\033[38;5;226m"
-# define GREEN "\033[38;5;082m"
+# define RED "\033[38;5;196m"		// fatal error
+# define ORANGE "\033[38;5;208m"	// normal error
+# define YELLOW "\033[38;5;226m"	// warning
+# define GREEN "\033[38;5;082m"		// debug
 # define BLUE "\033[38;5;027m"
-# define INDIGO "\033[38;5;025m"
+# define INDIGO "\033[38;5;025m"	// server
 # define VIOLET "\033[38;5;062m"
 # define WHITE "\033[38;5;231m"
 # define BROWN "\033[38;5;137m"
@@ -72,8 +57,7 @@
 # define SERVER_ADD_CLIENT			"[Server] Added client prot:"
 # define SERVER_DISCONNECT_CLIENT	"[Server] Client disconnected prot:"
 # define SERVER_NUMBER_OF_CLIENTS	"[Server] The current number of clients is "
-# define SEVER_REQUIREMENTS			"CHANNELLEN=20 NICKLEN=10 TOPICLEN=50"
-# define DEFAULT_KICK_COMMENT		":Kicked by channel operator"
+
 
 // Settings
 # define MAX_CLIENTS 4

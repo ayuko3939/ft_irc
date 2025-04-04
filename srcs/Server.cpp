@@ -21,8 +21,8 @@ _serverSockFd(-1),
 _port(port),
 _password(password),
 _operatorList(),
-// _clientList(),
-// _channelList(),
+_clientList(),
+_channelList(),
 _serverInfo(NULL)
 {
     std::cout << INDIGO "Server running..." END << std::endl;
@@ -128,6 +128,51 @@ void Server::launchServer()
 /*                       Client Management                         */
 /*******************************************************************/
 
+// クライアントリストからクライアントFDに対応するクライアントが存在するかチェック
+bool Server::isClientExist(int clientFd)
+{
+	std::map<const int, Client>::iterator it = _clientList.find(clientFd);
+	if (it == _clientList.end())
+		return (false);
+	return (true);
+}
+
+// クライアントリストからニックネームに対応するクライアントが存在するかチェック
+bool Server::isClientExist(std::string &nickname)
+{
+	std::map<const int, Client>::iterator it = _clientList.begin();
+	while (it != _clientList.end())
+	{
+		if (it->second.getNickname() == nickname)
+			return (true);
+		++it;
+	}
+	return (false);
+}
+
+// クライアントリストからニックネームに対応するクライアントのFDを取得
+int Server::getClientFdByNick(std::string &nick)
+{
+	std::map<const int, Client>::iterator it = _clientList.begin();
+	while (it != _clientList.end())
+	{
+		if (it->second.getNickname() == nick)
+			return (it->first);
+		++it;
+	}
+	return (-1);
+}
+
+// クライアントリストからクライアントのFDに対応するニックネームを取得
+std::string Server::getNickname(int clientFd)
+{
+	std::map<const int, Client>::iterator it = _clientList.find(clientFd);
+	if (it == _clientList.end())
+		return ("");
+	return (it->second.getNickname());
+}
+
+// クライアントリストに追加
 void Server::addClient(int clientFd, std::vector<pollfd> &tmpPollFds)
 {
 	pollfd	clientPollFd;
@@ -143,11 +188,11 @@ void Server::addClient(int clientFd, std::vector<pollfd> &tmpPollFds)
 	std::cout << INDIGO SERVER_ADD_CLIENT << clientFd << END << std::endl;
 }
 
+// クライアントリストから削除し、ソケットを閉じる
 void Server::deleteClient(std::vector<pollfd> &pollFds, std::vector<pollfd>::iterator &it, int clientFd)
 {
 	std::cout << INDIGO SERVER_DISCONNECT_CLIENT << clientFd << END << std::endl;
 	
-	// クライアントリストから削除し、ソケットを閉じる
 	_clientList.erase(clientFd);
 	close(clientFd);
 	pollFds.erase(it);
@@ -160,6 +205,7 @@ void Server::deleteClient(std::vector<pollfd> &pollFds, std::vector<pollfd>::ite
 /*                       Channel Management                        */
 /*******************************************************************/
 
+// チャンネルを作成し、チャンネルリストに追加
 void Server::addChannel(std::string &channelName)
 {
 	// すでにチャンネルが存在する場合、エラー文を出力して何もしないで処理終了
@@ -175,6 +221,7 @@ void Server::addChannel(std::string &channelName)
 	_channelList.insert(std::make_pair(channelName, channel));
 }
 
+// チャンネルにクライアントを追加
 void Server::addClientToChannel(std::string &channelName, Client &client)
 {
 	// チャンネルが存在しない場合、エラー文を出力して何もしないで処理終了
@@ -196,6 +243,7 @@ void Server::addClientToChannel(std::string &channelName, Client &client)
 	it->second.addClientToChannel(client);
 }
 
+// チャンネルが存在するか確認
 bool Server::isChannelExist(std::string &channelName)
 {
 	// チャンネルが存在しない場合、エラー文を出力してfalseを返す
@@ -206,48 +254,4 @@ bool Server::isChannelExist(std::string &channelName)
 		return (false);
 	}
 	return (true);
-}
-
-int Server::getClientFdByNick(std::string &nick)
-{
-	// クライアントリストからニックネームに対応するクライアントのFDを取得
-	std::map<const int, Client>::iterator it = _clientList.begin();
-	while (it != _clientList.end())
-	{
-		if (it->second.getNickname() == nick)
-			return (it->first);
-		++it;
-	}
-	return (-1);
-}
-
-bool Server::isClientExist(int clientFd)
-{
-	// クライアントリストからクライアントが存在するかチェック
-	std::map<const int, Client>::iterator it = _clientList.find(clientFd);
-	if (it == _clientList.end())
-		return (false);
-	return (true);
-}
-
-bool Server::isClientExist(std::string &nickname)
-{
-	// クライアントリストからニックネームに対応するクライアントが存在するかチェック
-	std::map<const int, Client>::iterator it = _clientList.begin();
-	while (it != _clientList.end())
-	{
-		if (it->second.getNickname() == nickname)
-			return (true);
-		++it;
-	}
-	return (false);
-}
-
-std::string Server::getNickname(int clientFd)
-{
-	// クライアントリストからクライアントのFDに対応するニックネームを取得
-	std::map<const int, Client>::iterator it = _clientList.find(clientFd);
-	if (it == _clientList.end())
-		return ("");
-	return (it->second.getNickname());
 }

@@ -1,16 +1,16 @@
 NAME = ircserv
 
-CXX = g++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -g
+CXX = c++
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 
 SRC_DIR = srcs
 SRCS = main.cpp \
 		Server.cpp \
 		Client.cpp \
 		Channel.cpp \
-		ManageServer.cpp \
-		ManageServerUtils.cpp \
-		parsing.cpp \
+		manageServerLoop.cpp \
+		handlePollFd.cpp \
+		parse.cpp \
 		utils.cpp \
 		commands/invite.cpp \
 		commands/join.cpp \

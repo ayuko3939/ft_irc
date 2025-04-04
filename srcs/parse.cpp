@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parsing.cpp                                        :+:      :+:    :+:   */
+/*   parse.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -30,14 +30,6 @@ void splitCommandLine(std::string &message, std::vector<std::string> &cmds)
 
 	while (std::getline(iss, line, '\n'))
 		cmds.push_back(line);
-
-	// while (std::getline(iss, line, '\n'))
-	// {
-	// 	// 前後の空白を除去した上で、空文字列でなければ追加
-	// 	line = trim(line);
-	// 	if (!line.empty())
-	// 		cmds.push_back(line);
-	// }
 }
 
 // 処理例
@@ -111,7 +103,6 @@ void sendClientRegistrationMsg(Server *server, int clientFd, Client *client)
 	addToClientSendBuf(server, clientFd, RPL_YOURHOST(client->getNickname(), "ircserv", "1.0"));
 	addToClientSendBuf(server, clientFd, RPL_CREATED(client->getNickname(), server->getDateTime()));
 	addToClientSendBuf(server, clientFd, RPL_MYINFO(client->getNickname(), "ircserv", "1.0"));
-	// addToClientSendBuf(server, clientFd, RPL_ISUPPORT(client->getNickname(), SEVER_REQUIREMENTS));
 	addToClientSendBuf(server, clientFd, DELIMITER_LINE);
 }
 
@@ -157,14 +148,9 @@ void Server::fillClientInfo(Client *client, int clientFd, s_ircCommand cmdInfo)
 	}
 }
 
-void Server::execCommand(int clientFd, std::string &cmd)
+void Server::execCommand(int clientFd, s_ircCommand	&cmdInfo)
 {
 	Client	*client = getClient(this, clientFd);
-	s_ircCommand	cmdInfo;
-	
-	// コマンド解析
-	if (parseCommand(cmd, cmdInfo) == EXIT_FAILURE)
-		return ;
 
 	// 登録処理が完了していない場合
 	if (!client->isRegistrationDone())
@@ -175,7 +161,7 @@ void Server::execCommand(int clientFd, std::string &cmd)
 
 	// コマンドリストからコマンドを検索
 	int	type = getCommandType(cmdInfo.name);
-	// std::cout << "type: " << type << std::endl;
+	// std::cout << GREEN "[execCommand] type: " << type << END << std::endl;
 
 	// コマンドに応じた処理を実行
 	switch (type)
@@ -200,7 +186,7 @@ void Server::execCommand(int clientFd, std::string &cmd)
 	}
 }
 
-void Server::parseMessage(int clientFd, std::string &message)
+void Server::parseExecCommand(int clientFd, std::string &message)
 {
 	std::vector<std::string>	cmds;
 	
@@ -211,7 +197,12 @@ void Server::parseMessage(int clientFd, std::string &message)
 	std::vector<std::string>::iterator cmdIt = cmds.begin();
 	for ( ; cmdIt != cmds.end(); ++cmdIt)
 	{
-		std::string &cmd = *cmdIt;
-		execCommand(clientFd, cmd);
+        s_ircCommand cmdInfo;
+
+        // コマンド解析
+        if (parseCommand(*cmdIt, cmdInfo) == EXIT_FAILURE)
+            continue;
+		// コマンド実行
+		execCommand(clientFd, cmdInfo);
 	}
 }

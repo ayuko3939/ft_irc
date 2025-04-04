@@ -29,14 +29,9 @@ _operatorList()
 
 Channel::~Channel() {}
 
-
-// void Channel::setName(const std::string &name) { _name = name; }
 void Channel::setTopic(const std::string &topic) { _topic = topic; }
 void Channel::setPassword(const std::string &password) { _password = password; }
 void Channel::setCapacity(int capacity) { _capacity = capacity; }
-// void Channel::setClientList(const Client &client) { _clientList.insert(std::make_pair(client.getClientFd(), client)); }
-// void Channel::setInvitedList(int clientFd) { _invitedList.push_back(clientFd); }
-// void Channel::setOperatorList(int clientFd) { _operatorList.push_back(clientFd); }
 
 // void Channel::setMultMode(const std::string &mode)
 // {
@@ -85,7 +80,7 @@ void Channel::setCapacity(int capacity) { _capacity = capacity; }
 
 void Channel::setMode(bool sign, const char mode)
 {
-	// std::cout << "[setMode] mode: " << mode << ", sign: " << sign << std::endl;
+	// std::cout << GREEN "[setMode] mode: " << mode << ", sign: " << sign << END << std::endl;
 	switch (mode)
 	{
 		case 'i':
@@ -111,8 +106,6 @@ const std::string &Channel::getTopic() const { return (_topic);}
 const std::string &Channel::getPassword() const { return (_password);}
 size_t Channel::getCapacity() const { return (_capacity);}
 std::map<const int, Client> &Channel::getClientList() { return (_clientList);}
-// std::vector<int> Channel::getInvitedList() { return (_invitedList);}
-// std::vector<int> Channel::getOperatorList() { return (_operatorList);}
 
 bool Channel::getMode(const std::string mode) const
 {
@@ -146,7 +139,7 @@ bool Channel::isInvited(const int clientFd)
 	return (false);
 }
 
-bool Channel::isOperator(int clientFd)
+bool Channel::isOperator(const int clientFd)
 {
 	for (std::vector<int>::iterator it = _operatorList.begin(); it != _operatorList.end(); ++it)
 	{

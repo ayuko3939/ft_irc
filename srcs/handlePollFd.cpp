@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ManageServerUtils.cpp                              :+:      :+:    :+:   */
+/*   handlePollFd.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -13,21 +13,7 @@
 #include "Server.hpp"
 #include "Command.hpp"
 
-void Server::setServerPollFd(std::vector<pollfd> &pollFds)
-{
-	pollfd	serverPollFd;
-
-	serverPollFd.fd = _serverSockFd;
-	serverPollFd.events = POLLIN; // POLLIN: データ読み込み可能
-
-	pollFds.push_back(serverPollFd);
-}
-
-
-/*******************************************************************/
-/*                       Handle Connection                         */
-/*******************************************************************/
-
+// 新規クライアントの接続を処理する
 int Server::handleNewConnection(std::vector<pollfd> &pollFds, std::vector<pollfd> &tmpPollFds)
 {
 	sockaddr_in		clientAddr;
@@ -62,6 +48,7 @@ int Server::handleNewConnection(std::vector<pollfd> &pollFds, std::vector<pollfd
 	return (EXIT_SUCCESS);
 }
 
+// 既存クライアントからのデータ受信を処理する
 int Server::handleClientData(std::vector<pollfd> &pollFds, std::vector<pollfd>::iterator &it)
 {
 	// 1. クライアント情報の取得
@@ -97,9 +84,6 @@ int Server::handleClientData(std::vector<pollfd> &pollFds, std::vector<pollfd>::
 	{
 		// 受信したデータをバッファに格納（実際のメッセージの長さにリサイズ）
 		message.resize(readSize);
-		
-		// trimして出力する、空なら処理をスキップ // ★★★コマンド処理ができないのでは？★★★
-		// message = trim(message);
 
 		if (message.find_first_not_of(" \t\n\v\f\r") != std::string::npos)
 			std::cout << "[Client] " << it->fd << " > " << message << std::endl;
@@ -112,23 +96,23 @@ int Server::handleClientData(std::vector<pollfd> &pollFds, std::vector<pollfd>::
 		{
 			try
 			{
-				parseMessage(it->fd, client->getReadBuf());
+				parseExecCommand(it->fd, client->getReadBuf());
 
 				client->resetReadBuf();
 			}
 			catch(char const *mes)
 			{
-				// std::cerr << RED << mes << END << std::endl;
-				
+				std::cerr << RED << mes << END << std::endl;
 				if (client->isRegistrationDone())
 					client->setToDeconnect();
-				return (EXIT_FAILURE); // ★★★
+				return (EXIT_FAILURE);
 			}
 		}
 	}
 	return (EXIT_SUCCESS);
 }
 
+// クライアントにデータを送信する処理
 int Server::handlePollout(std::vector<pollfd> &pollFds, std::vector<pollfd>::iterator &it, int clientFd)
 {
 	Client *client = getClient(this, clientFd);
@@ -154,6 +138,7 @@ int Server::handlePollout(std::vector<pollfd> &pollFds, std::vector<pollfd>::ite
 	return (EXIT_SUCCESS);
 }
 
+// クライアントにエラーが発生した場合の処理
 int Server::handlePollerr(std::vector<pollfd> &pollFds, std::vector<pollfd>::iterator &it)
 {
 	std::cerr << ORANGE ERROR_SERVER_POLL << it->fd << END << std::endl;

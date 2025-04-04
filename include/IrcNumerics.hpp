@@ -13,6 +13,7 @@
 #ifndef IRCNUMERICS_HPP
 # define IRCNUMERICS_HPP
 
+// Length of parameters
 # define USERNAMELEN 20
 # define REALNAMELEN 20
 # define NICKLEN 10
@@ -24,26 +25,11 @@
 # define MSGLEN 400
 # define QUITLEN 500
 
-// # define STRINGIFY(x) #x
-// # define USERNAMELEN_ STRINGIFY(USERNAMELEN)
-// # define REALNAMELEN_ STRINGIFY(REALNAMELEN)
-// # define NICKLEN_ STRINGIFY(NICKLEN)
-// # define CHANNELLEN_ STRINGIFY(CHANNELLEN)
-// # define KEYLEN_ STRINGIFY(KEYLEN)
-// # define TOPICLEN_ STRINGIFY(TOPICLEN)
-// # define KICKLEN_ STRINGIFY(KICKLEN)
-// # define PARTLEN_ STRINGIFY(PARTLEN)
-// # define MSGLEN_ STRINGIFY(MSGLEN)
-
-// // エラーメッセージ
+// Error message
 # define ERR_INVALID_PARM		"Error: Invalid parameters.\r\n"
-// # define ERR_ALREADYDONE(client) (":" + client + " :You are already done\r\n")
 # define ERR_PASS_AUTH_YET		"Error: Password authentication is not complete. Please \"PASS\".\r\n"
-// # define ERR_REGISTRATION_YET	"Error: Registration is not complete. Please \"NICK\" and \"USER\".\r\n"
-// # define ERR_CMD_NOT_FOUND		"Error: Command not found.\r\n"
-// # define ERR_PARM_EMPTY			"Error: Parameter is empty.\r\n"
 
-// // コマンド要件
+// Command usage and requirements
 # define NICK_USAGE			"Usage: NICK <nickname>\r\n"
 # define NICK_REQUIREMENTS	"[!] nickname requirements: len(10), char(a-z, A-Z, 0-9)\r\n"
 # define USER_USAGE			"Usage: USER <username> 0 * <realname>\r\n"
@@ -66,8 +52,9 @@
 # define PART_USAGE			"Usage: PART <channel> [<reason>]\r\n"
 # define PART_REQUIREMENTS	"[!] reason requirements: len(50)\r\n"
 
+
+// Success message
 # define IRC_PREFIX(nickname, username) (":" + nickname + "!" + username + "@localhost")
-// // 成功通知
 # define RPL_NICK(IRC_PREFIX, newNick) (IRC_PREFIX + " NICK " + newNick + "\r\n")
 # define RPL_USER(IRC_PREFIX, user, real) (IRC_PREFIX + " :Your username is " + user + ", realname is " + real + "\r\n")
 # define RPL_PASS() ("Password accepted\r\n")
@@ -79,8 +66,9 @@
 # define RPL_PRIVMSG(IRC_PREFIX, target, message) (IRC_PREFIX + " PRIVMSG " + target + " " + message + "\r\n")
 # define RPL_PART(IRC_PREFIX, channel, reason) (IRC_PREFIX + " PART #" + channel + " " + reason + "\r\n")
 # define RPL_QUIT(IRC_PREFIX, reason) (IRC_PREFIX + " :QUIT:" + reason + "\r\n")
-# define SEY_BYE(IRC_PREFIX) (IRC_PREFIX + " : .*:+* Thanks for using IRC server. Goodbye! *+:*.")
 
+# define SEY_BYE(IRC_PREFIX) (IRC_PREFIX + " : .*:+* Thanks for using IRC server. Goodbye! *+:*.")
+# define DEFAULT_KICK_COMMENT	":Kicked by channel operator"
 # define DELIMITER_LINE "-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-\r\n"
 
 

@@ -53,8 +53,8 @@ class Server
     void addClient(int clientSockFd, std::vector<pollfd> &tmpPollFds);
     void deleteClient(std::vector<pollfd> &pollFds, std::vector<pollfd>::iterator &it, int clientSockFd);
     
-    void parseMessage(int clientFd, std::string &message);
-    void execCommand(int clientFd, std::string &cmd);
+    void parseExecCommand(int clientFd, std::string &message);
+    void execCommand(int clientFd, s_ircCommand	&cmdInfo);
     void fillClientInfo(Client *client, int clientFd, s_ircCommand cmdInfo);
     
   public:

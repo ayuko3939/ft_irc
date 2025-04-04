@@ -128,6 +128,7 @@ static void broadcastJoin(Server *server, Channel &channel,
 	// トピック情報を送信
 	if (!channel.getTopic().empty())
 		addToClientSendBuf(server, server->getClientFdByNick(nickname) , RPL_TOPIC(nickname, channelName, channel.getTopic()));
+	std::cout << "debug : topic = " << channel.getTopic() << std::endl;
 }
 
 // JOIN <channel> [<key>]

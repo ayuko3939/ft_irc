@@ -45,16 +45,11 @@ class Channel
 	~Channel();
 
     // Setters
-	// void setName(const std::string &name);
 	void setTopic(const std::string &topic);
 	// void setMultMode(const std::string &mode); // 複数のモードを設定する場合
 	void setMode(bool sign, const char mode); // 1つのモードを設定する場合
 	void setPassword(const std::string &password);
 	void setCapacity(int capacity);
-	// void setClientList(Client &client);
-	// void setInvitedList(int clientFd);
-	// void setOperatorList(int clientFd);
-
 	// Getters
 	const std::string &getName() const;
 	const std::string &getTopic() const;
@@ -62,15 +57,16 @@ class Channel
 	const std::string &getPassword() const;
 	size_t getCapacity() const;
 	std::map<const int, Client> &getClientList();
-	// std::vector<int> getInvitedList();
-	// std::vector<int> getOperatorList();
 	
+	// check
 	bool isClientInChannel(const int clientFd);
 	bool isInvited(const int clientFd);
 	bool isOperator(const int clientFd);
+	// add
 	void addClientToChannel(Client &client);
 	void addInvitedList(int clientFd);
 	void addOperatorList(int clientFd);
+	// remove
 	void removeClient(int clientFd);
 	void removeInvited(int clientFd);
 	void removeOperator(int clientFd);

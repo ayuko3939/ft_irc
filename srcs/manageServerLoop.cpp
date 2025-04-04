@@ -13,6 +13,16 @@
 #include "Server.hpp"
 #include "Command.hpp"
 
+void Server::setServerPollFd(std::vector<pollfd> &pollFds)
+{
+	pollfd	serverPollFd;
+
+	serverPollFd.fd = _serverSockFd;
+	serverPollFd.events = POLLIN; // POLLIN: データ読み込み可能
+
+	pollFds.push_back(serverPollFd);
+}
+
 void Server::manageServerLoop()
 {
 	std::vector<pollfd>		pollFds;
