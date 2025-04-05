@@ -39,18 +39,14 @@ static bool checkAndGetArguments(Server *server, int clientFd, std::vector<std::
 	if (words.empty() || words[0].empty())
 	{
 		errMessage = ERR_NEEDMOREPARAMS(nickname, "JOIN");
-		errMessage += JOIN_USAGE;
 		addToClientSendBuf(server, clientFd, errMessage);
+		std::cout << GUIDE JOIN_USAGE END << std::endl;
 		return (false);
 	}
+
 	// 引数が複数ある場合
 	if (words.size() > 2)
-	{
-		errMessage = ERR_INVALID_PARM;
-		errMessage += JOIN_USAGE;
-		addToClientSendBuf(server, clientFd, errMessage);
-		return (false);
-	}
+		std::cout << GUIDE JOIN_USAGE END << std::endl;
 	
 	// チャンネル名とキーを取得
 	channelName = getChannelNameFromWord(words[0]);
@@ -61,8 +57,8 @@ static bool checkAndGetArguments(Server *server, int clientFd, std::vector<std::
 	if (!isValid(channelName, key))
 	{
 		errMessage = ERR_INVALIDKEY(nickname, channelName);
-		errMessage += JOIN_REQUIREMENTS;
 		addToClientSendBuf(server, clientFd, errMessage);
+		std::cout << GUIDE JOIN_REQUIREMENTS END << std::endl;
 		return (false);
 	}
 	return (true);
@@ -177,9 +173,9 @@ void join(Server *server, const int clientFd, s_ircCommand cmdInfo)
 	{
 		if (!checkJoinEligibility(server, clientFd, nickname, it->second, key))
 			return ;
-		// チャンネルに誰も参加していない場合、オペレーターリストに追加
-		if (it->second.getClientList().empty())
-			it->second.addOperatorList(clientFd);
+		// // チャンネルに誰も参加していない場合、オペレーターリストに追加
+		// if (it->second.getClientList().empty())
+		// 	it->second.addOperatorList(clientFd);
 	}
 
 	// 4. クライアントをチャンネルに追加（招待されていた場合は招待リストから削除）

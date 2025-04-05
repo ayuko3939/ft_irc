@@ -12,7 +12,7 @@
 
 #include "Command.hpp"
 
-static bool isAlreadySetLimit(Server *server, Channel &channel, Client &client, bool sign, const std::string &limitStr)
+static bool isAlreadySetLimit(Channel &channel, bool sign, const std::string &limitStr)
 {
 	// 文字列を整数に変換
 	std::istringstream iss(limitStr);
@@ -24,7 +24,7 @@ static bool isAlreadySetLimit(Server *server, Channel &channel, Client &client, 
 	{
 		std::string msg = "User limit mode is already ";
 		msg += (sign ? ("set to " + limitStr + "\r\n") : "OFF\r\n");
-		addToClientSendBuf(server, client.getClientFd(), msg);
+		std::cout << GUIDE << msg << END << std::endl;
 		return true;
 	}
 	return false;
@@ -73,14 +73,12 @@ void userLimitMode(Server *server, Channel &channel, Client &client, bool sign, 
 	// 1. 引数の検証
 	if (!isValidLimit(modeArgs))
 	{
-		std::string errMessege = ERR_INVALID_PARM;
-		errMessege += MODE_REQ_L_LIMIT;
-		addToClientSendBuf(server, client.getClientFd(), errMessege);
+		std::cout << GUIDE MODE_REQ_L_LIMIT END << std::endl;
 		return;
 	}
 
 	// 2. 既に同じ制限状態なら、通知して処理終了
-	if (isAlreadySetLimit(server, channel, client, sign, modeArgs))
+	if (isAlreadySetLimit(channel, sign, modeArgs))
 		return;
 
 	// 3-1. +l（有効化）の場合、limitの検証を行う

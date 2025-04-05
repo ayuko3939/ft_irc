@@ -24,8 +24,8 @@ static bool checkAndGetChannel(Server *server, int const clientFd, std::vector<s
 	if (wordsSize == 0 || words[0].empty())
 	{
 		errMessage = ERR_NEEDMOREPARAMS(nickname, "MODE");
-		errMessage += MODE_USAGE;
 		addToClientSendBuf(server, clientFd, errMessage);
+		std::cout << GUIDE MODE_USAGE END << std::endl;
 		return (false);
 	}
 
@@ -66,7 +66,14 @@ static bool checkModeArguments(Server *server, int const clientFd,
 {
 	std::string nickname = server->getNickname(clientFd);
 	std::string errMessage = "";
-
+	
+	// クライアントがそのチャンネルのオペレーターであるか確認
+	if (!channel.isOperator(clientFd))
+	{
+		errMessage = ERR_CHANOPRIVSNEEDED(nickname, channel.getName());
+		addToClientSendBuf(server, clientFd, errMessage);
+		return (false);
+	}
 
 	// モード文字列が正しいか確認(+i, -i, +t, -t, +k, -k, +o, -o, +l, -l)
 	if (modeString.empty() || modeString.size() != 2 ||
@@ -74,8 +81,8 @@ static bool checkModeArguments(Server *server, int const clientFd,
 		((modeString[1] != 'i' && modeString[1] != 't' && modeString[1] != 'k' && modeString[1] != 'o' && modeString[1] != 'l')))
 	{
 		errMessage = ERR_UNKNOWNMODE(nickname, modeString);
-		errMessage += MODE_REQUIREMENTS;
 		addToClientSendBuf(server, clientFd, errMessage);
+		std::cout << GUIDE MODE_REQUIREMENTS END << std::endl;
 		return (false);
 	}
 
@@ -86,30 +93,21 @@ static bool checkModeArguments(Server *server, int const clientFd,
 		if (modeArgs.empty())
 		{
 			errMessage = ERR_NEEDMOREPARAMS(nickname, "MODE");
-			errMessage += MODE_USAGE_K_O_L;
 			addToClientSendBuf(server, clientFd, errMessage);
+			std::cout << GUIDE MODE_USAGE_K_O_L END << std::endl;
 			return (false);
 		}
 	}
-	// それ以外のモード文字列は引数不要
-	else
-	{
-		if (!modeArgs.empty())
-		{
-			errMessage = ERR_INVALID_PARM;
-			errMessage += MODE_USAGE;
-			addToClientSendBuf(server, clientFd, errMessage);
-			return (false);
-		}
-	}
-
-	// クライアントがそのチャンネルのオペレーターであるか確認
-	if (!channel.isOperator(clientFd))
-	{
-		errMessage = ERR_CHANOPRIVSNEEDED(nickname, channel.getName());
-		addToClientSendBuf(server, clientFd, errMessage);
-		return (false);
-	}
+	// // それ以外のモード文字列は引数不要
+	// else
+	// {
+	// 	if (!modeArgs.empty())
+	// 	{
+	// 		addToClientSendBuf(server, clientFd, errMessage);
+	// 		std::cout << GUIDE MODE_USAGE END << std::endl;
+	// 		return (false);
+	// 	}
+	// }
 	return (true);
 }
 
@@ -137,22 +135,20 @@ static void infoChannelMode(Server *server, int const clientFd, Channel &channel
 	std::string modeString = getChannelModeString(channel);
 
 	modeInfo = RPL_CHANNELMODEIS(server->getNickname(clientFd), channelName, modeString, channel.getPassword());
-	modeInfo += "========== " + channelName + "'s mode ==========\r\n";
-	modeInfo += " invite only   : ";
-	modeInfo += (channel.getMode("i") ? "on\r\n" : "off\r\n");
-	modeInfo += " topic protect : ";
-	modeInfo += (channel.getMode("t") ? "on\r\n" : "off\r\n");
-	modeInfo += " channel key   : ";
-	modeInfo += (channel.getMode("k") ? "on\r\n" : "off\r\n");
-	modeInfo += " user limit    : ";
-	modeInfo += (channel.getMode("l") ? "on\r\n" : "off\r\n");
-	modeInfo += "\r\n";
-	if (channel.isOperator(clientFd))
-		modeInfo += "You are operator. You can change channel mode.\r\n";
-	else
-		modeInfo += "You are not operator. if you want to change channel mode, you need to ask operator.\r\n";
-
 	addToClientSendBuf(server, clientFd, modeInfo);
+
+	// debug
+	std::cout << "===== " + channelName + "'s mode =====" << std::endl
+			  << " invite only   : "
+			  << (channel.getMode("i") ? "ON" : "OFF") << std::endl
+			  << " topic protect : "
+			  << (channel.getMode("t") ? "ON" : "OFF") << std::endl
+			  << " channel key   : "
+			  << (channel.getMode("k") ? "ON" : "OFF") << std::endl
+			  << " user limit    : "
+			  << (channel.getMode("l") ? "ON" : "OFF") << std::endl
+			  << " Client " << clientFd << " is "
+			  << (channel.isOperator(clientFd) ? "an operator" : "not an operator") << std::endl;
 }
 
 static void processModeChanges(Server *server, Client &client, Channel &channel, std::string modeString, std::string modeArgs)

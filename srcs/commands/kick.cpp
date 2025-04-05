@@ -22,8 +22,8 @@ static bool checkAndGetArguments(Server *server, int clientFd, std::string &issu
 	if (argument.empty() || argument.find(' ') == std::string::npos)
 	{
 		errMessage = ERR_NEEDMOREPARAMS(issuerNick, "KICK");
-		errMessage += KICK_USAGE;
 		addToClientSendBuf(server, clientFd, errMessage);
+		std::cout << GUIDE KICK_USAGE END << std::endl;
 		return (false);
 	}
 
@@ -34,16 +34,15 @@ static bool checkAndGetArguments(Server *server, int clientFd, std::string &issu
 	argument.erase(0, pos + 1);
 	getTargetAndText(argument, targetNick, comment);
 
+	// コメントが空の場合、デフォルトのコメントを設定、長すぎる場合、切り詰めて末尾に"[CUT]"を追加
 	if (comment.empty())
 	{
 		comment = DEFAULT_KICK_COMMENT;
 	}
 	else if (comment.size() > KICKLEN)
 	{
-		errMessage = ERR_INVALID_PARM;
-		errMessage += KICK_REQUIREMENTS;
-		addToClientSendBuf(server, clientFd, errMessage);
-		return (false);
+		comment = comment.substr(0, KICKLEN);
+		comment += "[CUT]";
 	}
 	return (true);
 }
@@ -97,13 +96,13 @@ static bool checkKickEligibility(Server *server, int const clientFd,
 		return (false);
 	}
 
-	// InviterとTargetが同一でないことを確認
-	if (issuerNick == targetNick)
-	{
-		errMessage = ERR_ERRONEUSTARGET(issuerNick, targetNick, " (Inviter and target are the same)");
-		addToClientSendBuf(server, clientFd, errMessage);
-		return (false);
-	}
+	// // InviterとTargetが同一でないことを確認
+	// if (issuerNick == targetNick)
+	// {
+	// 	errMessage = ERR_ERRONEUSTARGET(issuerNick, targetNick, " (Inviter and target are the same)");
+	// 	addToClientSendBuf(server, clientFd, errMessage);
+	// 	return (false);
+	// }
 	return (true);
 }
 

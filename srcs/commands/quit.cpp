@@ -17,8 +17,10 @@ static std::string getReason(std::string &cmdLine)
 	std::string reason = trim(cmdLine);
 
 	if (reason.size() > QUITLEN)
+	{
 		reason = reason.substr(0, QUITLEN);
-
+		reason += "[CUT]";
+	}
 	return ("Quit: " + reason);	
 }
 
@@ -45,9 +47,6 @@ void quit(Server *server, int const clientFd, s_ircCommand cmdInfo)
 		if (it->second.isClientInChannel(clientFd))
 			it->second.removeClient(clientFd);
 	}
-
-	// 4. 発行者に最終通知を送信して接続を閉じる
-	addToClientSendBuf(server, clientFd, SEY_BYE(IRC_PREFIX(client.getNickname(), client.getUserName())));
 
 	client.setToDeconnect();
 }

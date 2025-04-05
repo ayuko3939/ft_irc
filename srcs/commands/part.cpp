@@ -23,21 +23,19 @@ static bool checkAndGetArguments(Server *server, int clientFd,
 	if (argument.empty())
 	{
 		errMessage = ERR_NEEDMOREPARAMS(nickname, "PART");
-		errMessage += PART_USAGE;
 		addToClientSendBuf(server, clientFd, errMessage);
+		std::cout << GUIDE PASS_USAGE END << std::endl;
 		return (false);
 	}
 	
 	// チャンネル名と理由を取得
 	getTargetAndText(argument, channelName, reason);
 
-	// 理由文字列の長さをチェック
+	// 理由が長すぎる場合、切り詰めて末尾に"[CUT]"を追加
 	if (reason.size() > PARTLEN)
 	{
-		errMessage = ERR_INVALID_PARM;
-		errMessage += PART_REQUIREMENTS;
-		addToClientSendBuf(server, clientFd, errMessage);
-		return (false);
+		reason = reason.substr(0, PARTLEN);
+		reason += "[CUT]";
 	}
 	return (true);
 }

@@ -21,18 +21,14 @@ static bool checkArguments(Server *server, int clientFd, std::vector<std::string
 	if (words.size() < 2 || words[0].empty() || words[1].empty())
 	{
 		errMessage = ERR_NEEDMOREPARAMS(nickname, "INVITE");
-		errMessage += INVITE_USAGE;
 		addToClientSendBuf(server, clientFd, errMessage);
+		std::cout << GUIDE INVITE_USAGE END << std::endl;
 		return (false);
 	}
 	// 引数が複数ある場合
 	if (words.size() > 2)
-	{
-		errMessage = ERR_INVALID_PARM;
-		errMessage += INVITE_USAGE;
-		addToClientSendBuf(server, clientFd, errMessage);
-		return (false);
-	}
+		std::cout << GUIDE INVITE_USAGE END << std::endl;
+
 	return (true);
 }
 
@@ -101,13 +97,6 @@ static bool checkInviteEligibility(Server *server, int const clientFd,
 		return (false);
 	}
 
-	// 8. 招待対象のユーザーが既に招待されているか確認
-	if (channel.isInvited(clientFd))
-	{
-		errMessage = ERR_USERONINVITED(inviterNick, targetNick, channelName);
-		addToClientSendBuf(server, clientFd, errMessage);
-		return (false);
-	}
 	return (true);
 }
 
@@ -133,9 +122,10 @@ void invite(Server *server, int const clientFd, s_ircCommand cmdInfo)
 	std::map<std::string, Channel> &channelList = server->getChannelList();
 	Channel &channel = channelList.find(channelName)->second;
 
-	// 4. 招待対象のユーザーを招待リストに追加する
+	// 4. 招待対象のユーザーを招待リストに追加する（すでに登録している場合は追加しない）
 	int targetFd = server->getClientFdByNick(targetNick);
-	channel.addInvitedList(targetFd);
+	if (!channel.isInvited(clientFd))
+		channel.addInvitedList(targetFd);
 
 	// 5. 招待したユーザーに成功通知の送信、招待対象のユーザーに招待通知を送信する
 	std::string notice = RPL_INVITE(IRC_PREFIX(inviterNick, client.getUserName()), targetNick, channelName);

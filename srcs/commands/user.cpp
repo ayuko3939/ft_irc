@@ -12,7 +12,7 @@
 
 #include "Command.hpp"
 
-// yohasega yohasega 127.0.0.1 :Yoka Hasegawa
+// user user 127.0.0.1 :real name
 static std::string getRealname(std::string &cmdLine, std::string &thirdArgument)
 {
 	std::size_t pos = cmdLine.find(":");
@@ -57,8 +57,8 @@ static bool checkAndGetArguments(Server *server, int clientFd,
 	if (words.size() < 4)
 	{
 		errMessage = ERR_NEEDMOREPARAMS(nickname, "USER");
-		errMessage += USER_USAGE;
 		addToClientSendBuf(server, clientFd, errMessage);
+		std::cout << GUIDE USER_USAGE END << std::endl;
 		return (false);
 	}
 
@@ -70,8 +70,8 @@ static bool checkAndGetArguments(Server *server, int clientFd,
 	if (!isValid(username, realname))
 	{
 		errMessage = ERR_INVALID_PARM;
-		errMessage += USER_REQUIREMENTS;
 		addToClientSendBuf(server, clientFd, errMessage);
+		std::cout << GUIDE USER_REQUIREMENTS END << std::endl;
 		return (false);
 	}
 	return (true);

@@ -12,14 +12,14 @@
 
 #include "Command.hpp"
 
-static bool isAlreadySet(Server *server, Channel &channel, Client &client, bool sign)
+static bool isAlreadySet(Channel &channel, bool sign)
 {
 	// 既に指定されたモードが設定されている場合はエラー
 	if (channel.getMode("i") == sign)
 	{
 		std::string msg = "Invite-only mode is already ";
 		msg += (sign ? "ON\r\n" : "OFF\r\n");
-		addToClientSendBuf(server, client.getClientFd(), msg);
+		std::cout << GUIDE << msg << END << std::endl;
 		return (true);
 	}
 	return (false);
@@ -40,7 +40,7 @@ static void broadcastModeChange(Server *server, Channel &channel, Client &client
 void inviteOnlyMode(Server *server, Channel &channel, Client &client, bool sign)
 {
 	// 1. 現在の状態をチェック
-	if (isAlreadySet(server, channel, client, sign))
+	if (isAlreadySet(channel, sign))
 		return;
 
 	// 2.モードを変更

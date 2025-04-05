@@ -12,14 +12,14 @@
 
 #include "Command.hpp"
 
-static bool isAlreadySet(Server *server, Channel &channel, Client &client, bool sign)
+static bool isAlreadySet(Channel &channel, bool sign)
 {
 	// 既にトピック保護モードが設定されている場合、通知を送って true を返す
 	if (channel.getMode("t") == sign)
 	{
 		std::string msg = "Topic protect mode is already ";
 		msg += (sign ? "ON\r\n" : "OFF\r\n");
-		addToClientSendBuf(server, client.getClientFd(), msg);
+		std::cout << GUIDE << msg << END << std::endl;
 		return true;
 	}
 	return false;
@@ -40,7 +40,7 @@ static void broadcastModeChange(Server *server, Channel &channel, Client &client
 void topicProtectMode(Server *server, Channel &channel, Client &client, bool sign)
 {
 	// 1. 現在の状態をチェック
-	if (isAlreadySet(server, channel, client, sign))
+	if (isAlreadySet(channel, sign))
 		return;
 
 	// 2.モードを変更

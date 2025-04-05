@@ -28,7 +28,7 @@ static bool isAlreadySetOperator(Server *server, Channel &channel, Client &clien
 	{
 		std::string msg = (targetNick + " is already ");
 		msg += (sign ? "an operator.\r\n" : "not an operator.\r\n");
-		addToClientSendBuf(server, client.getClientFd(), msg);
+		std::cout << GUIDE << msg << END << std::endl;
 		return (true);
 	}
 	return (false);

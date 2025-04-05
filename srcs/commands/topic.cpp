@@ -23,21 +23,19 @@ static bool checkAndGetArguments(Server *server, int clientFd,
 	if (argument.empty())
 	{
 		errMessage = ERR_NEEDMOREPARAMS(nickname, "TOPIC");
-		errMessage += TOPIC_USAGE;
 		addToClientSendBuf(server, clientFd, errMessage);
+		std::cout << GUIDE TOPIC_USAGE END << std::endl;
 		return (false);
 	}
 	
 	// チャンネル名とトピックを取得
 	getTargetAndText(argument, channelName, topic);
 
-	// トピックの妥当性をチェック
+	// トピックが長すぎる場合、切り詰めて末尾に"[CUT]"を追加
 	if (topic.size() > TOPICLEN)
 	{
-		errMessage = ERR_INVALID_PARM;
-		errMessage += TOPIC_REQUIREMENTS;
-		addToClientSendBuf(server, clientFd, errMessage);
-		return (false);
+		topic = topic.substr(0, PARTLEN);
+		topic += "[CUT]";
 	}
 	return (true);
 }

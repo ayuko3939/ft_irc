@@ -51,19 +51,15 @@ static bool checkAndGetArguments(Server *server, const int clientFd,
 	}
 	// 引数が複数ある場合
 	if (words.size() > 1)
-	{
-		errMessage = ERR_INVALID_PARM;
-		errMessage += NICK_USAGE;
-		addToClientSendBuf(server, clientFd, errMessage);
-		return (false);
-	}
+		std::cout << GUIDE NICK_USAGE END << std::endl;
+
 	// 不正なニックネームの場合
 	newNick = words[0];
 	if (!isValid(newNick))
 	{
 		errMessage = ERR_ERRONEUSNICKNAME(nickname, newNick);
-		errMessage += NICK_REQUIREMENTS;
 		addToClientSendBuf(server, clientFd, errMessage);
+		std::cout << GUIDE NICK_REQUIREMENTS END << std::endl;
 		return (false);
 	}
 	// 重複チェック（他のユーザーが既に使用しているか）

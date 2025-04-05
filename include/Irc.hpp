@@ -27,7 +27,8 @@
 # define INDIGO "\033[38;5;025m"	// server message
 # define VIOLET "\033[38;5;062m"
 # define WHITE "\033[38;5;231m"		
-# define BROWN "\033[38;5;137m"
+// # define BROWN "\033[38;5;137m"		// server guide
+# define GUIDE "\033[38;5;137m"		// server guide
 # define END "\033[0m"
 
 // ===== Error masege =====
@@ -50,14 +51,10 @@
 # define ERROR_CHANNEL_NOT_FOUND	"Error: Channel not found #"
 # define ERROR_SERVER_EMPTY_CMD		"Error: empty command"
 
-
-// # define 
-
 // Server message
 # define SERVER_ADD_CLIENT			"[Server] Added client prot:"
 # define SERVER_DISCONNECT_CLIENT	"[Server] Client disconnected prot:"
 # define SERVER_NUMBER_OF_CLIENTS	"[Server] The current number of clients is "
-
 
 // Settings
 # define MAX_CLIENTS 4
@@ -68,8 +65,8 @@
 struct s_ircCommand
 {
 	std::string		prefix; 
-	std::string		name; // コマンド名
-	std::string		message; // メッセージ
+	std::string		name;		// コマンド名
+	std::string		message;	// メッセージ
 };
 
 #endif

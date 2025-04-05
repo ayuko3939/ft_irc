@@ -21,8 +21,8 @@ static bool checkArguments(Server *server, const int clientFd, std::vector<std::
 	if (words.size() != 1 || words[0].empty())
 	{
 		errMessage = ERR_NEEDMOREPARAMS(nickname, "PASS");
-		errMessage += PASS_USAGE;
 		addToClientSendBuf(server, clientFd, errMessage);
+		std::cout << GUIDE PASS_USAGE END << std::endl;
 		return (false);
 	}
 
@@ -61,8 +61,7 @@ void pass(Server *server, const int clientFd,s_ircCommand cmdInfo)
 	client.incrementNmInfo();
 
 	// 4. 成功通知の送信
-	std::string notice = RPL_PASS();
-	addToClientSendBuf(server, clientFd, notice);
+	addToClientSendBuf(server, clientFd, RPL_PASS);
 }
 
 /*
