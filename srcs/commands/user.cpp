@@ -6,24 +6,28 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:30:39 by ohasega           #+#    #+#             */
-/*   Updated: 2025/03/31 18:48:23 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/04/06 19:55:12 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Command.hpp"
 
 // user user 127.0.0.1 :real name
-static std::string getRealname(std::string &cmdLine, std::string &thirdArgument)
+static std::string getRealname(std::string &cmdLine, std::vector<std::string> &words)
 {
+	// ":"以降を取得する、なければ3番目以降を結合して取得
 	std::size_t pos = cmdLine.find(":");
 	if (pos == std::string::npos)
 	{
-		pos = cmdLine.find(thirdArgument);
-		if (pos == std::string::npos)
-			return ("");
-		return (cmdLine.substr(pos));
+		std::string realName;
+		for (std::size_t i = 3; i < words.size(); i++)
+		{
+			if (i != 3)
+				realName += " ";
+			realName += words[i];
+		}
+		return (realName);
 	}
-
 	return (cmdLine.substr(pos + 1));
 }
 
@@ -40,7 +44,7 @@ static bool	isValid(std::string username, std::string realname)
 	}
 	for (std::size_t i = 0; i < realname.size(); i++)
 	{
-		if (!isalpha(realname[i]) && realname[i] != ' ')
+		if (!isalnum(realname[i]) && realname[i] != ' ')
 			return (false);
 	}
 	return (true);
@@ -64,7 +68,7 @@ static bool checkAndGetArguments(Server *server, int clientFd,
 
 	// ユーザー名と実名の取得
 	username = words[0];
-	realname = getRealname(cmdLine, words[3]);
+	realname = getRealname(cmdLine, words);
 
 	// ユーザー名と実名の妥当性チェック
 	if (!isValid(username, realname))

@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:04 by hasega            #+#    #+#             */
-/*   Updated: 2025/04/04 23:11:17 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/04/06 19:28:15 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,7 +199,10 @@ std::string Channel::getClientListString()
 	
 	while (it != _clientList.end())
 	{
-		clientListString += it->second.getNickname() + " ";
+		// チャンネルオペレーターの場合、@をつける
+		if (isOperator(it->first))
+			clientListString += "@";
+		clientListString += it->second.getNickname();
 		++it;
 		if (it != _clientList.end())
 			clientListString += " ";
