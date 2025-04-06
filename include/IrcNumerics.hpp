@@ -316,8 +316,8 @@
 // // (404) ERR_CANNOTSENDTOCHAN : チャネルへの送信ができない
 // # define ERR_CANNOTSENDTOCHAN(client, channel) (":localhost 404 " + client + " " + channel + " :Cannot send to channel\r\n")
 
-// (405) ERR_TOOMANYCHANNELS : チャネル参加数上限に達している
-# define ERR_TOOMANYCHANNELS(client, channel) (":localhost 405 " + client + " " + channel + " :You have joined too many channels\r\n")
+// // (405) ERR_TOOMANYCHANNELS : チャネル参加数上限に達している
+// # define ERR_TOOMANYCHANNELS(client, channel) (":localhost 405 " + client + " " + channel + " :You have joined too many channels\r\n")
 
 // // (406) ERR_WASNOSUCHNICK : WHOWASで存在しなかったニック
 // # define ERR_WASNOSUCHNICK(client, nickname) (":localhost 406 " + client + " " + nickname + " :There was no such nickname\r\n")

@@ -76,20 +76,20 @@ static bool checkAndGetArguments(Server *server, const int clientFd,
   :oldNick NICK newNick							; for other members
   :oldNick!username@localhost NICK newNick		; for personal use
 */
-static void broadcastNick(Server *server, std::string &userName, std::string &oldNick, std::string &newNick)
-{
-	std::string notice = oldNick + " NICK " + newNick + "\r\n";
-	std::string noticeT = RPL_NICK(IRC_PREFIX(oldNick, userName), newNick);
+// static void broadcastNick(Server *server, std::string &userName, std::string &oldNick, std::string &newNick)
+// {
+// 	std::string notice = oldNick + " NICK " + newNick + "\r\n";
+// 	std::string noticeT = RPL_NICK(IRC_PREFIX(oldNick, userName), newNick);
 
-	std::map<const int, Client>	&clientList = server->getClientList();
-	for (std::map<int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
-	{
-		if (it->second.getNickname() == newNick)
-			addToClientSendBuf(server, it->first, noticeT);
-		else
-			addToClientSendBuf(server, it->first, notice);
-	}
-}
+// 	std::map<const int, Client>	&clientList = server->getClientList();
+// 	for (std::map<int, Client>::iterator it = clientList.begin(); it != clientList.end(); ++it)
+// 	{
+// 		if (it->second.getNickname() == newNick)
+// 			addToClientSendBuf(server, it->first, noticeT);
+// 		else
+// 			addToClientSendBuf(server, it->first, notice);
+// 	}
+// }
 
 void nick(Server *server, const int clientFd, s_ircCommand cmdInfo)
 {
@@ -119,7 +119,8 @@ void nick(Server *server, const int clientFd, s_ircCommand cmdInfo)
 	}
 
 	// 4. 成功通知の送信（クライアントだけでいいけど、知らん間に名前変わってたら困るので全員に送信）
-	broadcastNick(server, client.getUserName(), oldNick, newNick);
+	// broadcastNick(server, client.getUserName(), oldNick, newNick);
+	addToClientSendBuf(server, clientFd, RPL_NICK(IRC_PREFIX(oldNick, client.getUserName()), newNick));
 }
 
 /*

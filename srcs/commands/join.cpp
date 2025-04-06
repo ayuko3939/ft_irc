@@ -100,7 +100,7 @@ static bool checkJoinEligibility(Server *server, int clientFd,
 	// 参加人数制限チェック
 	if (channel.getMode("limit") && channel.getClientList().size() >= channel.getCapacity())
 	{
-		errMessage = ERR_TOOMANYCHANNELS(nickname, channelName);
+		errMessage = ERR_CHANNELISFULL(nickname, channelName);
 		addToClientSendBuf(server, clientFd, errMessage);
 		return (false);
 	}
@@ -191,7 +191,7 @@ void join(Server *server, const int clientFd, s_ircCommand cmdInfo)
 Numeric Replies:
 	ERR_NEEDMOREPARAMS (461)
 	// ERR_NOSUCHCHANNEL (403)
-	ERR_TOOMANYCHANNELS (405)
+	// ERR_TOOMANYCHANNELS (405)
 	ERR_BADCHANNELKEY (475)
 	// ERR_BANNEDFROMCHAN (474)
 	ERR_CHANNELISFULL (471)
