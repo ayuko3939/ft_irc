@@ -20,7 +20,6 @@ Server::Server(std::string port, std::string password, struct tm *timeinfo) :
 _serverSockFd(-1),
 _port(port),
 _password(password),
-_operatorList(),
 _clientList(),
 _channelList(),
 _serverInfo(NULL)
@@ -48,27 +47,11 @@ Server::~Server()
 /*                             Accessor                            */
 /*******************************************************************/
 
-// Setters
-// void Server::setServerSockFd(int serverSockFd) { _serverSockFd = serverSockFd; }
-// void Server::setPort(const std::string &port) { _port = port; }
-// void Server::setPassword(const std::string &password) { _password = password; }
-// void Server::setDateTime(const std::string &dateTime) { _dateTime = dateTime; }
-// void Server::setOperatorList(std::vector<serverOperator> &operatorList) { _operatorList = operatorList; }
-// void Server::setClientList(const std::map<const int, Client> &clientList) { _clientList = clientList; }
-// void Server::setChannelList(const std::map<std::string, Channel> &channelList) { _channelList = channelList; }
-// void Server::setAddrInfo(const struct addrinfo &addrInfo) { _addrInfo = addrInfo; }
-// void Server::setServerInfo(struct addrinfo* serverInfo) { _serverInfo = serverInfo; } 
-
 // Getter
-// int Server::getServerSockFd() { return (_serverSockFd); }
-// std::string &Server::getPort() { return (_port); }
 std::string &Server::getPassword() { return (_password); }
 std::string &Server::getDateTime() { return (_dateTime); }
-// std::vector<serverOperator> &Server::getOperatorList() { return (_operatorList); }
 std::map<const int, Client>& Server::getClientList() { return (_clientList); }
 std::map<std::string, Channel>& Server::getChannelList() { return (_channelList); }
-// struct addrinfo &Server::getAddrInfo() { return (_addrInfo); }
-// struct addrinfo* Server::getServerInfo() { return (_serverInfo); }
 
 
 /*******************************************************************/
@@ -152,6 +135,17 @@ bool Server::isClientExist(std::string &nickname)
 		++it;
 	}
 	return (false);
+}
+
+// クライアントリストからクライアントのFDに対応するクライアントを取得
+Client *Server::getClient(int clientFd)
+{
+	std::map<const int, Client>::iterator it = _clientList.find(clientFd);
+
+	// クライアントが見つからなかった場合、エラー文を出力してNULLを返す
+	if (it == _clientList.end())
+		return (NULL);
+	return (&it->second);
 }
 
 // クライアントリストからニックネームに対応するクライアントのFDを取得

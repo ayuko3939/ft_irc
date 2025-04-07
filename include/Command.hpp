@@ -39,5 +39,7 @@ void topicProtectMode(Server *server, Channel &channel, Client &client, bool sig
 // Command utils
 std::vector<std::string> splitMessage(std::string message);
 // std::vector<std::string> splitByComma(const std::string &str);
+std::string getChannelNameFromWord(std::string &word);
+void getTargetAndText(std::string &argument, std::string &target, std::string &text);
 
 #endif

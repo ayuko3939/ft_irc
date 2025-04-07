@@ -35,7 +35,6 @@ class Server
     std::string						          _port;
     std::string					          	_password;
     std::string					          	_dateTime;
-    std::vector<serverOperator>     _operatorList;
     std::map<const int, Client>		  _clientList;
     std::map<std::string, Channel>	_channelList;
     struct addrinfo				        	_addrInfo; // アドレス情報
@@ -44,7 +43,6 @@ class Server
   
     // manageServerLoop
     void setServerPollFd(std::vector<pollfd> &pollFds);
-
     int handleNewConnection(std::vector<pollfd> &pollFds, std::vector<pollfd> &tmpPollFds);
     int handleClientData(std::vector<pollfd> &pollFds, std::vector<pollfd>::iterator &it);
     int handlePollout(std::vector<pollfd> &pollFds, std::vector<pollfd>::iterator &it, int clientSockFd);
@@ -63,29 +61,13 @@ class Server
 
     static void signalHandler(int signum);
 
-    // Setters
-    // void setServerSockFd(int serverSockFd);
-    // void setPort(const std::string &port);
-    // void setPassword(const std::string &password);
-    // void setDateTime(const std::string &dateTime);
-    // void setOperatorList(std::vector<serverOperator> &operatorList);
-    // void setClientList(const std::map<const int, Client> &clientList);
-    // void setChannelList(const std::map<std::string, Channel> &channelList);
-    // void setAddrInfo(const struct addrinfo &addrInfo);
-    // void setServerInfo(struct addrinfo* serverInfo);
-
     // Getters
-    // int getServerSockFd();
-    // std::string &getPort();
     std::string &getPassword();
     std::string &getDateTime();
-    // std::vector<serverOperator> &getOperatorList();
     std::map<const int, Client>& getClientList();
     std::map<std::string, Channel>& getChannelList();
-    // struct addrinfo &getAddrInfo();
-    // struct addrinfo* getServerInfo();
     int getClientFdByNick(std::string &nick);
-
+    Client *getClient(int clientFd);
 
     // Other functions
     void getServerInfo();
@@ -101,16 +83,12 @@ class Server
 };
 
 // utils
-std::string trim(const std::string &s);
-Client *getClient(Server *server, int clientSockFd);
-Client &retrieveClient(Server *server, int clientSockFd);
-void splitCommandLine(std::string &message, std::vector<std::string> &cmds);
-std::string getChannelNameFromWord(std::string &word);
-void getTargetAndText(std::string &argument, std::string &target, std::string &text);
-void sendServerReply(int clientFd, std::string &message);
 void addToClientSendBuf(Server *server, int clientFd, std::string message);
-void sendClientRegistrationMsg(Server *server, int clientFd, Client *client);
+void sendServerReply(int clientFd, std::string &message);
+Client &retrieveClient(Server *server, int clientSockFd);
+// Client *getClient(Server *server, int clientSockFd);
 std::string getChannelName(std::string &msgToParse);
+std::string trim(const std::string &s);
 int getCommandType(std::string &cmd);
 
 #endif

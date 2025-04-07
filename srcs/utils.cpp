@@ -45,16 +45,17 @@ Client &retrieveClient(Server *server, int clientFd)
 	return (client);
 }
 
-Client *getClient(Server *server, int clientFd)
-{
-	std::map<const int, Client>& clientList = server->getClientList();
-	std::map<const int, Client>::iterator it = clientList.find(clientFd);
+// Client *getClient(Server *server, int clientFd)
+// {
+// 	std::map<const int, Client>& clientList = server->getClientList();
+// 	std::map<const int, Client>::iterator it = clientList.find(clientFd);
 
-	// クライアントが見つからなかった場合、エラー文を出力してNULLを返す
-	if (it == clientList.end())
-		return (NULL);
-	return (&it->second);
-}
+// 	// クライアントが見つからなかった場合、エラー文を出力してNULLを返す
+// 	if (it == clientList.end())
+// 		return (NULL);
+// 	return (&it->second);
+// }
+
 
 std::string getChannelName(std::string &msgToParse)
 {

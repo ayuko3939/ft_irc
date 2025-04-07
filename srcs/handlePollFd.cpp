@@ -28,11 +28,15 @@ int Server::handleNewConnection(std::vector<pollfd> &pollFds, std::vector<pollfd
 	}
 
 	// 非ブロッキングモードに設定（サーバーが応答しない状態になるのを防ぎ、複数の接続が同時に処理される）
-	int flags = fcntl(clientFd, F_GETFL, 0);
-	if (flags == -1)
+	// レビュー用
+	if (fcntl(clientFd, F_SETFL, O_NONBLOCK) == -1)
 		throw (ERROR_SERVER_SETSOCKETOPT);
-	if (fcntl(clientFd, F_SETFL, flags | O_NONBLOCK) == -1)
-		throw (ERROR_SERVER_SETSOCKETOPT);
+	// 理想の実装
+	// int flags = fcntl(clientFd, F_GETFL, 0);
+	// if (flags == -1)
+	// 	throw (ERROR_SERVER_SETSOCKETOPT);
+	// if (fcntl(clientFd, F_SETFL, flags | O_NONBLOCK) == -1)
+	// 	throw (ERROR_SERVER_SETSOCKETOPT);
 
 	// サーバーが満員なら、エラー出力・クライアントにエラーを送信してソケットを閉じる
 	if (pollFds.size() >= MAX_CLIENTS)
@@ -52,7 +56,7 @@ int Server::handleNewConnection(std::vector<pollfd> &pollFds, std::vector<pollfd
 int Server::handleClientData(std::vector<pollfd> &pollFds, std::vector<pollfd>::iterator &it)
 {
 	// 1. クライアント情報の取得
-	Client *client = getClient(this, it->fd);
+	Client *client = getClient(it->fd);
 	if (!client)
 	{
 		std::cerr << ORANGE ERROR_CLIENT_NOT_FOUND << it->fd << END << std::endl;
@@ -115,7 +119,7 @@ int Server::handleClientData(std::vector<pollfd> &pollFds, std::vector<pollfd>::
 // クライアントにデータを送信する処理
 int Server::handlePollout(std::vector<pollfd> &pollFds, std::vector<pollfd>::iterator &it, int clientFd)
 {
-	Client *client = getClient(this, clientFd);
+	Client *client = getClient(clientFd);
 
 	// クライアントが見つからなかった場合、エラー文を出力して何もしないで処理終了
 	if (!client)

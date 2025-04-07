@@ -14,7 +14,7 @@
 #include "Server.hpp"
 #include "Command.hpp"
 
-void splitCommandLine(std::string &message, std::vector<std::string> &cmds)
+static void splitCommandLine(std::string &message, std::vector<std::string> &cmds)
 {
 	// 改行コードを"\r\n"から"\n"に変換
 	std::string::size_type pos = 0;
@@ -40,7 +40,7 @@ void splitCommandLine(std::string &message, std::vector<std::string> &cmds)
 // 　→ "#channel :Hello there\n" をメッセージとして取得
 // 　→ "PRIVMSG" を大文字に変換
 	
-int parseCommand(std::string &cmdLine, s_ircCommand &cmdInfo)
+static int parseCommand(std::string &cmdLine, s_ircCommand &cmdInfo)
 {
 	// １．コマンドが空の場合、エラーを返す
 	cmdLine = trim(cmdLine);
@@ -96,7 +96,7 @@ int parseCommand(std::string &cmdLine, s_ircCommand &cmdInfo)
 	return (EXIT_SUCCESS);
 }
 
-void sendClientRegistrationMsg(Server *server, int clientFd, Client *client)
+static void sendClientRegistrationMsg(Server *server, int clientFd, Client *client)
 {
 	addToClientSendBuf(server, clientFd, DELIMITER_LINE);
 	addToClientSendBuf(server, clientFd, RPL_WELCOME(client->getNickname(), client->getNickname()));
@@ -150,7 +150,7 @@ void Server::fillClientInfo(Client *client, int clientFd, s_ircCommand cmdInfo)
 
 void Server::execCommand(int clientFd, s_ircCommand	&cmdInfo)
 {
-	Client	*client = getClient(this, clientFd);
+	Client	*client = getClient(clientFd);
 
 	// 登録処理が完了していない場合
 	if (!client->isRegistrationDone())
