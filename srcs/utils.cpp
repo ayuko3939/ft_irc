@@ -20,21 +20,6 @@ void addToClientSendBuf(Server *server, int clientFd, std::string message)
 	client.setSendBuf(newMessage);
 }
 
-void sendServerReply(int clientFd, std::string &message)
-{
-	std::istringstream iss(message);
-	std::string line;
-
-	// クライアントにデータを送信
-	send(clientFd, message.c_str(), message.size(), 0);
-	
-	// 送信したデータを表示
-	while (getline(iss, line))
-	{
-		std::cout << BLUE "[Server] " << clientFd << " > " << line << END << std::endl; 
-	}
-}
-
 Client &retrieveClient(Server *server, int clientFd)
 {
 	// クライアントリストからクライアント情報を探す

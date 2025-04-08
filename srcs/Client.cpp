@@ -53,3 +53,20 @@ bool Client::getConnexionPassword() { return (_connexion_password); }
 int Client::getNmInfo() { return (_nmInfo); }
 bool Client::getToDeconnect() { return (_toDeconnect); }
 bool Client::isRegistrationDone() { return (_registrationDone); }
+
+
+void Client::sendServerReply()
+{
+	std::string &message = getSendBuf();
+	std::istringstream iss(message);
+	std::string line;
+
+	// クライアントにデータを送信
+	send(_clientFd, message.c_str(), message.size(), 0);
+	
+	// 送信したデータを表示
+	while (getline(iss, line))
+	{
+		std::cout << BLUE "[Server] " << _clientFd << " > " << line << END << std::endl; 
+	}
+}

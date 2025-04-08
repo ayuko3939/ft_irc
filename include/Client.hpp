@@ -58,6 +58,8 @@ class Client
     int getNmInfo();
     bool getToDeconnect();
     bool isRegistrationDone();
+
+    void sendServerReply();
 };
 
 #endif

@@ -129,7 +129,7 @@ int Server::handlePollout(std::vector<pollfd> &pollFds, std::vector<pollfd>::ite
 	else
 	{
 		// クライアントのメッセージを送信して、バッファをクリアする
-		sendServerReply(clientFd, client->getSendBuf());
+		client->sendServerReply();
 		client->getSendBuf().clear();
 
 		// クライアントが切断フラグを持っている場合は削除してbreak
