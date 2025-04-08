@@ -84,14 +84,14 @@ void Server::launchServer()
 	
 	// ソケットをノンブロッキングモードに設定
 	// レビュー用
-	if (fcntl(_serverSockFd, F_SETFL, O_NONBLOCK) == -1)
-		throw (ERROR_SERVER_SETSOCKETOPT);
+	// if (fcntl(_serverSockFd, F_SETFL, O_NONBLOCK) == -1)
+	// 	throw (ERROR_SERVER_SETSOCKETOPT);
 	// 理想の実装
-	// int flags = fcntl(_serverSockFd, F_GETFL, 0);
-	// if (flags == -1)
-	// 	throw (ERROR_SERVER_SETSOCKETOPT);
-	// if (fcntl(_serverSockFd, F_SETFL, flags | O_NONBLOCK) == -1)
-	// 	throw (ERROR_SERVER_SETSOCKETOPT);
+	int flags = fcntl(_serverSockFd, F_GETFL, 0);
+	if (flags == -1)
+		throw (ERROR_SERVER_SETSOCKETOPT);
+	if (fcntl(_serverSockFd, F_SETFL, flags | O_NONBLOCK) == -1)
+		throw (ERROR_SERVER_SETSOCKETOPT);
 
 	// ソケットオプションを設定
 	int socketOpt = 1;

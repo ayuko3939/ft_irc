@@ -29,14 +29,14 @@ int Server::handleNewConnection(std::vector<pollfd> &pollFds, std::vector<pollfd
 
 	// 非ブロッキングモードに設定（サーバーが応答しない状態になるのを防ぎ、複数の接続が同時に処理される）
 	// レビュー用
-	if (fcntl(clientFd, F_SETFL, O_NONBLOCK) == -1)
-		throw (ERROR_SERVER_SETSOCKETOPT);
+	// if (fcntl(clientFd, F_SETFL, O_NONBLOCK) == -1)
+	// 	throw (ERROR_SERVER_SETSOCKETOPT);
 	// 理想の実装
-	// int flags = fcntl(clientFd, F_GETFL, 0);
-	// if (flags == -1)
-	// 	throw (ERROR_SERVER_SETSOCKETOPT);
-	// if (fcntl(clientFd, F_SETFL, flags | O_NONBLOCK) == -1)
-	// 	throw (ERROR_SERVER_SETSOCKETOPT);
+	int flags = fcntl(clientFd, F_GETFL, 0);
+	if (flags == -1)
+		throw (ERROR_SERVER_SETSOCKETOPT);
+	if (fcntl(clientFd, F_SETFL, flags | O_NONBLOCK) == -1)
+		throw (ERROR_SERVER_SETSOCKETOPT);
 
 	// サーバーが満員なら、エラー出力・クライアントにエラーを送信してソケットを閉じる
 	if (pollFds.size() >= MAX_CLIENTS)
