@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:11 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/13 17:48:04 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/04/09 18:00:40 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,6 @@ class Client
     int getNmInfo();
     bool getToDeconnect();
     bool isRegistrationDone();
-
-    void sendServerReply();
 };
 
 #endif

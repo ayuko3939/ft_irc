@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:18 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/26 21:19:46 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/04/09 18:04:36 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ class Server
 
     void addClient(int clientSockFd, std::vector<pollfd> &tmpPollFds);
     void deleteClient(std::vector<pollfd> &pollFds, std::vector<pollfd>::iterator &it, int clientSockFd);
+    void sendServerReply(int clientFd, std::string &message);
     
     void parseExecCommand(int clientFd, std::string &message);
     void execCommand(int clientFd, s_ircCommand	&cmdInfo);
@@ -58,8 +59,6 @@ class Server
   public:
 	  Server(std::string port, std::string password, struct tm *timeinfo);
 	  ~Server();
-
-    static void signalHandler(int signum);
 
     // Getters
     std::string &getPassword();
@@ -70,6 +69,7 @@ class Server
     Client *getClient(int clientFd);
 
     // Other functions
+    static void signalHandler(int signum);
     void getServerInfo();
     void launchServer();
     void manageServerLoop();
@@ -84,9 +84,7 @@ class Server
 
 // utils
 void addToClientSendBuf(Server *server, int clientFd, std::string message);
-void sendServerReply(int clientFd, std::string &message);
 Client &retrieveClient(Server *server, int clientSockFd);
-// Client *getClient(Server *server, int clientSockFd);
 std::string getChannelName(std::string &msgToParse);
 std::string trim(const std::string &s);
 int getCommandType(std::string &cmd);

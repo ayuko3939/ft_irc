@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 12:58:58 by yohasega          #+#    #+#             */
-/*   Updated: 2025/04/04 22:21:23 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/04/09 17:56:01 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,18 +29,6 @@ Client &retrieveClient(Server *server, int clientFd)
 	Client &client = it->second;
 	return (client);
 }
-
-// Client *getClient(Server *server, int clientFd)
-// {
-// 	std::map<const int, Client>& clientList = server->getClientList();
-// 	std::map<const int, Client>::iterator it = clientList.find(clientFd);
-
-// 	// クライアントが見つからなかった場合、エラー文を出力してNULLを返す
-// 	if (it == clientList.end())
-// 		return (NULL);
-// 	return (&it->second);
-// }
-
 
 std::string getChannelName(std::string &msgToParse)
 {

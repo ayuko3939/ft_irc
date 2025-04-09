@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:18 by hasega            #+#    #+#             */
-/*   Updated: 2025/04/04 22:10:30 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/04/09 18:05:40 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,6 +203,22 @@ void Server::deleteClient(std::vector<pollfd> &pollFds, std::vector<pollfd>::ite
 	pollFds.erase(it);
 
 	std::cout << INDIGO SERVER_NUMBER_OF_CLIENTS << pollFds.size() - 1 << END << std::endl;
+}
+
+// クライアントにデータを送信する
+void Server::sendServerReply(int clientFd, std::string &message)
+{
+	std::istringstream iss(message);
+	std::string line;
+
+	// クライアントにデータを送信
+	send(clientFd, message.c_str(), message.size(), 0);
+	
+	// 送信したデータを表示
+	while (getline(iss, line))
+	{
+		std::cout << BLUE "[Server] " << clientFd << " > " << line << END << std::endl; 
+	}
 }
 
 

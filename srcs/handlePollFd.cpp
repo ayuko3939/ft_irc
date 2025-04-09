@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/07 21:43:54 by yohasega          #+#    #+#             */
-/*   Updated: 2025/04/04 21:52:10 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/04/09 18:01:04 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,7 @@ int Server::handlePollout(std::vector<pollfd> &pollFds, std::vector<pollfd>::ite
 	else
 	{
 		// クライアントのメッセージを送信して、バッファをクリアする
-		client->sendServerReply();
+		sendServerReply(clientFd, client->getSendBuf());
 		client->getSendBuf().clear();
 
 		// クライアントが切断フラグを持っている場合は削除してbreak

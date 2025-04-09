@@ -6,7 +6,7 @@
 /*   By: yohasega <yohasega@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:56:11 by hasega            #+#    #+#             */
-/*   Updated: 2025/03/13 17:48:40 by yohasega         ###   ########.fr       */
+/*   Updated: 2025/04/09 17:58:28 by yohasega         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,20 +53,3 @@ bool Client::getConnexionPassword() { return (_connexion_password); }
 int Client::getNmInfo() { return (_nmInfo); }
 bool Client::getToDeconnect() { return (_toDeconnect); }
 bool Client::isRegistrationDone() { return (_registrationDone); }
-
-
-void Client::sendServerReply()
-{
-	std::string &message = getSendBuf();
-	std::istringstream iss(message);
-	std::string line;
-
-	// クライアントにデータを送信
-	send(_clientFd, message.c_str(), message.size(), 0);
-	
-	// 送信したデータを表示
-	while (getline(iss, line))
-	{
-		std::cout << BLUE "[Server] " << _clientFd << " > " << line << END << std::endl; 
-	}
-}
